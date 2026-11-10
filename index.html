@@ -100,8 +100,8 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .sky.paused .balloon{animation-play-state:paused}
 @keyframes rise{to{transform:translateY(calc(-1 * min(62vh,480px) - 260px))}}
 .track{width:100%;overflow:hidden;border-bottom:6px solid #8796ad;padding:8px 0 4px}
-.train{display:flex;gap:6px;align-items:flex-end;justify-content:flex-end;transition:transform 2.2s ease-in}
-.train.go{transform:translateX(-140%)}
+.train{display:flex;gap:6px;align-items:flex-end;justify-content:flex-start;transition:transform 3s ease-in}
+.train.go{transform:translateX(-115%)}
 .engine{font-size:clamp(44px,13vw,64px);line-height:1}
 .wagon{width:clamp(44px,14vw,80px);height:clamp(44px,14vw,72px);border-radius:12px;background:var(--coral);border-bottom:8px solid #c94a38;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;text-align:center;line-height:1.1;overflow:hidden}
 .platform{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
@@ -547,9 +547,20 @@ const FIXBY={
  z:[['🧳','המזוודה','🪡','המזוודה נקרעה, אני תופר אותה'],['🪑','הכיסא','🔨','הכיסא זז, צריך לתקן אותו'],['🏠','הבית','🖌️','אני צובע את הבית בזהב'],['🚲','האופניים','🔧','אני מזיז את הגלגל'],['📦','הארגז','🔨','הארגז שבור, אני מתקן אותו'],['🐴','הסוס','🩹','הזנב של הסוס נפצע']],
  ts:[['🏠','הבית','🖌️','אני צובע את הבית בצהוב'],['🪑','הכיסא','🔨','צריך לתקן את הכיסא'],['🧸','הדובי','🪡','אני תופר לדובי חולצה'],['🚲','האופניים','🔧','צריך מפתח כדי לתקן'],['🐢','הצב','🩹','אני שם פלסטר לצב'],['🛶','הסירה','🔨','יש חור בצד של הסירה']]
 };
-const RECIPES=[{name:'פיצה',final:'הפיצה',kind:'pizza',into:'פיצה',ing:[['🍅','עגבנייה'],['🧀','גבינה'],['🫒','זית'],['🍄','פטרייה'],['🌽','תירס'],['🫑','פלפל']]},
- {name:'סלט',final:'הסלט',kind:'bowl',into:'קערה',ing:[['🥒','מלפפון'],['🍅','עגבנייה'],['🥕','גזר'],['🫑','פלפל'],['🧅','בצל'],['🥬','חסה']]},
- {name:'מרק',final:'המרק',kind:'pot',into:'סיר',ing:[['🥕','גזר'],['🥔','תפוח אדמה'],['🧅','בצל'],['🌽','תירס'],['🍗','עוף'],['🧂','מלח']]}];
+const RECIPES=[{name:'פיצה',final:'הפיצה',kind:'pizza',into:'פיצה',in:'בפיצה',to:'לפיצה',rd:'מוכנה',ing:[['🍅','עגבנייה'],['🧀','גבינה'],['🫒','זית'],['🍄','פטרייה'],['🌽','תירס'],['🫑','פלפל']]},
+ {name:'סלט',final:'הסלט',kind:'bowl',into:'קערה',in:'בסלט',to:'לקערה',rd:'מוכן',ing:[['🥒','מלפפון'],['🍅','עגבנייה'],['🥕','גזר'],['🫑','פלפל'],['🧅','בצל'],['🥬','חסה']]},
+ {name:'מרק',final:'המרק',kind:'pot',into:'סיר',in:'בסיר',to:'לסיר',rd:'מוכן',ing:[['🥕','גזר'],['🥔','תפוח אדמה'],['🧅','בצל'],['🌽','תירס'],['🍗','עוף'],['🧂','מלח']]}];
+/* cooking game per target sound: every ingredient and the container carry the sound, so the sentence fits the activity */
+const COOK={
+ r:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',in:'בסיר',to:'לסיר',ing:[['🥕','גזר'],['🌽','תירס'],['🍚','אורז'],['🥦','ברוקולי'],['🥬','כרוב'],['🍄','פטריות']]},
+ l:{name:'סלט',final:'הסלט',rd:'מוכן',kind:'bowl',in:'בסלט',to:'לקערה',ing:[['🥒','מלפפון'],['🧅','בצל'],['🫑','פלפל'],['🍋','לימון'],['🧂','מלח'],['🥬','עלי חסה']]},
+ sh:{name:'קינוח',final:'הקינוח',rd:'מוכן',kind:'bowl',in:'בקינוח',to:'לקערה',ing:[['🍫','שוקולד'],['🍯','דבש'],['🍓','תות שדה'],['🍑','משמש'],['🥜','קשיו'],['🌰','שקדים']]},
+ s:{name:'סלט פירות',final:'סלט הפירות',rd:'מוכן',kind:'bowl',in:'בסלט הפירות',to:'לקערה',ing:[['🍍','אננס'],['🍑','אפרסק'],['🍐','אגס'],['🥥','קוקוס']]},
+ k:{name:'קערת פירות',final:'קערת הפירות',rd:'מוכנה',kind:'bowl',in:'בקערה',to:'לקערה',ing:[['🥝','קיווי'],['🥥','קוקוס'],['🍑','אפרסק'],['🍊','קלמנטינה']]},
+ g:{name:'עוגה',final:'העוגה',rd:'מוכנה',kind:'pizza',in:'בעוגה',to:'לעוגה',ing:[['🥕','גזר'],['🥜','אגוזים'],['🧀','גבינה'],['🍦','גלידה']]},
+ z:{name:'סלט',final:'הסלט',rd:'מוכן',kind:'bowl',in:'בקערה הזאת',to:'לקערה',ing:[['🫒','זיתים'],['🥕','גזר'],['🌻','זרעים'],['🥜','אגוזים']]},
+ ts:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🧅','בצל'],['🍆','חציל'],['🧀','מוצרלה'],['🥚','ביצה']]}
+};
 const CREATURES=[['🐶','הכלב'],['🐱','החתול'],['🐸','הצפרדע',1],['🐵','הקוף'],['🐮','הפרה',1],['🦁','האריה'],['🐼','הפנדה'],['🐰','הארנב'],['🦊','השועל'],['🐻','הדוב'],['🐔','התרנגולת',1],['🐧','הפינגווין'],['🐙','התמנון'],['🦄','החד-קרן'],['🐲','הדרקון'],['👾','המפלצון'],['🤖','הרובוט'],['🐳','הלוויתן'],['🦖','הדינוזאור'],['🐢','הצב'],['🦉','הינשוף'],['🐝','הדבורה',1],['👻','רוח הרפאים',1],['🐞','החיפושית',1]];
 const POS=[['s','בתחילת מילה'],['m','באמצע מילה'],['e','בסוף מילה'],['c','צרורות'],['x','הגה שיבוש עם הגה מטרה']];
 const POSBIT=[10,11,12,21,22];
@@ -891,16 +902,30 @@ function renderPair(){
 const STAGES=[
  ['syl','1','הברות','רָ, רוֹ, רִי...'],
  ['words','2','מילים','בתחילה, באמצע ובסוף'],
- ['sent','3','משפטי תבנית','אני רואה... יש לי...'],
- ['short','4','משפטים קצרים','משפט עם המילה'],
- ['long','5','משפטים ארוכים','משפט עם כמה מילים'],
+ ['phr','3','צירופים','שתי מילים ביחד'],
+ ['short','4','משפטים קצרים','אני רואה... יש לי...'],
+ ['long','5','משפטים ארוכים','אני רוצה... ו...'],
  ['story','6','מתארים ומספרים','תמונות לתיאור ותמונות מצחיקות']
 ];
+/* phrases: two words in a row, both with the target sound */
+const PHRASES={
+ r:[['רכבת ארוכה','🚆'],['רוצה ארנב','🐰'],['רואה נמר','🐅'],['פרח אדום','🌹'],['רובוט ירוק','🤖'],['ספר ורוד','📖'],['רוצה גזר','🥕'],['רואה ירח','🌙'],['כדור אדום','⚽'],['ארנב רץ','🐇']],
+ l:[['כלב לבן','🐕'],['פיל גדול','🐘'],['גמל גדול','🐫'],['בלון כחול','🎈'],['חתול לבן','🐈'],['לימון גדול','🍋'],['סל כחול','🧺'],['לב כחול','💙']],
+ sh:[['שעון חדש','⌚'],['שוקולד שחור','🍫'],['שן חדשה','🦷'],['משאית חדשה','🚚'],['נחש שחור','🐍'],['שבלול שמח','🐌'],['שמיכה חדשה','🛏️'],['יש שמש','☀️']],
+ s:[['סוס סגול','🐴'],['סבון סגול','🧼'],['סל סגול','🧺'],['סירה סגולה','⛵'],['כוס סגולה','🥛'],['ספר סגול','📖'],['אוטובוס סגול','🚌'],['מטוס סגול','✈️']],
+ k:[['כלב קטן','🐕'],['כדור קטן','⚽'],['קוף קטן','🐒'],['כובע כחול','🎩'],['כוכב קטן','⭐'],['קיפוד קטן','🦔'],['בקבוק קטן','🍼'],['כוס קטנה','🥛']],
+ g:[['גמל גדול','🐫'],['גזר גדול','🥕'],['דג גדול','🐟'],['גיטרה גדולה','🎸'],['עוגה גדולה','🎂'],['גרב גדולה','🧦'],['מגדל גבוה','🗼'],['גשם גדול','🌧️']],
+ z:[['זחל זז','🐛'],['זבוב זז','🪰'],['זברה זזה','🦓'],['תפוז זהוב','🍊'],['זית זהוב','🫒'],['מזלג זהוב','🍴'],['אגוז זהוב','🥜'],['ברווז זז','🦆']],
+ ts:[['צב צהוב','🐢'],['ציפור צהובה','🐦'],['עציץ צהוב','🪴'],['צלחת צהובה','🍽️'],['מיץ צהוב','🧃'],['ביצה צהובה','🥚'],['פיצה צהובה','🍕'],['עץ צהוב','🌳']]
+};
+/* simple long sentences for kindergarten: the old short sentences, "אני רוצה X ו-Y", and for כ/ק also sentences with "כי" */
+const KI=[['צריך כובע כי קר','🎩'],['הקוף קופץ כי הוא שמח','🐒'],['הכלב נובח כי הוא רוצה כדור','🐕'],['אני שותה כוס מים כי חם','🥛'],['הקיפוד קטן כי הוא תינוק','🦔'],['אני רוצה כדור כי אני רוצה לשחק','⚽']];
+function andSentences(){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length&&out.length<8;i+=2)out.push(['אני רוצה '+w[i][0]+' ו'+w[i+1][0],w[i][1]+w[i+1][1]]);return out}
 function renderSound(){
   const s=SOUNDS[S.sound],mx=maxStage(S.bits),p=prog();
   const st=STAGES.slice(0,mx).map(a=>[a,p.ctx['snd'+S.sound+':'+a[0]]||0]);
   const nx=st.findIndex(x=>x[1]<MASTER);
-  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail">${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}</div>`;
+  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail">${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}</div>`;
   bindCommon();
   app.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const st=b.dataset.stage;go('games',{stage:st,gback:'sound'})});
 }
@@ -913,9 +938,9 @@ function stageItems(st,act){
   if(st==='syl'){const [L,F]=s.L;const cv=[L+'ָ',L+'ֶ',L+'ִי',L+'וֹ',L+'וּ'],vc=['אַ'+F,'אֶ'+F,'אִי'+F,'אוֹ'+F,'אוּ'+F];
     const chains=[0,1,2,3].map(()=>pick(cv,3).join(' '));const cr=shuffle(CREATURES);return shuffle([...cv,...vc,...chains]).map((x,i)=>{const c=cr[i%cr.length];return [x,c[0],'syl',c[1],c[2]]})}
   if(st==='words')return shuffle(soundWords());
-  if(st==='sent'){const t=tplFor(act);return shuffle(soundWords()).map(w=>[t+' '+w[0],w[1]])}
-  if(st==='short')return shuffle(s.short);
-  if(st==='long')return shuffle(s.long);
+  if(st==='phr')return shuffle(PHRASES[s.id]||soundWords());
+  if(st==='short'){const t=tplFor(act);return shuffle(soundWords()).map(w=>[t+' '+w[0],w[1]])}
+  if(st==='long')return shuffle([...s.short,...andSentences(),...(s.id==='k'?KI:[])]);
   if(st==='pair'){const v=VOICING[S.pair];return shuffle([...v.a[1],...v.b[1]])}
   if(st==='vocab')return shuffle(allVocab());
   return [];
@@ -924,7 +949,7 @@ const GAMES={fix:['🛠️','בית המלאכה','אומרים משפט ומת�
 function gamesFor(st){
   if(st==='story')return ['scene','absurd'];
   if(st==='syl')return ['eggs','monster','frog','balloon','train','wheel'];
-  if(st==='words'||st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
+  if(st==='words'||st==='phr'||st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
   if(st==='short'||st==='long')return ['fix','cook','silly','balloon','train','line'];
   return ['balloon','train','line'];
 }
@@ -1168,7 +1193,7 @@ function startAct(act,from){
   if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[]}
   if(act==='absurd'){d.scenes=shuffle(SCENES);d.si=0;d.found=[]}
   if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;d.jobs=shuffle(FIXBY[sid]||FIXJOBS).slice(0,6);d.toolset=TOOLS}
-  if(act==='cook'){d.items=items();d.recipe=pick(RECIPES,1)[0];d.n=0;d.added=[];d.ready=false;d.baking=false}
+  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=COOK[sid]||pick(RECIPES,1)[0];d.recipe=Object.assign({},base,{ing:shuffle(base.ing)});d.pairs=S.stage==='long';d.n=0;d.added=[];d.ready=false;d.baking=false}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
@@ -1492,16 +1517,19 @@ function renderAct(){
     return;
   }
   if(S.act==='cook'){
-    const R=d.recipe,it=d.items[d.n%d.items.length],L=SOUNDS[S.sound];const done=d.n>=R.ing.length;
-    shell(`<div class="card stage"><p class="muted">מבשלים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
+    /* the sentence is part of the cooking: "אני רוצה לשים גזר בסיר"; in long sentences two ingredients at once */
+    const R=d.recipe,L=SOUNDS[S.sound];const done=d.n>=R.ing.length;
+    const cur=done?[]:R.ing.slice(d.n,d.n+(d.pairs?2:1));
+    const sent=done?'':`אני רוצה לשים ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
+    shell(`<div class="card stage"><p class="muted">מכינים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
       <div class="kitchen2"><div class="dish ${R.kind} ${d.baking?'baking':''} ${done&&!d.baking?'ready':''}" id="dish">${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}${done&&!d.baking?'<span class="steam">♨️</span>':''}</div></div>
-      ${done?(d.baking?'<p class="drag-hint">נכנס לתנור... 🔥</p>':`<div class="cheer">${R.final} מוכנה! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
-        :d.ready?`<p class="drag-hint">עכשיו גוררים את ה${R.ing[d.n][1]} ל${R.into}!</p><div class="platform"><button class="pitem ready ingr" id="ingr"><span style="font-size:52px">${R.ing[d.n][0]}</span><span class="plabel">${R.ing[d.n][1]}</span></button></div>`
-        :`<div class="saybox"><p class="muted">אומרים את המשפט, ומקבלים ${R.ing[d.n][1]}:</p><div class="sentence">${it[1]?it[1]+' ':''}${hl(it[0],L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
+      ${done?(d.baking?'<p class="drag-hint">מתבשל... 🔥</p>':`<div class="cheer">${R.final} ${R.rd}! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
+        :d.ready?`<p class="drag-hint">עכשיו גוררים ${R.to}!</p><div class="platform"><button class="pitem ready ingr" id="ingr"><span style="font-size:52px">${cur.map(x=>x[0]).join('')}</span><span class="plabel">${cur.map(x=>x[1]).join(' וגם ')}</span></button></div>`
+        :`<div class="saybox"><div class="pic" style="font-size:64px">${cur.map(x=>x[0]).join(' ')}</div><p class="muted">אומרים מה שמים ${R.in}:</p><div class="sentence">${hl(sent,L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
       </div>`);
-    const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(hl(it[0],L.hl),()=>{addStar();d.ready=true;render()});
+    const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(`${cur.map(x=>x[0]).join(' ')} ${hl(sent,L.hl)}`,()=>{addStar();d.ready=true;render()});
     const ig=document.getElementById('ingr');
-    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();{const SP=[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]][d.n%6];d.added.push([R.ing[d.n][0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])}d.n++;d.ready=false;
+    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();cur.forEach((x,k)=>{const SP=[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]][(d.n+k)%6];d.added.push([x[0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])});d.n+=cur.length;d.ready=false;
         if(d.n>=R.ing.length){d.baking=true;render();SFX.whoosh();TIMERS.push(setTimeout(()=>{d.baking=false;SFX.fanfare();render()},2200))}else render()})};
       dragTo(ig,()=>document.getElementById('dish'),drop)}
     const e=document.getElementById('eat');if(e)e.onclick=()=>{addStar();finish()};
