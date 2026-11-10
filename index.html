@@ -1055,7 +1055,7 @@ function stageItems(st,act){
   if(st==='vocab')return shuffle(allVocab());
   return [];
 }
-const GAMES={pscene:['🖼️','תמונות מספרות','מוצאים בתמונה ומספרים מה קורה'],fix:['🛠️','בית המלאכה','אומרים משפט ומתקנים דברים שבורים'],cook:['👩‍🍳','מבשלים ארוחה','כל משפט מוסיף מצרך'],silly:['🎰','מכונת המשפטים המצחיקים','משפטים משוגעים: מה מצחיק?'],scene:['🔎','מחפשים בתמונה','מוצאים דברים עם ההגה ומספרים'],absurd:['🤪','מה מצחיק בתמונה?','מוצאים ומסבירים מה לא הגיוני'],eggs:['🥚','ביצים מפתיעות','מי בוקע מהביצה?'],monster:['😋','המפלצון הרעב','מאכילים אותו עוגיות הברה'],frog:['🐸','הצפרדע הרעבה','קופצים על אבנים ותופסים חרקים'],balloon:['🎈','בלונים','מפוצצים בלון ואומרים'],train:['🚂','רכבת','מעמיסים את הקרונות'],line:['✏️','מותחים קו','מחברים כל תמונה לצל שלה'],memory:['🃏','זיכרון','מוצאים זוגות'],wheel:['🎡','גלגל המזל','מסובבים ואומרים 3 פעמים']};
+const GAMES={pscene:['🖼️','תמונות מספרות','מוצאים בתמונה ומספרים מה קורה'],fix:['🛠️','בית המלאכה','אומרים משפט ומתקנים דברים שבורים'],cook:['👩‍🍳','מבשלים ארוחה','כל משפט מוסיף מצרך'],silly:['🎰','מכונת המשפטים','מסובבים את המכונה ואומרים'],scene:['🔎','מחפשים בתמונה','מוצאים דברים עם ההגה ומספרים'],absurd:['🤪','מה מצחיק בתמונה?','מוצאים ומסבירים מה לא הגיוני'],eggs:['🥚','ביצים מפתיעות','מי בוקע מהביצה?'],monster:['😋','המפלצון הרעב','מאכילים אותו עוגיות הברה'],frog:['🐸','הצפרדע הרעבה','קופצים על אבנים ותופסים חרקים'],balloon:['🎈','בלונים','מפוצצים בלון ואומרים'],train:['🚂','רכבת','מעמיסים את הקרונות'],line:['✏️','מותחים קו','מחברים כל תמונה לצל שלה'],memory:['🃏','זיכרון','מוצאים זוגות'],wheel:['🎡','גלגל המזל','מסובבים ואומרים 3 פעמים']};
 function gamesFor(st){
   if(st==='story')return ['pscene','scene','absurd'];
   if(st==='syl')return ['eggs','monster','frog','balloon','train','wheel'];
@@ -1380,7 +1380,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',silly:'משפטים מצחיקים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -1744,7 +1744,7 @@ function renderAct(){
   }
   if(S.act==='silly'){
     const L=SOUNDS[S.sound],r=d.cur,two=S.stage==='phr';
-    shell(`<div class="card stage"><p class="muted">${two?'מכונת הזוגות':'מכונת המשפטים המצחיקים'} 🎰 · ${d.n+1} / ${d.goal}</p>
+    shell(`<div class="card stage"><p class="muted">${two?'מכונת הזוגות':'מכונת המשפטים'} 🎰 · ${d.n+1} / ${d.goal}</p>
       <div class="sillybox ${r&&!d.rolling?'show':''}" id="sb">${r?(two?`<div class="slot pair2"><span>${r.A[1]}</span><span>${r.B[1]}</span></div>`:`<div class="silly ${r.p}"><span class="sB">${r.B[1]}</span><span class="sA">${r.A[1]}</span></div>`):'<div class="slot">🎰</div>'}</div>
       ${r&&!d.rolling?`<div class="sentence">${hl(r.text,L.hl)}</div>${two?'<p class="note">להורה: הילד אומר את שתי המילים ביחד, בלי הפסקה ביניהן.</p>':`<p class="note">להורה: הילד אומר את המשפט, ואז מסביר מה מצחיק. למשל: למה ${r.A[0]} לא יכול להיות ${r.pw} ${r.B[0]}? איפה הוא צריך להיות?</p>`}
         <button class="btn leaf" id="said">⭐ אמרתי והסברתי!</button>`:`<button class="btn sun" id="roll" ${d.rolling?'disabled':''}>🎰 מפעילים את המכונה!</button>`}
