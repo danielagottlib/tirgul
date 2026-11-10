@@ -418,7 +418,7 @@ body{background:#BFE6FF}
 .hl{color:var(--coral)}
 .door.gone{display:none}
 .recbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
-.recbtn{font-size:22px;padding:14px 24px;animation:pulse 1.4s ease-in-out infinite}
+.recbtn{font-size:26px;padding:18px 32px;border-radius:999px;animation:pulse 1.4s ease-in-out infinite}
 .recdot{font-family:var(--display);font-size:22px;color:var(--coral)}
 .meter{width:80%;height:14px;border-radius:8px;background:#EEF3F7;overflow:hidden}
 .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--leaf),var(--sun),var(--coral));transition:width .08s}
@@ -995,10 +995,11 @@ function recStep(host,done,opts){
     host.innerHTML=`<div class="recbox"><div class="recdot">🔊 שומעים את עצמנו...</div><div class="ears">👂</div></div>`;
     await REC.play(blob);if(!alive())return;
     done()};
+  /* the child starts the recording; stopping, playback and returning to the game are automatic */
   REC.granted().then(g=>{if(!alive())return;
-    if(g||REC.state==='ok'){run();return}
-    host.innerHTML=`<div class="recbox"><button class="btn coral recbtn" id="recGo" type="button">🎙️ מקליטים ואומרים</button><p class="muted" style="font-size:14px">להורים: בפעם הראשונה הדפדפן ישאל אם לאפשר מיקרופון. לוחצים "אישור" (Allow), ומהפעם הבאה ההקלטה תתחיל לבד.</p></div>`;
-    host.querySelector('#recGo').onclick=()=>run()});
+    const first=!(g||REC.state==='ok');
+    host.innerHTML=`<div class="recbox"><button class="btn coral recbtn" id="recGo" type="button" aria-label="לוחצים ומדברים">🎤 לוחצים ומדברים</button>${first?'<p class="muted" style="font-size:14px">להורים: בפעם הראשונה הדפדפן ישאל אם לאפשר מיקרופון. לוחצים "אישור" (Allow) פעם אחת.</p>':''}</div>`;
+    host.querySelector('#recGo').onclick=()=>{SFX.unlock();run()}});
 }
 /* small overlay used by games that have their own "אמרתי" button */
 function recOverlay(label,done,opts){
