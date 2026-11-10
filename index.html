@@ -343,6 +343,34 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .dish.baking{animation:shake .2s linear infinite;filter:brightness(1.1) sepia(.3)}
 .dish.ready{animation:popin .5s ease-out}
 .steam{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:40px;animation:bob3 1.2s ease-in-out infinite}
+/* cooking v2 */
+.kitchen2{position:relative;gap:14px;align-items:flex-end;min-height:230px;padding:30px 0 10px}
+.dish.pot,.dish.bowl,.dish.cake{background:none;border-radius:0}
+.dish.pot{aspect-ratio:200/166}.dish.bowl{aspect-ratio:200/140}.dish.cake{aspect-ratio:200/166}
+.dishart{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dish .topping{z-index:2}
+.spoon{position:absolute;left:44%;top:-38%;width:13%;z-index:4;transform-origin:50% 85%;animation:stir 1.1s linear infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+@keyframes stir{0%{transform:translate(-40%,0) rotate(-14deg)}25%{transform:translate(0,6%) rotate(0)}50%{transform:translate(40%,0) rotate(14deg)}75%{transform:translate(0,-5%) rotate(0)}100%{transform:translate(-40%,0) rotate(-14deg)}}
+.spoon.rest{animation:none;left:auto;right:4%;top:-30%;transform:rotate(22deg)}
+.ph-stir .k-bowl .topping,.ph-stir.k-bowl .topping{animation:toss .45s ease-in-out infinite alternate}
+@keyframes toss{to{transform:translate(-50%,-80%) rotate(14deg)}}
+.vapor{position:absolute;left:0;right:0;top:-34%;height:60%;pointer-events:none;z-index:3}
+.vapor i{position:absolute;bottom:0;left:calc(var(--x)*1%);width:20%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(150,165,185,.55),rgba(150,165,185,0) 70%);animation:vapor 2.2s ease-out infinite;animation-delay:var(--d);opacity:0}
+@keyframes vapor{0%{transform:translateY(20%) scale(.5);opacity:0}25%{opacity:1}100%{transform:translateY(-130%) scale(1.7);opacity:0}}
+.ph-pour .dish.pot{transform-origin:20% 60%;animation:tilt .9s ease-in-out forwards}
+@keyframes tilt{to{transform:translate(-4%,-6%) rotate(-32deg)}}
+.serve{position:relative;width:min(44vw,170px);aspect-ratio:200/120;animation:popin .45s ease-out}
+.serve.big{width:min(72vw,280px)}
+.serve .soupfill{transform-box:fill-box;transform-origin:50% 100%;animation:fillup 1.8s .5s ease-out both}
+.serve.big .soupfill{animation:none}
+@keyframes fillup{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+.pourline{position:absolute;left:58%;bottom:62%;width:9px;height:95%;border-radius:6px;background:linear-gradient(#E9A23B,#F2B957);transform-origin:50% 100%;transform:rotate(18deg);animation:pourin 2.2s ease-in-out both;z-index:2}
+@keyframes pourin{0%{transform:rotate(18deg) scaleY(0)}20%,80%{transform:rotate(18deg) scaleY(1)}100%{transform:rotate(18deg) scaleY(0);opacity:0}}
+.ovenglow{position:absolute;inset:-14%;border-radius:30px;background:radial-gradient(circle,rgba(255,170,60,.0) 35%,rgba(255,140,40,.55) 70%,rgba(255,90,30,.0) 100%);animation:glow .7s ease-in-out infinite alternate;z-index:0}
+@keyframes glow{from{opacity:.45}to{opacity:1}}
+.ph-bake .dish{animation:shake .25s linear infinite}
+.ph-ready .dish{animation:popin .5s ease-out}
+.ph-pour .dish{width:min(44vw,190px)}
 .sillybox{width:100%;height:230px;border-radius:18px;background:linear-gradient(135deg,#FFF1C9,#E7DCFF);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .slot{font-size:80px}
 .silly{position:relative;width:200px;height:200px}
@@ -560,14 +588,44 @@ const FIXBY={
 const RECIPES=[{name:'פיצה',final:'הפיצה',kind:'pizza',into:'פיצה',in:'בפיצה',to:'לפיצה',rd:'מוכנה',ing:[['🍅','עגבנייה'],['🧀','גבינה'],['🫒','זית'],['🍄','פטרייה'],['🌽','תירס'],['🫑','פלפל']]},
  {name:'סלט',final:'הסלט',kind:'bowl',into:'קערה',in:'בסלט',to:'לקערה',rd:'מוכן',ing:[['🥒','מלפפון'],['🍅','עגבנייה'],['🥕','גזר'],['🫑','פלפל'],['🧅','בצל'],['🥬','חסה']]},
  {name:'מרק',final:'המרק',kind:'pot',into:'סיר',in:'בסיר',to:'לסיר',rd:'מוכן',ing:[['🥕','גזר'],['🥔','תפוח אדמה'],['🧅','בצל'],['🌽','תירס'],['🍗','עוף'],['🧂','מלח']]}];
+/* ---------- cooking art: pot, bowls, cake, pizza, wooden spoon, steam ---------- */
+const SPOS={pot:[[38,25],[62,25],[50,31],[30,30],[70,30],[50,20]],bowl:[[36,22],[64,22],[50,30],[26,28],[74,28],[50,15]],cake:[[38,24],[62,24],[50,31],[28,29],[72,29],[50,18]],pizza:[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]]};
+function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',cake:'#F7C6D9',pizza:'#E2563B'})[k];
+  if(k==='pot')return `<svg class="dishart" viewBox="0 0 200 166" aria-hidden="true"><defs><linearGradient id="potg" x1="0" x2="1"><stop offset="0" stop-color="#6f7a88"/><stop offset=".42" stop-color="#eef2f6"/><stop offset=".6" stop-color="#c9d1da"/><stop offset="1" stop-color="#7b8796"/></linearGradient></defs>
+    <rect x="0" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/><rect x="170" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/>
+    <path d="M20 42 h160 v78 q0 38 -38 38 h-84 q-38 0 -38 -38z" fill="url(#potg)"/><path d="M34 70 q66 14 132 0" stroke="#fff" stroke-opacity=".35" stroke-width="5" fill="none"/>
+    <ellipse cx="100" cy="42" rx="80" ry="19" fill="#dfe5eb" stroke="#97a2b0" stroke-width="3"/><ellipse cx="100" cy="44" rx="72" ry="14" fill="#5d6673"/>
+    <ellipse cx="100" cy="46" rx="70" ry="12" fill="${c}" opacity="${p?.35+.65*p:0}"/></svg>`;
+  if(k==='bowl')return `<svg class="dishart" viewBox="0 0 200 140" aria-hidden="true"><defs><linearGradient id="bowlg" x1="0" x2="1"><stop offset="0" stop-color="#b9d9ec"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#a9cde3"/></linearGradient></defs>
+    <path d="M4 34 q6 94 96 100 q90 -6 96 -100z" fill="url(#bowlg)" stroke="#8fb9d3" stroke-width="2"/><path d="M30 78 q70 26 140 0" stroke="#F06A4F" stroke-opacity=".55" stroke-width="5" fill="none"/>
+    <ellipse cx="100" cy="34" rx="96" ry="24" fill="#f4f9fc" stroke="#8fb9d3" stroke-width="2"/><ellipse cx="100" cy="37" rx="86" ry="17" fill="${c}" opacity="${p?.3+.7*p:.15}"/></svg>`;
+  if(k==='cake')return `<svg class="dishart" viewBox="0 0 200 166" aria-hidden="true"><ellipse cx="100" cy="150" rx="96" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/>
+    <path d="M24 52 v80 q0 14 76 14 q76 0 76 -14 v-80z" fill="#F2D3A4"/><path d="M24 92 q76 16 152 0 v8 q-76 16 -152 0z" fill="#E59AB7"/>
+    <ellipse cx="100" cy="52" rx="76" ry="22" fill="${c}"/><path d="M24 52 q10 26 20 6 q10 26 20 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q10 22 16 -4" fill="${c}"/></svg>`;
+  return ''}
+function serveArt(R){return `<svg class="dishart" viewBox="0 0 200 120" aria-hidden="true"><ellipse cx="100" cy="104" rx="94" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/><path d="M14 40 q8 66 86 70 q78 -4 86 -70z" fill="#fff" stroke="#c4cfd8" stroke-width="2"/><path d="M28 64 q72 22 144 0" stroke="#12A397" stroke-opacity=".5" stroke-width="5" fill="none"/><ellipse cx="100" cy="40" rx="86" ry="20" fill="#f7fafc" stroke="#c4cfd8" stroke-width="2"/><ellipse class="soupfill" cx="100" cy="43" rx="76" ry="14" fill="${R.color||'#E9A23B'}"/><circle cx="74" cy="40" r="5" fill="#F08A2C"/><circle cx="118" cy="44" r="4" fill="#7CC36B"/><circle cx="98" cy="38" r="3.5" fill="#FFD84D"/></svg>`}
+const SPOON=`<svg class="spoon" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/><ellipse cx="17" cy="132" rx="6" ry="12" fill="#D9A877" opacity=".6"/></svg>`;
+const SPOON_REST=`<svg class="spoon rest" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/></svg>`;
+function vapor(on){return on?`<div class="vapor">${[18,38,58,76].map((x,i)=>`<i style="--x:${x};--d:${i*.55}s"></i>`).join('')}</div>`:''}
+/* workshop, short sentences: [object emoji, object (with ה), right tool] — every object has the target sound */
+const FIXSHORT={
+ r:[['🗄️','הארון','🔨'],['🪞','המראה','🔨'],['🪑','הרגליים של הכיסא','🔨'],['🚂','הרכבת','🔧'],['🤖','הרובוט','🪛'],['📻','הרדיו','🪛'],['🏡','הגדר','🖌️'],['📦','הארגז','🔨']],
+ ts:[['🖼️','הציור','🖌️'],['📿','הצמיד','🪡'],['👗','החצאית','🪡'],['🪴','העציץ','🔨'],['🛖','הצריף','🔨'],['🧸','הצעצוע','🪡']],
+ l:[['🚲','הגלגל','🔧'],['🪣','הדלי','🔨'],['🚪','הדלת','🔨'],['🧸','הלב של הדובי','🪡'],['🏠','הקיר הלבן','🖌️'],['🎒','התיק הכחול','🪡'],['⏰','השעון הגדול','🪛']],
+ sh:[['🕰️','השעון','🪛'],['🚚','המשאית','🔧'],['🪑','השולחן','🔨'],['🪆','השיער של הבובה','🪡'],['🛏️','השמיכה','🪡'],['🚪','השער','🖌️']],
+ s:[['⛵','הסירה','🔨'],['🚌','האוטובוס','🔧'],['🧺','הסל','🪡'],['🛋️','הספה','🪡'],['🪜','הסולם','🔨'],['✂️','המספריים','🪛']],
+ k:[['🪑','הכיסא','🔨'],['🧱','הקיר','🖌️'],['🎩','הכובע','🪡'],['🛴','הקורקינט','🔧'],['🫖','הקומקום','🪛'],['🚪','הכפתור של הדלת','🪛']],
+ g:[['🎸','הגיטרה','🪛'],['🏠','הגג','🔨'],['🧦','הגרב','🪡'],['🚲','הגלגל','🔧'],['🧱','הגדר','🖌️'],['👢','המגפיים','🪡']],
+ z:[['🧳','המזוודה','🪡'],['📦','הארגז','🔨'],['🦓','הזברה מעץ','🖌️'],['🧸','הזנב של הדובי','🪡'],['🤖','הזרוע של הרובוט','🪛']]
+};
 /* cooking game per target sound: every ingredient and the container carry the sound, so the sentence fits the activity */
 const COOK={
  r:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',in:'בסיר',to:'לסיר',ing:[['🥕','גזר'],['🌽','תירס'],['🍚','אורז'],['🥦','ברוקולי'],['🥬','כרוב'],['🍄','פטריות']]},
  l:{name:'סלט',final:'הסלט',rd:'מוכן',kind:'bowl',in:'בסלט',to:'לקערה',ing:[['🥒','מלפפון'],['🧅','בצל'],['🫑','פלפל'],['🍋','לימון'],['🧂','מלח'],['🥬','עלי חסה']]},
- sh:{name:'קינוח',final:'הקינוח',rd:'מוכן',kind:'bowl',in:'בקינוח',to:'לקערה',ing:[['🍫','שוקולד'],['🍯','דבש'],['🍓','תות שדה'],['🍑','משמש'],['🥜','קשיו'],['🌰','שקדים']]},
- s:{name:'סלט פירות',final:'סלט הפירות',rd:'מוכן',kind:'bowl',in:'בסלט הפירות',to:'לקערה',ing:[['🍍','אננס'],['🍑','אפרסק'],['🍐','אגס'],['🥥','קוקוס']]},
- k:{name:'קערת פירות',final:'קערת הפירות',rd:'מוכנה',kind:'bowl',in:'בקערה',to:'לקערה',ing:[['🥝','קיווי'],['🥥','קוקוס'],['🍑','אפרסק'],['🍊','קלמנטינה']]},
- g:{name:'עוגה',final:'העוגה',rd:'מוכנה',kind:'pizza',in:'בעוגה',to:'לעוגה',ing:[['🥕','גזר'],['🥜','אגוזים'],['🧀','גבינה'],['🍦','גלידה']]},
+ sh:{name:'קינוח',final:'הקינוח',rd:'מוכן',kind:'bowl',color:'#9C6644',in:'בקינוח',to:'לקערה',ing:[['🍫','שוקולד'],['🍯','דבש'],['🍓','תות שדה'],['🍑','משמש'],['🥜','קשיו'],['🌰','שקדים']]},
+ s:{name:'סלט פירות',final:'סלט הפירות',rd:'מוכן',kind:'bowl',color:'#F9D976',in:'בסלט הפירות',to:'לקערה',ing:[['🍍','אננס'],['🍑','אפרסק'],['🍐','אגס'],['🥥','קוקוס']]},
+ k:{name:'קערת פירות',final:'קערת הפירות',rd:'מוכנה',kind:'bowl',color:'#FBC98D',in:'בקערה',to:'לקערה',ing:[['🥝','קיווי'],['🥥','קוקוס'],['🍑','אפרסק'],['🍊','קלמנטינה']]},
+ g:{name:'עוגה',final:'העוגה',rd:'מוכנה',kind:'cake',in:'בעוגה',to:'לעוגה',ing:[['🥕','גזר'],['🥜','אגוזים'],['🧀','גבינה'],['🍦','גלידה']]},
  z:{name:'סלט',final:'הסלט',rd:'מוכן',kind:'bowl',in:'בקערה הזאת',to:'לקערה',ing:[['🫒','זיתים'],['🥕','גזר'],['🌻','זרעים'],['🥜','אגוזים']]},
  ts:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🧅','בצל'],['🍆','חציל'],['🧀','מוצרלה'],['🥚','ביצה']]}
 };
@@ -1246,8 +1304,11 @@ function startAct(act,from){
     if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[]}
   if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[]}
   if(act==='absurd'){d.scenes=shuffle(SCENES);d.si=0;d.found=[]}
-  if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;d.jobs=shuffle(FIXBY[sid]||FIXJOBS).slice(0,6);d.toolset=TOOLS}
-  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=COOK[sid]||pick(RECIPES,1)[0];d.recipe=Object.assign({},base,{ing:shuffle(base.ing)});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false}
+  if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;
+    /* short sentences: always "צריך לתקן/לצבוע את ה..." with an object that has the target sound */
+    if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid]).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
+    else d.jobs=shuffle(FIXBY[sid]||FIXJOBS).slice(0,6);d.toolset=TOOLS}
+  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=COOK[sid]||pick(RECIPES,1)[0];d.recipe=Object.assign({},base,{ing:shuffle(base.ing)});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
@@ -1560,9 +1621,9 @@ function renderAct(){
     const said=d.said;
     shell(`<div class="card stage"><p class="muted">בית המלאכה של ${esc(kidName()||'הילד')} 🛠️ · תיקון ${d.j+1} / ${d.jobs.length}</p>
       <div class="workbench"><div class="broken ${d.fixed?'fixed':''}" id="obj">${job[0]}${d.fixed?'':'<span class="crack">💥</span>'}</div>${d.fixed?'<div class="sparkles">✨</div>':''}</div>
-      ${!said?`<div class="saybox"><p class="muted">כדי לתקן את ${job[1]}, קודם אומרים את המשפט:</p><div class="sentence">${job[3]?hl(job[3],L.hl):(it[1]?it[1]+' ':'')+hl(it[0],L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`
-        :d.fixed?`<div class="cheer">תיקנת את ${job[1]}! 🎉</div>`
-        :`<p class="drag-hint">באיזה כלי מתקנים את ${job[1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`}
+      ${!said?`<div class="saybox"><p class="muted">כדי ${job[4]||'לתקן'} את ${job[1]}, קודם אומרים את המשפט:</p><div class="sentence">${job[3]?hl(job[3],L.hl):(it[1]?it[1]+' ':'')+hl(it[0],L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`
+        :d.fixed?`<div class="cheer">${job[5]||'תיקנת'} את ${job[1]}! 🎉</div>`
+        :`<p class="drag-hint">באיזה כלי ${job[4]==='לצבוע'?'צובעים':'מתקנים'} את ${job[1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`}
       </div>`);
     const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(hl(job[3]||'',L.hl),()=>{addStar();d.said=true;render()});
     app.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{const t=d.toolset[+b.dataset.t];
@@ -1578,15 +1639,23 @@ function renderAct(){
     const cur=done?[]:R.ing.slice(d.n,d.n+(d.pairs?2:1));
     const sent=done?'':`אני רוצה לשים ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
     shell(`<div class="card stage"><p class="muted">מכינים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
-      <div class="kitchen2"><div class="dish ${R.kind} ${d.baking?'baking':''} ${done&&!d.baking?'ready':''}" id="dish">${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}${done&&!d.baking?'<span class="steam">♨️</span>':''}</div></div>
-      ${done?(d.baking?'<p class="drag-hint">מתבשל... 🔥</p>':`<div class="cheer">${R.final} ${R.rd}! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
+      <div class="kitchen2 ph-${d.phase||'add'} k-${R.kind}">${R.kind==='pot'&&d.phase==='ready'?'':`<div class="dish ${R.kind}" id="dish">${dishArt(R,d.n/R.ing.length)}${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}
+        ${d.phase==='stir'?SPOON+vapor(R.kind==='pot'):''}${d.phase==='bake'?'<div class="ovenglow"></div>':''}${d.phase==='ready'?vapor(R.kind!=='bowl'):''}</div>`}
+        ${R.kind==='pot'&&(d.phase==='pour'||d.phase==='ready')?`<div class="serve ${d.phase==='ready'?'big':''}">${d.phase==='pour'?'<i class="pourline"></i>':''}${serveArt(R)}${d.phase==='ready'?vapor(true)+SPOON_REST:''}</div>`:''}</div>
+      ${done?(d.phase!=='ready'?`<p class="drag-hint">${{stir:R.kind==='pot'?'מערבבים את המרק... 🥄':'מערבבים טוב טוב... 🥄',pour:'מוזגים לצלחת... 🥣',bake:'נכנס לתנור... 🔥'}[d.phase]||''}</p>`:`<div class="cheer">${R.final} ${R.rd}! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
         :d.ready?`<p class="drag-hint">עכשיו גוררים ${R.to}!</p><div class="platform"><button class="pitem ready ingr" id="ingr"><span style="font-size:52px">${cur.map(x=>x[0]).join('')}</span><span class="plabel">${cur.map(x=>x[1]).join(' וגם ')}</span></button></div>`
         :`<div class="saybox"><div class="pic" style="font-size:64px">${cur.map(x=>x[0]).join(' ')}</div><p class="muted">אומרים מה שמים ${R.in}:</p><div class="sentence">${hl(sent,L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
       </div>`);
     const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(`${cur.map(x=>x[0]).join(' ')} ${hl(sent,L.hl)}`,()=>{addStar();d.ready=true;render()});
     const ig=document.getElementById('ingr');
-    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();cur.forEach((x,k)=>{const SP=[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]][(d.n+k)%6];d.added.push([x[0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])});d.n+=cur.length;d.ready=false;
-        if(d.n>=R.ing.length){d.baking=true;render();SFX.whoosh();TIMERS.push(setTimeout(()=>{d.baking=false;SFX.fanfare();render()},2200))}else render()})};
+    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();cur.forEach((x,k)=>{const SP=(SPOS[R.kind]||SPOS.pizza)[(d.n+k)%6];d.added.push([x[0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])});d.n+=cur.length;d.ready=false;
+        if(d.n>=R.ing.length){
+          /* finale: pot = stir, pour into a soup plate; salad bowls = stir; cake & pizza = oven */
+          const step=(ph,ms,sfx)=>new Promise(res=>{d.phase=ph;render();sfx&&sfx();TIMERS.push(setTimeout(res,ms))});
+          (async()=>{if(R.kind==='pizza'||R.kind==='cake'){await step('bake',2600,()=>SFX.whoosh())}
+            else{await step('stir',2800,()=>SFX.roll());if(R.kind==='pot')await step('pour',2400,()=>{SFX.zip();TIMERS.push(setTimeout(()=>SFX.plop(),900))})}
+            if(S.act==='cook'&&S.data===d){d.phase='ready';SFX.fanfare();render()}})()}
+        else render()})};
       dragTo(ig,()=>document.getElementById('dish'),drop)}
     const e=document.getElementById('eat');if(e)e.onclick=()=>{addStar();finish()};
     return;
