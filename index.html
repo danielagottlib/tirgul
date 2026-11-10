@@ -345,7 +345,8 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .steam{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:40px;animation:bob3 1.2s ease-in-out infinite}
 /* cooking v2 */
 .kitchen2{position:relative;gap:14px;align-items:flex-end;min-height:230px;padding:30px 0 10px}
-.dish.pot,.dish.bowl,.dish.cake{background:none;border-radius:0}
+.dish.pot,.dish.bowl,.dish.cake,.dish.pan{background:none;border-radius:0}
+.dish.pan{aspect-ratio:220/150}
 .dish.pot{aspect-ratio:200/166}.dish.bowl{aspect-ratio:200/140}.dish.cake{aspect-ratio:200/166}
 .dishart{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .dish .topping{z-index:2}
@@ -374,6 +375,25 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .sillybox{width:100%;height:230px;border-radius:18px;background:linear-gradient(135deg,#FFF1C9,#E7DCFF);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .slot{font-size:80px}
 .silly{position:relative;width:200px;height:200px}
+/* a different look per stage, so climbing the stages feels new */
+.sky.th-phr{background:linear-gradient(#FFB991,#FFE3C8 60%,#FFF4E6)}
+.sky.th-short{background:linear-gradient(#22305C,#3D4F8C 70%,#5A6FAE)}
+.sky.th-long{background:linear-gradient(#7FD6C9,#CFF3EA)}
+.sky.th-pair,.sky.th-vocab{background:linear-gradient(#E3D7FF,#F6F1FF)}
+.stars-bg{position:absolute;inset:0;background-image:radial-gradient(2px 2px at 12% 18%,#fff,transparent),radial-gradient(2px 2px at 42% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 70% 22%,#fff,transparent),radial-gradient(2px 2px at 86% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 40%,#fff,transparent),radial-gradient(2px 2px at 58% 36%,#fff,transparent);animation:twinkle 2.5s ease-in-out infinite}
+.track.th-phr .wagon{background:#8E6CEF;border-bottom-color:#6A4BC9}
+.track.th-short .wagon{background:#12A397;border-bottom-color:#0C7D74}
+.track.th-long .wagon{background:#E9A100;border-bottom-color:#B87F00}
+.track.th-pair .wagon,.track.th-vocab .wagon{background:#F0679E;border-bottom-color:#C4467A}
+.discbox{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;width:100%}
+.dzone{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:190px;border-radius:24px;border:3px dashed var(--line);background:#fff;padding:10px 6px;font-family:var(--display);font-size:18px;color:var(--ink)}
+.dzone.yes{border-color:var(--leaf);background:#EFFAF3}.dzone.no{border-color:#B9C6D2;background:#F4F7FA}
+.dzic{font-size:64px;line-height:1}.dzin{display:flex;flex-wrap:wrap;justify-content:center;font-size:24px;gap:2px}
+.dcard{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:3px solid var(--sun);border-radius:22px;padding:12px 14px;box-shadow:0 6px 0 #c98c0e;touch-action:none;cursor:grab}
+.dcard .dpic{font-size:72px;line-height:1}.dcard .dear{font-family:var(--display);font-size:15px;color:var(--muted)}
+.dcard.no{animation:shake .35s}
+@media (max-width:420px){.dzic{font-size:44px}.dcard .dpic{font-size:54px}.dzone{min-height:150px;font-size:15px}}
+.slot.pair2{display:flex;gap:28px;font-size:96px;animation:popin .5s ease-out}
 .silly span{position:absolute;left:50%;line-height:1}
 .silly .sB{font-size:110px;top:50%;transform:translate(-50%,-30%)}
 .silly .sA{font-size:70px;animation:wiggle 1.2s ease-in-out infinite}
@@ -589,7 +609,7 @@ const RECIPES=[{name:'פיצה',final:'הפיצה',kind:'pizza',into:'פיצה',
  {name:'סלט',final:'הסלט',kind:'bowl',into:'קערה',in:'בסלט',to:'לקערה',rd:'מוכן',ing:[['🥒','מלפפון'],['🍅','עגבנייה'],['🥕','גזר'],['🫑','פלפל'],['🧅','בצל'],['🥬','חסה']]},
  {name:'מרק',final:'המרק',kind:'pot',into:'סיר',in:'בסיר',to:'לסיר',rd:'מוכן',ing:[['🥕','גזר'],['🥔','תפוח אדמה'],['🧅','בצל'],['🌽','תירס'],['🍗','עוף'],['🧂','מלח']]}];
 /* ---------- cooking art: pot, bowls, cake, pizza, wooden spoon, steam ---------- */
-const SPOS={pot:[[38,25],[62,25],[50,31],[30,30],[70,30],[50,20]],bowl:[[36,22],[64,22],[50,30],[26,28],[74,28],[50,15]],cake:[[38,24],[62,24],[50,31],[28,29],[72,29],[50,18]],pizza:[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]]};
+const SPOS={pan:[[36,40],[60,36],[48,52],[30,56],[64,56],[46,30]],pot:[[38,25],[62,25],[50,31],[30,30],[70,30],[50,20]],bowl:[[36,22],[64,22],[50,30],[26,28],[74,28],[50,15]],cake:[[38,24],[62,24],[50,31],[28,29],[72,29],[50,18]],pizza:[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]]};
 function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',cake:'#F7C6D9',pizza:'#E2563B'})[k];
   if(k==='pot')return `<svg class="dishart" viewBox="0 0 200 166" aria-hidden="true"><defs><linearGradient id="potg" x1="0" x2="1"><stop offset="0" stop-color="#6f7a88"/><stop offset=".42" stop-color="#eef2f6"/><stop offset=".6" stop-color="#c9d1da"/><stop offset="1" stop-color="#7b8796"/></linearGradient></defs>
     <rect x="0" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/><rect x="170" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/>
@@ -599,6 +619,7 @@ function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',c
   if(k==='bowl')return `<svg class="dishart" viewBox="0 0 200 140" aria-hidden="true"><defs><linearGradient id="bowlg" x1="0" x2="1"><stop offset="0" stop-color="#b9d9ec"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#a9cde3"/></linearGradient></defs>
     <path d="M4 34 q6 94 96 100 q90 -6 96 -100z" fill="url(#bowlg)" stroke="#8fb9d3" stroke-width="2"/><path d="M30 78 q70 26 140 0" stroke="#F06A4F" stroke-opacity=".55" stroke-width="5" fill="none"/>
     <ellipse cx="100" cy="34" rx="96" ry="24" fill="#f4f9fc" stroke="#8fb9d3" stroke-width="2"/><ellipse cx="100" cy="37" rx="86" ry="17" fill="${c}" opacity="${p?.3+.7*p:.15}"/></svg>`;
+  if(k==='pan')return `<svg class="dishart" viewBox="0 0 220 150" aria-hidden="true"><rect x="168" y="66" width="52" height="14" rx="7" fill="#3f2f25"/><ellipse cx="90" cy="78" rx="88" ry="62" fill="#2f3640"/><ellipse cx="90" cy="74" rx="78" ry="54" fill="#4a5361"/><ellipse cx="90" cy="76" rx="72" ry="49" fill="${c}" opacity="${p?.35+.65*p:0}"/></svg>`;
   if(k==='cake')return `<svg class="dishart" viewBox="0 0 200 166" aria-hidden="true"><ellipse cx="100" cy="150" rx="96" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/>
     <path d="M24 52 v80 q0 14 76 14 q76 0 76 -14 v-80z" fill="#F2D3A4"/><path d="M24 92 q76 16 152 0 v8 q-76 16 -152 0z" fill="#E59AB7"/>
     <ellipse cx="100" cy="52" rx="76" ry="22" fill="${c}"/><path d="M24 52 q10 26 20 6 q10 26 20 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q10 22 16 -4" fill="${c}"/></svg>`;
@@ -607,6 +628,17 @@ function serveArt(R){return `<svg class="dishart" viewBox="0 0 200 120" aria-hid
 const SPOON=`<svg class="spoon" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/><ellipse cx="17" cy="132" rx="6" ry="12" fill="#D9A877" opacity=".6"/></svg>`;
 const SPOON_REST=`<svg class="spoon rest" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/></svg>`;
 function vapor(on){return on?`<div class="vapor">${[18,38,58,76].map((x,i)=>`<i style="--x:${x};--d:${i*.55}s"></i>`).join('')}</div>`:''}
+/* a different dish in the long-sentences stage, so the child who climbs the stages meets something new */
+const COOK2={
+ r:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🌽','תירס'],['🍄','פטריות'],['🫑','פלפל אדום'],['🫒','זיתים שחורים'],['🥦','ברוקולי']]},
+ l:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E8C26A',in:'בסיר הגדול',to:'לסיר',ing:[['🧅','בצל'],['🫑','פלפל'],['🧂','מלח'],['🌿','פטרוזיליה'],['⚪','שעועית לבנה']]},
+ sh:{name:'שקשוקה',final:'השקשוקה',rd:'מוכנה',kind:'pan',color:'#D9472B',in:'בשקשוקה',to:'למחבת',ing:[['🧄','שום'],['🫒','שמן זית'],['🧂','פלפל שחור'],['🥛','שמנת'],['🥚','שתי ביצים']]},
+ s:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#D9A441',in:'בסיר',to:'לסיר',ing:[['🥬','סלרי'],['🍚','קוסקוס'],['🌱','אספרגוס'],['🟣','סלק'],['🍝','ספגטי']]},
+ k:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E2B04A',in:'בסיר הקטן',to:'לסיר',ing:[['🥒','קישוא'],['🥕','קוביות גזר'],['🎃','קוביות דלעת'],['🌿','כמון'],['🥔','תפוח אדמה קטן']]},
+ g:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🫑','גמבה'],['🍅','עגבנייה'],['🌿','אורגנו'],['🌽','גרעיני תירס'],['🧀','גבינה']]},
+ z:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E6B85C',in:'בסיר',to:'לסיר',ing:[['🍚','אורז'],['🥕','גזר'],['🌿','זעתר'],['🫚','זנגביל'],['🫒','זיתים']]},
+ ts:{name:'ארוחת בוקר',final:'ארוחת הבוקר',rd:'מוכנה',kind:'bowl',color:'#FFF1C9',in:'בצלחת',to:'לצלחת',ing:[['🥚','ביצה'],['🔴','צנון'],['🍇','צימוקים'],['🫑','פלפל צהוב'],['🧅','בצל']]}
+};
 /* workshop, short sentences: [object emoji, object (with ה), right tool] — every object has the target sound */
 const FIXSHORT={
  r:[['🗄️','הארון','🔨'],['🪞','המראה','🔨'],['🪑','הרגליים של הכיסא','🔨'],['🚂','הרכבת','🔧'],['🤖','הרובוט','🪛'],['📻','הרדיו','🪛'],['🏡','הגדר','🖌️'],['📦','הארגז','🔨']],
@@ -704,7 +736,7 @@ function streak(p){p=p||prog();let n=0;const d=new Date();if(!(p.days[dkey(d)]||
 function ctxKey(act,from){if(from==='pair')return 'pair'+S.pair;if(from==='lang')return 'lang:'+S.lang;
   if(S.stage==='pair')return 'pair'+S.pair;if(S.stage==='vocab')return 'lang:vocab';return 'snd'+S.sound+':'+S.stage}
 function ctxLabel(k){
-  if(k.startsWith('snd')){const [a,st]=k.slice(3).split(':');const s=SOUNDS[+a];const sg=STAGES.find(x=>x[0]===st);return s?'הגה '+s.name+(sg?', '+sg[2]:''):k}
+  if(k.startsWith('snd')){const [a,st]=k.slice(3).split(':');const s=SOUNDS[+a];const sg=STAGES.find(x=>x[0]===st);return s?'הגה '+s.name+(sg?', '+sg[2]:st==='disc'?', אבחנה שמיעתית':''):k}
   if(k.startsWith('pair')){const v=VOICING[+k.slice(4)];return v?'קולי ובלתי קולי '+v.name:k}
   if(k.startsWith('lang:')){const g=GOAL_LANG.find(x=>x.id===k.slice(5));return g?g.name:k}return k}
 function starsWord(n){return n===1?'כוכב אחד':n+' כוכבים'}
@@ -758,6 +790,9 @@ function pickVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)
   HEV=v.find(x=>/carmit|hila|female|אישה|google/i.test(x.name))||v.find(x=>!/asaf|avri|male/i.test(x.name))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
 function greet(text){if(SFX.muted)return;try{if(!HEV)pickVoice();if(!HEV)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=HEV;u.lang=HEV.lang;u.rate=.92;u.pitch=1.15;speechSynthesis.speak(u)}catch(e){}}
+/* any Hebrew voice (a man's voice is fine here) to say single words in the listening stage */
+function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang));return v.find(x=>/hila|carmit|google/i.test(x.name))||v[0]||null}catch(e){return null}}
+function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 const VOICE={door:'audio/door.mp3',welcomeB:'audio/welcome-boy.mp3',welcomeG:'audio/welcome-girl.mp3',byeB:'audio/bye-boy.mp3',byeG:'audio/bye-girl.mp3',done:'audio/well-done.mp3',
   cheer:['audio/cheer1.mp3','audio/cheer2.mp3','audio/cheer3.mp3','audio/cheer4.mp3','audio/cheer5.mp3']};
@@ -994,9 +1029,10 @@ function renderSound(){
   const s=SOUNDS[S.sound],mx=maxStage(S.bits),p=prog();
   const st=STAGES.slice(0,mx).map(a=>[a,p.ctx['snd'+S.sound+':'+a[0]]||0]);
   const nx=st.findIndex(x=>x[1]<MASTER);
-  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail">${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}</div>`;
+  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail"><button class="step" data-disc="1"><span class="num" aria-hidden="true">👂</span><span class="st"><b>אבחנה שמיעתית</b><span>יש את ההגה במילה, או אין?</span></span><span class="sstars">${p.ctx['snd'+S.sound+':disc']?'⭐ '+p.ctx['snd'+S.sound+':disc']:''}</span></button>${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}</div>`;
   bindCommon();
   app.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const st=b.dataset.stage;go('games',{stage:st,gback:'sound'})});
+  const dz=app.querySelector('[data-disc]');if(dz)dz.onclick=()=>{S.stage='disc';S.gback='sound';startAct('disc','sound')};
 }
 /* items for a stage: [text, pic] */
 const GAME_TPL={balloon:'אני תופס',train:'אני מעמיס',line:'אני רואה',memory:'מצאתי',wheel:'יש לי'};
@@ -1009,12 +1045,12 @@ function stageItems(st,act){
   if(st==='words')return shuffle(soundWords());
   /* memory game in the phrases stage: "ראיתי גזר, ראיתי גזר" — the carrier word also has the target sound */
   if(st==='phr'&&act==='memory'){const C=MEMV[s.id]||'מצאתי';return shuffle(soundWords().filter(x=>!x[0].includes(' '))).map(w=>[`${C} ${w[0]}, ${C} ${w[0]}`,w[1]])}
-  if(st==='phr')return shuffle(PHRASES[s.id]||soundWords());
+  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex));return shuffle(p.length>=4?p:soundWords())}
   /* in the train game the sentences are about the train itself */
   if(act==='train'&&st==='short')return shuffle(soundWords()).map(w=>[w[0]+' עולה לרכבת',w[1]]);
   if(act==='train'&&st==='long'){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length;i+=2)out.push([w[i][0]+' ו'+w[i+1][0]+' עולים לרכבת',w[i][1]+w[i+1][1]]);return out}
   if(st==='short'){const t=tplFor(act);return shuffle(soundWords()).map(w=>[t+' '+w[0],w[1]])}
-  if(st==='long')return shuffle([...s.short,...andSentences(),...(s.id==='k'?KI:[])]);
+  if(st==='long'){const ex=excluded();return shuffle([...s.short,...andSentences(),...(s.id==='k'?KI:[])].filter(x=>okText(x[0],ex)))}
   if(st==='pair'){const v=VOICING[S.pair];return shuffle([...v.a[1],...v.b[1]])}
   if(st==='vocab')return shuffle(allVocab());
   return [];
@@ -1023,7 +1059,8 @@ const GAMES={pscene:['🖼️','תמונות מספרות','מוצאים בתמ�
 function gamesFor(st){
   if(st==='story')return ['pscene','scene','absurd'];
   if(st==='syl')return ['eggs','monster','frog','balloon','train','wheel'];
-  if(st==='words'||st==='phr'||st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
+  if(st==='phr')return ['silly','balloon','train','line','memory','wheel'];
+  if(st==='words'||st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
   if(st==='short'||st==='long')return ['fix','cook','silly','balloon','train','line'];
   return ['balloon','train','line'];
 }
@@ -1291,7 +1328,20 @@ function dragTo(el,getTarget,onDrop){
 /* ---------- activities ---------- */
 let TIMERS=[];
 function clearTimers(){try{speechSynthesis.cancel()}catch(e){}REC.gen++;try{REC.stopNow&&REC.stopNow()}catch(e){}TIMERS.forEach(t=>{clearInterval(t);clearTimeout(t)});TIMERS=[];document.querySelectorAll('.overlay').forEach(o=>o.remove());S.overlay=false}
-function soundWords(){const s=SOUNDS[S.sound];const w=positions(S.bits).flatMap(p=>s.w[p]||[]);return w.length?w:['s','m','e'].flatMap(p=>s.w[p])}
+/* word positions (start/middle/end) apply only to the words stage; later stages use all positions.
+   Clusters and substitution-sound words are practiced only when the therapist ticked them, and are kept out of everything else. */
+const EXTRA_CLUSTERS=new Set('ברוקולי כרוב כרובית טרקטור דרקון קרואסון ברז כריש בלון גלידה דלי קלפים פלמינגו פלסטר שתיים שתי שלושה שמונה שמיכה שקדים סנאי ספוג ספינה סקייטבורד פסנתר ספגטי קציצות קלמנטינה גבינה גדי זבוב זרוע זרעים צפרדע צריף צבעים צדף'.split(' '));
+function excluded(){const set=new Set();const s=SOUNDS[S.sound];
+  if(!has(S.bits,21)){SOUNDS.forEach(x=>(x.w.c||[]).forEach(w=>set.add(w[0])));EXTRA_CLUSTERS.forEach(w=>set.add(w))}
+  if(!has(S.bits,22)&&s&&s.w.x){const own=new Set(['s','m','e'].flatMap(p=>(s.w[p]||[]).map(w=>w[0])));s.w.x.forEach(w=>set.add(w[0]))}
+  return set}
+function okText(text,ex){ex=ex||excluded();if(!ex.size)return true;
+  return !String(text).split(/[\s,!?.]+/).some(t=>t&&(ex.has(t)||(t.length>3&&ex.has(t.slice(1)))||(t.length>4&&ex.has(t.slice(2)))))}
+function soundWords(){const s=SOUNDS[S.sound],ex=excluded();
+  const ps=S.stage==='words'?positions(S.bits):['s','m','e'].concat(has(S.bits,21)?['c']:[],has(S.bits,22)?['x']:[]);
+  const seen=new Set();let w=ps.flatMap(p=>s.w[p]||[]).filter(x=>!seen.has(x[0])&&seen.add(x[0]));
+  w=w.filter(x=>okText(x[0],ex));
+  return w.length?w:['s','m','e'].flatMap(p=>s.w[p]).filter(x=>okText(x[0],ex))}
 const allVocab=()=>CATS.flatMap(c=>c.i);
 function startAct(act,from){
   clearTimers();
@@ -1306,9 +1356,13 @@ function startAct(act,from){
   if(act==='absurd'){d.scenes=shuffle(SCENES);d.si=0;d.found=[]}
   if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;
     /* short sentences: always "צריך לתקן/לצבוע את ה..." with an object that has the target sound */
-    if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid]).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
-    else d.jobs=shuffle(FIXBY[sid]||FIXJOBS).slice(0,6);d.toolset=TOOLS}
-  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=COOK[sid]||pick(RECIPES,1)[0];d.recipe=Object.assign({},base,{ing:shuffle(base.ing)});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
+    if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid].filter(j=>okText(j[1]))).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
+    else d.jobs=shuffle((FIXBY[sid]||FIXJOBS).filter(j=>okText(j[3]||j[1]))).slice(0,6);d.toolset=TOOLS}
+  if(act==='disc'){const sid=SOUNDS[S.sound].id,ex=excluded();
+    const yes=pick(['s','m','e'].flatMap(p=>SOUNDS[S.sound].w[p]||[]).filter(w=>okText(w[0],ex)&&!w[0].includes(' ')),5);
+    const no=pick(SOUNDS.filter(x=>x.id!==sid).flatMap(x=>['s','m','e'].flatMap(p=>x.w[p]||[])).filter(w=>!w[0].includes(' ')&&!sceneHas([0,w[0]],sid)),5);
+    d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
+  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
@@ -1326,7 +1380,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){return {pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',silly:'משפטים מצחיקים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',silly:'משפטים מצחיקים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -1347,7 +1401,7 @@ function renderAct(){
   const d=S.data;let body='';
   const shell=b=>{app.innerHTML=header(titleFor(),backTo())+b;bindCommon()};
   if(S.act==='balloon'){
-    shell(`<div class="card stage"><p class="muted">מפוצצים בלון, ואומרים מה שיצא ממנו!</p><div class="progress" id="bcount">${d.count} / ${d.goal}</div><div class="sky" id="sky"></div></div>`);
+    shell(`<div class="card stage"><p class="muted">מפוצצים בלון, ואומרים מה שיצא ממנו!</p><div class="progress" id="bcount">${d.count} / ${d.goal}</div><div class="sky th-${S.stage}" id="sky">${S.stage==='short'?'<i class="stars-bg"></i>':''}</div></div>`);
     const sky=document.getElementById('sky');
     const spawn=()=>{if(S.overlay||!document.body.contains(sky))return;
       const it=d.items[d.k%d.items.length];d.k++;
@@ -1403,7 +1457,7 @@ function renderAct(){
   }
   if(S.act==='scene'||S.act==='absurd'||S.act==='pscene'){
     const sc=d.scenes[d.si],ab=S.act==='absurd',ps=S.act==='pscene';
-    const targets=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id));
+    const exw=excluded();const targets=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id)&&okText(it[1],exw));
     const all=ab?[...sc.items.map(x=>[...x,'n']),...sc.absurd.map(x=>[...x.slice(0,6),'','a'])]:sc.items;
     const L=SOUNDS[S.sound];
     const done=d.found.length>=targets.length;
@@ -1424,6 +1478,7 @@ function renderAct(){
     app.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{if(done)return;const it=all[+b.dataset.i];const isT=ab?it[7]==='a':targets.includes(it);
       if(isT){if(d.found.includes(it[1]))return;d.found.push(it[1]);SFX.good();
         if(d.found.length===targets.length){addStar();SFX.fanfare()}render()}
+      else if(!ab&&sceneHas(it,SOUNDS[S.sound].id)){if(!b.querySelector('.slabel')){const s=document.createElement('span');s.className='slabel grey';s.textContent=it[1];b.appendChild(s);TIMERS.push(setTimeout(()=>s.remove(),1400))}}
       else{SFX.bad();b.classList.remove('nope');void b.offsetWidth;b.classList.add('nope');
         if(!ab){const old=b.querySelector('.slabel');if(!old){const s=document.createElement('span');s.className='slabel grey';s.textContent=it[1];b.appendChild(s);TIMERS.push(setTimeout(()=>s.remove(),1400))}}}});
     const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay(ab?'מסבירים מה מצחיק בתמונה 🗣️':'מספרים מה קורה בתמונה 🗣️',()=>{addStar();d.si++;d.found=[];if(d.si>=d.scenes.length)finish();else render()},{max:15000});
@@ -1492,7 +1547,7 @@ function renderAct(){
     const hint=d.ready!=null?'<p class="drag-hint">עכשיו גוררים לרכבת! 🚂</p>':'<p class="muted">נוגעים בפריט ואומרים אותו. אחר כך גוררים אותו לקרון.</p>';
     shell(`<div class="card stage">${hint}
       <div class="progress">נסיעה ${d.round+1} / ${d.rounds}</div>
-      <div class="track" id="track"><div class="train" id="train">${wag}<div class="engine">🚂</div></div></div>
+      <div class="track th-${S.stage}" id="track"><div class="train" id="train">${wag}<div class="engine">🚂</div></div></div>
       <div class="platform">${d.platform.map((it,ix)=>{const used=d.loaded.includes(it),rdy=d.ready===ix;return `<button class="pitem ${rdy?'ready':''}" data-ix="${ix}" ${used||(d.ready!=null&&!rdy)?'disabled':''} style="${used?'visibility:hidden':''}">${it[1]?`<span style="font-size:46px">${it[1]}</span>`:''}<span class="${it[2]==='syl'?'plabel syl':'plabel'}">${it[0]}</span></button>`}).join('')}</div></div>`);
     const loadIt=(fromEl)=>{
       const ix=d.ready;if(ix==null)return;const it=d.platform[ix];d.ready=null;
@@ -1633,6 +1688,33 @@ function renderAct(){
           TIMERS.push(setTimeout(()=>{d.j++;d.said=false;d.fixed=false;if(d.j>=d.jobs.length)finish();else render()},1800))},900))})});
     return;
   }
+  if(S.act==='disc'){
+    /* auditory discrimination: hear the word, drag the picture to the house (has the sound) or to the tree (doesn't) */
+    const L=SOUNDS[S.sound],it=d.list[d.k],chip=`<span class="letterchip">${L.name}</span>`,voiceOk=!!anyHebVoice();
+    shell(`<div class="card stage"><p class="drag-hint">מקשיבים למילה 👂 יש בה ${chip}? גוררים לבית. אין? גוררים לעץ.</p>
+      <div class="progress">${d.k+1} / ${d.list.length}</div>
+      <div class="discbox">
+        <button class="dzone yes" id="dzYes" type="button"><span class="dzic">🏠</span><span class="dzl">יש ${chip}</span><span class="dzin">${d.inYes.join('')}</span></button>
+        <button class="dcard" id="dcard" type="button" aria-label="שומעים שוב"><span class="dpic">${it[1]}</span><span class="dear">🔊 שוב</span></button>
+        <button class="dzone no" id="dzNo" type="button"><span class="dzic">🌳</span><span class="dzl">אין ${chip}</span><span class="dzin">${d.inNo.join('')}</span></button>
+      </div>
+      <p class="note" ${voiceOk?'hidden':''}>להורה: במכשיר הזה אין קול בעברית. אמרו בקול את המילה: <b>${esc(it[0])}</b></p>
+      <div class="cheer" id="cheer"></div></div>`);
+    const card=document.getElementById('dcard'),yesZ=document.getElementById('dzYes'),noZ=document.getElementById('dzNo');
+    const choose=ans=>{if(d.lock)return;if(ans===!!it[2]){d.lock=true;SFX.good();addStar();(ans?d.inYes:d.inNo).push(it[1]);document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
+        flyTo(card,ans?yesZ:noZ,()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()})}
+      else{SFX.bad();card.classList.remove('no');void card.offsetWidth;card.classList.add('no');document.getElementById('cheer').textContent='מקשיבים שוב 🙂';TIMERS.push(setTimeout(()=>sayWord(it[0]),500))}};
+    card.onclick=()=>sayWord(it[0]);yesZ.onclick=()=>choose(true);noZ.onclick=()=>choose(false);
+    card.onpointerdown=e=>{const r=card.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
+      const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>8){g=card.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(g);card.style.visibility='hidden'}
+        if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
+      const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);if(!g)return;g.remove();card.style.visibility='';
+        const inZ=z=>{const b=z.getBoundingClientRect();return ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom};
+        if(inZ(yesZ))choose(true);else if(inZ(noZ))choose(false)};
+      document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
+    d.lock=false;TIMERS.push(setTimeout(()=>sayWord(it[0]),450));
+    return;
+  }
   if(S.act==='cook'){
     /* the sentence is part of the cooking: "אני רוצה לשים גזר בסיר"; in long sentences two ingredients at once */
     const R=d.recipe,L=SOUNDS[S.sound];const done=d.n>=R.ing.length;
@@ -1661,16 +1743,16 @@ function renderAct(){
     return;
   }
   if(S.act==='silly'){
-    const L=SOUNDS[S.sound],r=d.cur;
-    shell(`<div class="card stage"><p class="muted">מכונת המשפטים המצחיקים 🎰 · ${d.n+1} / ${d.goal}</p>
-      <div class="sillybox ${r&&!d.rolling?'show':''}" id="sb">${r?`<div class="silly ${r.p}"><span class="sB">${r.B[1]}</span><span class="sA">${r.A[1]}</span></div>`:'<div class="slot">🎰</div>'}</div>
-      ${r&&!d.rolling?`<div class="sentence">${hl(r.text,L.hl)}</div><p class="note">להורה: הילד אומר את המשפט, ואז מסביר מה מצחיק. למשל: למה ${r.A[0]} לא יכול להיות ${r.pw} ${r.B[0]}? איפה הוא צריך להיות?</p>
+    const L=SOUNDS[S.sound],r=d.cur,two=S.stage==='phr';
+    shell(`<div class="card stage"><p class="muted">${two?'מכונת הזוגות':'מכונת המשפטים המצחיקים'} 🎰 · ${d.n+1} / ${d.goal}</p>
+      <div class="sillybox ${r&&!d.rolling?'show':''}" id="sb">${r?(two?`<div class="slot pair2"><span>${r.A[1]}</span><span>${r.B[1]}</span></div>`:`<div class="silly ${r.p}"><span class="sB">${r.B[1]}</span><span class="sA">${r.A[1]}</span></div>`):'<div class="slot">🎰</div>'}</div>
+      ${r&&!d.rolling?`<div class="sentence">${hl(r.text,L.hl)}</div>${two?'<p class="note">להורה: הילד אומר את שתי המילים ביחד, בלי הפסקה ביניהן.</p>':`<p class="note">להורה: הילד אומר את המשפט, ואז מסביר מה מצחיק. למשל: למה ${r.A[0]} לא יכול להיות ${r.pw} ${r.B[0]}? איפה הוא צריך להיות?</p>`}
         <button class="btn leaf" id="said">⭐ אמרתי והסברתי!</button>`:`<button class="btn sun" id="roll" ${d.rolling?'disabled':''}>🎰 מפעילים את המכונה!</button>`}
       </div>`);
     const rb=document.getElementById('roll');if(rb)rb.onclick=()=>{d.rolling=true;render();const box=document.getElementById('sb');const w=soundWords().filter(x=>!x[0].includes(' '));let k=0;
       const t=setInterval(()=>{SFX.tick();box.innerHTML=`<div class="slot">${pick(w,1)[0][1]} ${pick(w,1)[0][1]}</div>`;if(++k>14){clearInterval(t);
         const [A,B]=pick(w,2);const P=pick([['on','על','ה'],['under','מתחת ל',''],['in','בתוך ה','']].concat([['on','על','ה']]),1)[0];
-        const text='ה'+A[0]+' '+(P[0]==='on'?'על ה':P[0]==='under'?'מתחת ל':'בתוך ה')+B[0]+'!';
+        const text=two?A[0]+' ו'+B[0]:'ה'+A[0]+' '+(P[0]==='on'?'על ה':P[0]==='under'?'מתחת ל':'בתוך ה')+B[0]+'!';
         d.cur={A,B,p:P[0],pw:P[0]==='on'?'על':P[0]==='under'?'מתחת ל':'בתוך',text};d.rolling=false;SFX.boing();render()}},90);TIMERS.push(t)};
     const sd=document.getElementById('said');if(sd)sd.onclick=()=>recOverlay(hl(r.text,L.hl),()=>{addStar();d.n++;d.cur=null;if(d.n>=d.goal)finish();else render()});
     return;
