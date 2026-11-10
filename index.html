@@ -372,6 +372,11 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .ph-bake .dish{animation:shake .25s linear infinite}
 .ph-ready .dish{animation:popin .5s ease-out}
 .ph-pour .dish{width:min(44vw,190px)}
+.dish.img{aspect-ratio:1!important;background:none!important;border-radius:0!important}
+.dishimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.15))}
+.dishfill{position:absolute;border-radius:50%;transition:opacity .4s;mix-blend-mode:multiply;pointer-events:none}
+.dish.img .spoon{top:-14%}
+.dish.img .vapor{top:-12%}
 .sillybox{width:100%;height:230px;border-radius:18px;background:linear-gradient(135deg,#FFF1C9,#E7DCFF);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .slot{font-size:80px}
 .silly{position:relative;width:200px;height:200px}
@@ -609,8 +614,14 @@ const RECIPES=[{name:'פיצה',final:'הפיצה',kind:'pizza',into:'פיצה',
  {name:'סלט',final:'הסלט',kind:'bowl',into:'קערה',in:'בסלט',to:'לקערה',rd:'מוכן',ing:[['🥒','מלפפון'],['🍅','עגבנייה'],['🥕','גזר'],['🫑','פלפל'],['🧅','בצל'],['🥬','חסה']]},
  {name:'מרק',final:'המרק',kind:'pot',into:'סיר',in:'בסיר',to:'לסיר',rd:'מוכן',ing:[['🥕','גזר'],['🥔','תפוח אדמה'],['🧅','בצל'],['🌽','תירס'],['🍗','עוף'],['🧂','מלח']]}];
 /* ---------- cooking art: pot, bowls, cake, pizza, wooden spoon, steam ---------- */
+/* topping spots on the real pictures (square images) */
+const SPOS_IMG={pot:[[38,33],[62,33],[50,40],[32,40],[68,40],[50,29]],bowl:[[36,31],[64,31],[50,38],[26,36],[74,36],[50,26]],pan:[[28,47],[46,45],[36,58],[22,58],[50,57],[38,40]],cake:[[38,33],[62,33],[50,40],[30,38],[70,38],[50,28]],pizza:[[50,30],[30,46],[70,46],[38,68],[62,68],[50,50]]};
 const SPOS={pan:[[36,40],[60,36],[48,52],[30,56],[64,56],[46,30]],pot:[[38,25],[62,25],[50,31],[30,30],[70,30],[50,20]],bowl:[[36,22],[64,22],[50,30],[26,28],[74,28],[50,15]],cake:[[38,24],[62,24],[50,31],[28,29],[72,29],[50,18]],pizza:[[50,26],[28,46],[72,46],[38,70],[62,70],[50,48]]};
-function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',cake:'#F7C6D9',pizza:'#E2563B'})[k];
+/* real dish pictures (Gemini) load on demand from dishes.js; until then the drawn versions are used */
+function loadScriptOnce(src,cb){window._ls=window._ls||{};if(window._ls[src]==='ok'){cb&&cb();return}if(window._ls[src]){return}window._ls[src]='loading';const s=document.createElement('script');s.src=src;s.onload=()=>{window._ls[src]='ok';cb&&cb()};s.onerror=()=>{window._ls[src]='fail'};document.head.appendChild(s)}
+const DFILL={pot:[22,25,56,22],bowl:[16,27,68,17],pan:[13,37,50,30],cake:[0,0,0,0],pizza:[0,0,0,0]};
+function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',cake:'#F7C6D9',pizza:'#E2563B',pan:'#D9472B'})[k];
+  const IMG=window.DISH_IMG||{};if(IMG[k]){const f=DFILL[k]||[0,0,0,0];return `<img class="dishimg" src="${IMG[k]}" alt="">${f[2]?`<span class="dishfill" style="left:${f[0]}%;top:${f[1]}%;width:${f[2]}%;height:${f[3]}%;background:${c};opacity:${p?.25+.6*p:0}"></span>`:''}`}
   if(k==='pot')return `<svg class="dishart" viewBox="0 0 200 166" aria-hidden="true"><defs><linearGradient id="potg" x1="0" x2="1"><stop offset="0" stop-color="#6f7a88"/><stop offset=".42" stop-color="#eef2f6"/><stop offset=".6" stop-color="#c9d1da"/><stop offset="1" stop-color="#7b8796"/></linearGradient></defs>
     <rect x="0" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/><rect x="170" y="50" width="30" height="15" rx="7.5" fill="#3f4856"/>
     <path d="M20 42 h160 v78 q0 38 -38 38 h-84 q-38 0 -38 -38z" fill="url(#potg)"/><path d="M34 70 q66 14 132 0" stroke="#fff" stroke-opacity=".35" stroke-width="5" fill="none"/>
@@ -624,7 +635,7 @@ function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',c
     <path d="M24 52 v80 q0 14 76 14 q76 0 76 -14 v-80z" fill="#F2D3A4"/><path d="M24 92 q76 16 152 0 v8 q-76 16 -152 0z" fill="#E59AB7"/>
     <ellipse cx="100" cy="52" rx="76" ry="22" fill="${c}"/><path d="M24 52 q10 26 20 6 q10 26 20 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q10 22 16 -4" fill="${c}"/></svg>`;
   return ''}
-function serveArt(R){return `<svg class="dishart" viewBox="0 0 200 120" aria-hidden="true"><ellipse cx="100" cy="104" rx="94" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/><path d="M14 40 q8 66 86 70 q78 -4 86 -70z" fill="#fff" stroke="#c4cfd8" stroke-width="2"/><path d="M28 64 q72 22 144 0" stroke="#12A397" stroke-opacity=".5" stroke-width="5" fill="none"/><ellipse cx="100" cy="40" rx="86" ry="20" fill="#f7fafc" stroke="#c4cfd8" stroke-width="2"/><ellipse class="soupfill" cx="100" cy="43" rx="76" ry="14" fill="${R.color||'#E9A23B'}"/><circle cx="74" cy="40" r="5" fill="#F08A2C"/><circle cx="118" cy="44" r="4" fill="#7CC36B"/><circle cx="98" cy="38" r="3.5" fill="#FFD84D"/></svg>`}
+function serveArt(R){const IMG=window.DISH_IMG||{};if(IMG.soup)return `<img class="dishimg" src="${IMG.soup}" alt="">`;return `<svg class="dishart" viewBox="0 0 200 120" aria-hidden="true"><ellipse cx="100" cy="104" rx="94" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/><path d="M14 40 q8 66 86 70 q78 -4 86 -70z" fill="#fff" stroke="#c4cfd8" stroke-width="2"/><path d="M28 64 q72 22 144 0" stroke="#12A397" stroke-opacity=".5" stroke-width="5" fill="none"/><ellipse cx="100" cy="40" rx="86" ry="20" fill="#f7fafc" stroke="#c4cfd8" stroke-width="2"/><ellipse class="soupfill" cx="100" cy="43" rx="76" ry="14" fill="${R.color||'#E9A23B'}"/><circle cx="74" cy="40" r="5" fill="#F08A2C"/><circle cx="118" cy="44" r="4" fill="#7CC36B"/><circle cx="98" cy="38" r="3.5" fill="#FFD84D"/></svg>`}
 const SPOON=`<svg class="spoon" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/><ellipse cx="17" cy="132" rx="6" ry="12" fill="#D9A877" opacity=".6"/></svg>`;
 const SPOON_REST=`<svg class="spoon rest" viewBox="0 0 40 170" aria-hidden="true"><rect x="16" y="0" width="8" height="118" rx="4" fill="#C08A55"/><ellipse cx="20" cy="138" rx="16" ry="26" fill="#B47A45"/></svg>`;
 function vapor(on){return on?`<div class="vapor">${[18,38,58,76].map((x,i)=>`<i style="--x:${x};--d:${i*.55}s"></i>`).join('')}</div>`:''}
@@ -1362,7 +1373,7 @@ function startAct(act,from){
     const yes=pick(['s','m','e'].flatMap(p=>SOUNDS[S.sound].w[p]||[]).filter(w=>okText(w[0],ex)&&!w[0].includes(' ')),5);
     const no=pick(SOUNDS.filter(x=>x.id!==sid).flatMap(x=>['s','m','e'].flatMap(p=>x.w[p]||[])).filter(w=>!w[0].includes(' ')&&!sceneHas([0,w[0]],sid)),5);
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
-  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
+  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
@@ -1721,7 +1732,7 @@ function renderAct(){
     const cur=done?[]:R.ing.slice(d.n,d.n+(d.pairs?2:1));
     const sent=done?'':`אני רוצה לשים ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
     shell(`<div class="card stage"><p class="muted">מכינים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
-      <div class="kitchen2 ph-${d.phase||'add'} k-${R.kind}">${R.kind==='pot'&&d.phase==='ready'?'':`<div class="dish ${R.kind}" id="dish">${dishArt(R,d.n/R.ing.length)}${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}
+      <div class="kitchen2 ph-${d.phase||'add'} k-${R.kind}">${R.kind==='pot'&&d.phase==='ready'?'':`<div class="dish ${R.kind} ${window.DISH_IMG&&DISH_IMG[R.kind]?'img':''}" id="dish">${dishArt(R,d.n/R.ing.length)}${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}
         ${d.phase==='stir'?SPOON+vapor(R.kind==='pot'):''}${d.phase==='bake'?'<div class="ovenglow"></div>':''}${d.phase==='ready'?vapor(R.kind!=='bowl'):''}</div>`}
         ${R.kind==='pot'&&(d.phase==='pour'||d.phase==='ready')?`<div class="serve ${d.phase==='ready'?'big':''}">${d.phase==='pour'?'<i class="pourline"></i>':''}${serveArt(R)}${d.phase==='ready'?vapor(true)+SPOON_REST:''}</div>`:''}</div>
       ${done?(d.phase!=='ready'?`<p class="drag-hint">${{stir:R.kind==='pot'?'מערבבים את המרק... 🥄':'מערבבים טוב טוב... 🥄',pour:'מוזגים לצלחת... 🥣',bake:'נכנס לתנור... 🔥'}[d.phase]||''}</p>`:`<div class="cheer">${R.final} ${R.rd}! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
@@ -1730,7 +1741,7 @@ function renderAct(){
       </div>`);
     const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(`${cur.map(x=>x[0]).join(' ')} ${hl(sent,L.hl)}`,()=>{addStar();d.ready=true;render()});
     const ig=document.getElementById('ingr');
-    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();cur.forEach((x,k)=>{const SP=(SPOS[R.kind]||SPOS.pizza)[(d.n+k)%6];d.added.push([x[0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])});d.n+=cur.length;d.ready=false;
+    if(ig){const drop=()=>{flyTo(ig,document.getElementById('dish'),()=>{SFX.plop();cur.forEach((x,k)=>{const SP=((window.DISH_IMG&&DISH_IMG[R.kind]?SPOS_IMG:SPOS)[R.kind]||SPOS.pizza)[(d.n+k)%6];d.added.push([x[0],SP[0]+Math.random()*6-3,SP[1]+Math.random()*6-3])});d.n+=cur.length;d.ready=false;
         if(d.n>=R.ing.length){
           /* finale: pot = stir, pour into a soup plate; salad bowls = stir; cake & pizza = oven */
           const step=(ph,ms,sfx)=>new Promise(res=>{d.phase=ph;render();sfx&&sfx();TIMERS.push(setTimeout(res,ms))});
