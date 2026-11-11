@@ -779,7 +779,10 @@ button.stars{cursor:pointer;color:var(--ink)}
 .frog2.real .fr-o{opacity:0}
 .frog2.real.gulp .fr-o{opacity:1}.frog2.real.gulp .fr-c{opacity:0}
 .frog2.real.happy .fr-o{opacity:1}.frog2.real.happy .fr-c{opacity:0}
-.bug .bugimg{width:min(11vw,52px);height:auto;display:block}</style>
+.bug .bugimg{width:min(11vw,52px);height:auto;display:block}
+.critimg{display:block;max-width:100%;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(0,0,0,.18))}
+.egg .critimg{max-width:80%;height:auto!important}
+</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1176,6 +1179,8 @@ function setupVrec(){let mic=null,mr=null,chunks=[],cur=null;const blobs={};let 
       catch(e){sb.disabled=false;st.textContent='השמירה לא הצליחה ('+e.message+'). נסי שוב.'}}})}
 /* personal games (mygames.js, built by Claude) and who sees them (assign.js, saved from the therapist screen) */
 const CH=k=>(window.CHAR_IMG||{})[k]||'';
+/* a syllable creature as a realistic picture (creatures.js) or, until it loads, its emoji */
+const crit=(e,px)=>{const s=(window.CRIT_IMG||{})[e];return s?`<img class="critimg" src="${s}" alt="" style="width:${px}px;height:${px}px">`:e};
 const HOUSE_COL=['#FF6A55','#3C8DDE','#22A86A','#B76CF0','#F6B21E','#FF8FB1'];
 const myGames=()=>window.MY_GAMES||[];
 function myAssigned(code){if(!code)return [];if(isTestCode(code))return myGames();const ids=(window.MY_ASSIGN||{})[fmtCode(code)]||[];return myGames().filter(g=>ids.includes(g.id))}
@@ -1546,7 +1551,7 @@ function recOverlay(label,done,opts){
 /* ---------- "say it" pop-up ---------- */
 function letters(){return (S.stage&&S.sound!==null&&!['pair','vocab'].includes(S.stage)&&S.stage!=='syl'&&SOUNDS[S.sound])?SOUNDS[S.sound].hl:''}
 function itemHtml(it,big){
-  if(it[2]==='syl')return `<div class="creature"><div class="cpic" style="font-size:${big?110:64}px">${it[1]}</div><div class="sbub">${it[0]}!</div></div>${big?`<p class="cline">${it[3]} ${it[4]?'אומרת':'אומר'}: <b>${it[0]}</b></p>`:''}`;const L=letters();const t=L?hl(it[0],L):it[0];const isSent=it[0].includes(' ')&&S.stage!=='syl';
+  if(it[2]==='syl')return `<div class="creature"><div class="cpic" style="font-size:${big?110:64}px">${crit(it[1],big?150:84)}</div><div class="sbub">${it[0]}!</div></div>${big?`<p class="cline">${it[3]} ${it[4]?'אומרת':'אומר'}: <b>${it[0]}</b></p>`:''}`;const L=letters();const t=L?hl(it[0],L):it[0];const isSent=it[0].includes(' ')&&S.stage!=='syl';
   return `${it[1]?`<div class="pic" style="font-size:${big?110:56}px">${it[1]}</div>`:''}<div class="${isSent?'sentence':'word'}" ${!it[1]?'style="font-size:60px;color:var(--coral)"':''}>${t}</div>`}
 function sayIt(it,onDone){
   const ov=document.createElement('div');ov.className='overlay';
@@ -1766,6 +1771,7 @@ function startAct(act,from){
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
+  if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
   if(['eggs','monster','frog'].includes(act))loadScriptOnce('chars.js?v=1',()=>{if(S.view==='act'&&['eggs','monster','frog'].includes(S.act))render()});
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
@@ -1982,7 +1988,7 @@ function renderAct(){
   if(S.act==='eggs'){
     shell(`<div class="card stage"><p class="muted">מי מסתתר בביצה? נוגעים בביצה, ומי שבוקע אומר הברה. אחר כך אומרים כמוהו!</p>
       <div class="progress">${d.hatched.length} / ${d.eggs.length}</div>
-      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${it[1]}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
+      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${crit(it[1],64)}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
     app.querySelectorAll('.egg:not(.hatched)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
       b.classList.add('cracking');SFX.crack();
       TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();eggParty()}else render()})},900))});
