@@ -905,7 +905,7 @@ function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|i
 function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
-const VREC=[['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
+const VREC=[['door','מנגינת הדלת','מזמזמים או מנגנים את המנגינה של "טוק טוק בדלת, דניאלה שואלת: מי הבא?" (המילים יופיעו בבועות)'],['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
 let VA=null;const VT=Math.floor(Date.now()/600000);
@@ -1060,7 +1060,7 @@ function renderWelcome(){
     <div class="row"><button class="ghost" id="rename" type="button" style="font-size:14px">לשנות את השם</button><button class="ghost" id="switch" type="button" style="font-size:14px">לא ${n}? כניסה עם קוד אחר</button></div></div>`;
   const dw=document.getElementById('doorway'),song=app.querySelector('.song');
   document.getElementById('door').onclick=()=>{if(dw.classList.contains('started'))return;dw.classList.add('started');song.classList.add('started');SFX.knock();
-    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{SFX.tune();document.querySelectorAll('.hero').forEach(h=>h.classList.add('talking'))},3600));TIMERS.push(setTimeout(()=>document.querySelectorAll('.hero').forEach(h=>h.classList.remove('talking')),8000))};
+    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>voice('door',null,()=>{SFX.tune();document.querySelectorAll('.hero').forEach(h=>h.classList.add('talking'));TIMERS.push(setTimeout(()=>document.querySelectorAll('.hero').forEach(h=>h.classList.remove('talking')),4400))}),3600))};
   document.getElementById('start').onclick=()=>go('home');
   document.getElementById('again').onclick=()=>{S.view='welcome';render()};
   document.getElementById('rename').onclick=()=>go('name');
@@ -1711,7 +1711,7 @@ function renderAct(){
         TIMERS.push(setTimeout(()=>{if(d.eaten.length>=N){SFX.burp();m.classList.add('full');TIMERS.push(setTimeout(finish,1000))}else render()},700))})};
     app.querySelectorAll('.cookie2').forEach(b=>{const ix=+b.dataset.ix;
       if(d.ready===ix)dragTo(b,()=>document.getElementById('monster'),()=>feed(b));
-      else b.onclick=()=>{if(d.ready!=null)return;SFX.blip();sayIt(d.cookies[ix],()=>{d.ready=ix;render()})}});
+      else b.onclick=()=>{if(d.ready!=null)return;SFX.blip();const c=d.cookies[ix];sayIt(c[2]==='syl'?[c[0],'👾','syl','המפלצון',0]:c,()=>{d.ready=ix;render()})}});
     document.getElementById('monster').onclick=()=>{if(d.ready!=null)feed(app.querySelector('.cookie2.ready'))};
     return;
   }
