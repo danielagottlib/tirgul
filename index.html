@@ -781,7 +781,7 @@ button.stars{cursor:pointer;color:var(--ink)}
 .frog2.real.happy .fr-o{opacity:1}.frog2.real.happy .fr-c{opacity:0}
 .bug .bugimg{width:min(11vw,52px);height:auto;display:block}
 .critimg{display:block;max-width:100%;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(0,0,0,.18))}
-.egg .critimg{max-width:80%;height:auto!important}
+.egg .critimg{max-width:74%;height:auto!important}
 </style>
 </head>
 <body>
@@ -1988,7 +1988,7 @@ function renderAct(){
   if(S.act==='eggs'){
     shell(`<div class="card stage"><p class="muted">מי מסתתר בביצה? נוגעים בביצה, ומי שבוקע אומר הברה. אחר כך אומרים כמוהו!</p>
       <div class="progress">${d.hatched.length} / ${d.eggs.length}</div>
-      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${crit(it[1],64)}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
+      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${crit(it[1],110)}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
     app.querySelectorAll('.egg:not(.hatched)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
       b.classList.add('cracking');SFX.crack();
       TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();eggParty()}else render()})},900))});
