@@ -1036,11 +1036,11 @@ function toast(e,t){const d=document.createElement('div');d.className='toast';d.
   ['touchend','pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true,passive:true}))})();
 const SFX=(()=>{
   let ctx=null,muted=store.get('muted')==='1';
-  function c(){if(muted)return null;try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}catch(e){return null}}
+  function c(){if(muted)return null;try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume().catch(()=>{});return ctx}catch(e){return null}}
   function tone(f,dur,{type='sine',vol=.25,at=0,to=null,attack=.005}={}){const a=c();if(!a)return;const t=a.currentTime+at;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
   function noise(dur,{at=0,vol=.4,hp=800,lp=12000}={}){const a=c();if(!a)return;const t=a.currentTime+at;const n=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,n,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource();s.buffer=buf;const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;const l=a.createBiquadFilter();l.type='lowpass';l.frequency.value=lp;const g=a.createGain();g.gain.value=vol;s.connect(h).connect(l).connect(g).connect(a.destination);s.start(t)}
   const knock1=at=>{tone(140,.12,{vol:.6,at,to:70});noise(.05,{at,vol:.5,hp:200,lp:1500})};
-  function engine(){try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}catch(e){return null}}
+  function engine(){try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume().catch(()=>{});return ctx}catch(e){return null}}
   return{
     unlock(){engine()},
     engine,
@@ -1521,6 +1521,7 @@ function bindCommon(){
 const REC={state:(navigator.mediaDevices&&window.MediaRecorder&&window.isSecureContext)?'unknown':'no',stream:null,gen:0,stopNow:null,
   async granted(){if(this.stream)return true;try{const p=await navigator.permissions.query({name:'microphone'});return p.state==='granted'}catch(e){return false}},
   async ensure(){if(this.state==='no')return false;if(this.stream&&this.stream.getAudioTracks().some(t=>t.readyState==='live'))return true;
+    try{if(navigator.audioSession)navigator.audioSession.type='play-and-record'}catch(e){}
     try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});this.state='ok';return true}catch(e){this.state='no';return false}},
   /* records until the child has spoken and then been quiet for a moment, or until maxMs */
   record(maxMs,onLevel){return new Promise((res,rej)=>{try{const ch=[];const mr=new MediaRecorder(this.stream);mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
@@ -1534,6 +1535,9 @@ const REC={state:(navigator.mediaDevices&&window.MediaRecorder&&window.isSecureC
         if(rms>.045){spoke=true;quietSince=0}else if(spoke){if(!quietSince)quietSince=now;else if(now-quietSince>1100&&now-t0>900){REC.stopNow&&REC.stopNow();return}}
         raf=requestAnimationFrame(loop)};loop()}catch(e){}
     mr.start();const t=setTimeout(()=>{if(mr.state!=='inactive')mr.stop()},maxMs);REC.stopNow=()=>{clearTimeout(t);REC.stopNow=null;if(mr.state!=='inactive')mr.stop()}}catch(e){rej(e)}})},
+  /* phones (iPhone) send all sound to the quiet ear speaker while the microphone is open:
+     close the microphone after each recording and switch back to normal playback before playing it */
+  release(){try{this.stream&&this.stream.getTracks().forEach(t=>t.stop())}catch(e){}this.stream=null;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}try{SFX.wake()}catch(e){}},
   /* plays the recording through the page's sound engine (works on phones too), louder than normal */
   play(blob){return new Promise(res=>{let fin=false;const end=()=>{if(fin)return;fin=true;res()};
     const viaEl=()=>{const url=URL.createObjectURL(blob);const au=new Audio(url);au.onended=()=>{URL.revokeObjectURL(url);end()};au.onerror=end;au.play().catch(end);setTimeout(end,15000)};
@@ -1554,8 +1558,9 @@ function recStep(host,done,opts){
     await sleep(450);if(!alive())return;
     host.querySelector('#recMsg').textContent='🔴 עכשיו אומרים!';
     const blob=await REC.record(opts.max||5000,v=>{const l=host.querySelector('#lvl');if(l)l.style.width=Math.round(v*100)+'%'});
-    if(!alive())return;
+    REC.release();if(!alive())return;
     host.innerHTML=`<div class="recbox"><div class="recdot">🔊 שומעים את עצמנו...</div><div class="ears">👂</div></div>`;
+    await sleep(250);if(!alive())return;
     await REC.play(blob);if(!alive())return;
     done()};
   /* the child starts the recording; stopping, playback and returning to the game are automatic */
