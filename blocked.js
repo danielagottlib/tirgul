@@ -2,5 +2,6 @@ window.BLOCKED=[
 
 ];
 window.REPLACED={
-'GDD8-EU3H':'X9UZ-UC6L'
+'GDD8-EU3H':'X9UZ-UC6L',
+'SDU7-NK5D':'739X-66ZN'
 };
