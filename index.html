@@ -1739,7 +1739,7 @@ function renderAct(){
     const win=racing?`<div class="cback" id="slotimg"><span>?</span></div>`
       :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">טוען תמונה...</div>`}${d.phase==='reveal'?`<div class="ccap">${hl(c[1],d.sid===L.id?L.hl:'')}</div>`:''}</div></div>`;
     d.flip=false;
-    const pile=`<div class="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k,a)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===a.length-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
+    const pile=`<div class="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
     d.justAdded=false;
     body=`<div class="abrow">${pile}<div class="slotm ${d.phase==='shuffle'?'running':''}"><div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
         <div class="slotwin">${win}</div>
