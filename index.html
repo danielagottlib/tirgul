@@ -875,19 +875,19 @@ const SFX=(()=>{
     /* door song played on instruments, one note per syllable:
        טוק-טוק-ב-דֶ-לֶת | דָ-נִי-אֵ-לָה-שׁוֹ-אֶ-לֶת | מִי-הַ-בָּא? | (שם)-(שם) בָּ-רוּךְ-הַ-בָּא
        marimba melody + pizzicato bass + soft string chords + a glockenspiel sparkle at the end */
-    tune(){const B=.4,f=m=>440*Math.pow(2,(m-69)/12);
-      const mel=[[67,.5],[67,.5],[72,.25],[74,.25],[76,.5],
-                 [77,.25],[76,.25],[74,.25],[72,.25],[74,.25],[76,.25],[72,.5],
-                 [67,.5],[69,.5],[71,1],
-                 [76,.5],[76,.5],[74,.25],[76,.25],[79,.5],[84,1.5]];
-      let t=0;mel.forEach(([m,d])=>{const fr=f(m),len=Math.max(.35,d*B*1.6);
-        tone(fr,len,{vol:.2,at:t,type:'sine',attack:.004});tone(fr*4,.12,{vol:.05,at:t,type:'sine',attack:.002});tone(fr*2,len*.6,{vol:.05,at:t,type:'triangle',attack:.004});t+=d*B});
-      const ch=[[48,[60,64,67]],[53,[60,65,69]],[55,[59,62,67]],[48,[60,64,67]]];
-      ch.forEach(([bs,notes],i)=>{const at=i*2*B,last=i===3;
-        [0,1].forEach(k=>tone(f(bs),.35,{vol:.16,at:at+k*B,type:'triangle',attack:.004}));
-        notes.forEach(n=>tone(f(n),(last?3.2:2)*B,{vol:.035,at,type:'sawtooth',attack:.12}))});
-      [96,91,88,84].forEach((m,i)=>tone(f(m),.6,{vol:.05,at:t-1.2*B+i*.07,type:'sine',attack:.002}));
-      return t}
+    /* Daniela's door melody (transcribed from her recording, key of D, her own rhythm):
+       [start sec, length sec, note], played on marimba with a plucked bass and a sparkle at the end */
+    tune(){const f=m=>440*Math.pow(2,(m-69)/12),D=74,A=69,Bn=71,E=76,Fs=78,G=79;
+      const mel=[[0,.16,D],[.32,.26,D],[.65,.17,A],[.82,.18,A],[1.02,.41,Bn],[1.43,.26,A],[1.8,.22,A],[2.12,.49,D],
+        [2.84,.11,A],[3.17,.1,Bn],[3.42,.3,A],[4.06,.47,D],[4.53,.38,Fs],[4.99,.65,G],[5.64,.2,Fs],[5.99,.12,A],[6.11,.15,Bn],[6.38,.15,D],[6.61,.23,D],
+        [7.6,.58,D],[8.26,.07,A],[8.33,.18,A],[8.51,.36,Bn],[8.91,.45,A],[9.47,.44,D],[9.99,.23,A],[10.22,.34,Bn],[10.6,.28,A],[11.07,.38,D],[11.5,.38,Fs],[11.88,.3,G],
+        [12.49,.21,Fs],[12.7,.19,E],[12.98,.13,A],[13.16,.16,Bn],[13.34,.6,D]];
+      mel.forEach(([at,d,m])=>{const fr=f(m),len=Math.max(.3,d*1.5);
+        tone(fr,len,{vol:.2,at,type:'sine',attack:.004});tone(fr*4,.1,{vol:.045,at,type:'sine',attack:.002});tone(fr*2,len*.5,{vol:.045,at,type:'triangle',attack:.004})});
+      const bass=[[.32,50],[2.12,50],[4.06,50],[4.99,43],[5.64,45],[6.61,50],[7.6,50],[9.47,50],[11.07,50],[11.88,43],[12.7,45],[13.34,50]];
+      bass.forEach(([at,m])=>{tone(f(m),.45,{vol:.17,at,type:'triangle',attack:.004});tone(f(m+12),.3,{vol:.05,at,type:'sine',attack:.004})});
+      [98,93,90,86].forEach((m,i)=>tone(f(m),.6,{vol:.05,at:13.5+i*.07,type:'sine',attack:.002}));
+      return 14.2}
   };
 })();
 document.addEventListener('pointerdown',()=>SFX.unlock(),{once:true});
@@ -905,7 +905,7 @@ function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|i
 function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
-const VREC=[['door','מנגינת הדלת','מזמזמים או מנגנים את המנגינה של "טוק טוק בדלת, דניאלה שואלת: מי הבא?" (המילים יופיעו בבועות)'],['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
+const VREC=[['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
 let VA=null;const VT=Math.floor(Date.now()/600000);
@@ -1060,7 +1060,7 @@ function renderWelcome(){
     <div class="row"><button class="ghost" id="rename" type="button" style="font-size:14px">לשנות את השם</button><button class="ghost" id="switch" type="button" style="font-size:14px">לא ${n}? כניסה עם קוד אחר</button></div></div>`;
   const dw=document.getElementById('doorway'),song=app.querySelector('.song');
   document.getElementById('door').onclick=()=>{if(dw.classList.contains('started'))return;dw.classList.add('started');song.classList.add('started');SFX.knock();
-    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>voice('door',null,()=>{SFX.tune();document.querySelectorAll('.hero').forEach(h=>h.classList.add('talking'));TIMERS.push(setTimeout(()=>document.querySelectorAll('.hero').forEach(h=>h.classList.remove('talking')),4400))}),3600))};
+    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{if(SFX.muted)return;SFX.tune();document.querySelectorAll('.hero').forEach(h=>h.classList.add('talking'));TIMERS.push(setTimeout(()=>document.querySelectorAll('.hero').forEach(h=>h.classList.remove('talking')),14000))},3600))};
   document.getElementById('start').onclick=()=>go('home');
   document.getElementById('again').onclick=()=>{S.view='welcome';render()};
   document.getElementById('rename').onclick=()=>go('name');
@@ -2040,6 +2040,7 @@ function renderTherapist(){
   </div>
   <div class="card form" id="vrecCard">
     <h2>🎙️ ההקלטות שלי</h2>
+    <div class="row" style="justify-content:flex-start"><button class="btn sun" type="button" onclick="SFX.tune()">🎵 השמעת מנגינת הדלת</button></div>
     <p class="muted">כאן מקליטים את הקול שלך, והילדים ישמעו אותו באתר. לוחצים "הקלטה", אומרים (או שרים) את המשפט, לוחצים "עצירה", מקשיבים, ואם טוב לוחצים "שמירה". בפעם הראשונה הדפדפן ישאל אם לאפשר מיקרופון: לוחצים "אפשר" (Allow).</p>
     ${ghToken()?'':'<p class="err">כדי לשמור הקלטות צריך קודם לחבר את המכשיר ל-GitHub (בכרטיס שלמעלה).</p>'}
     ${VREC.map(([k,t,say])=>`<div class="vrow" data-vk="${k}" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0;border-top:1px solid #0001">
