@@ -476,7 +476,12 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .reps{display:flex;gap:8px;justify-content:center}
 .reps i{width:18px;height:18px;border-radius:50%;background:#E6E1F5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
 .reps i.on{background:#F6B21E}
-.zoo{position:relative;padding-bottom:70px;overflow:hidden}
+.zoo{position:relative;padding-bottom:84px;overflow:hidden;min-width:min(86vw,560px)}
+.zoo .street .mini{width:min(22vw,112px);height:min(24vw,120px)}
+.zoo .street .walls{height:56%;left:10%;right:10%}
+.zoo .street .roof{height:36%;bottom:54%}
+.zoo .street span{font-size:min(9vw,44px)}
+.zoogirl{font-size:72px!important}
 .zoogirl{position:absolute;bottom:0;right:-60px;font-size:60px;line-height:1;animation:girlwalk 2.6s linear forwards}
 .zoogirl.yay{animation:girljump .45s ease-in-out infinite alternate;right:calc(50% - 30px)}
 @keyframes girlwalk{to{right:calc(50% - 30px)}}
