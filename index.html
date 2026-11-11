@@ -882,7 +882,8 @@ function decode(code){
   const cs=t%2048,comb=Math.floor(t/2048);
   if((mix(comb+77)&0x7FF)!==cs)return null;
   const r=Math.floor(comb/0x800000),bits=((comb%0x800000)^mix(r+1000))&0x7FFFFF;
-  if(!(bits&GOALMASK))return null;
+  /* a code with no regular goals is valid only when it has personal games */
+  if(!(bits&GOALMASK)&&!((window.MY_ASSIGN||{})[c.slice(0,4)+'-'+c.slice(4)]||[]).length)return null;
   return bits;
 }
 const has=(bits,b)=>!!(bits&(1<<b));
