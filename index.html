@@ -379,6 +379,11 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .pbite{position:absolute;transform:translate(-50%,-50%);font-size:min(9vw,38px);line-height:1}
 .dish.small{width:min(40vw,170px)}
 .eater{position:absolute;right:-28%;bottom:10%;font-size:min(16vw,72px);line-height:1;z-index:5;animation:comein .9s ease-out both,chew .22s .9s 10 alternate}
+.eater.img{width:min(30vw,120px);right:-42%;bottom:-6%;animation:comein .9s ease-out both,chew2 .7s .9s 4 ease-in-out}
+.eater.img img{width:100%;display:block}
+.eater.img .ec{position:absolute;inset:0;opacity:0;animation:mouth .36s steps(1) .9s 9}
+@keyframes mouth{0%{opacity:1}50%{opacity:0}}
+@keyframes chew2{50%{transform:translateY(-4%) rotate(-3deg)}}
 @keyframes comein{from{transform:translateX(120%) scale(.6);opacity:0}to{transform:none;opacity:1}}
 @keyframes chew{to{transform:translateY(-8%) rotate(-6deg) scale(1.06)}}
 .foodwrap{position:absolute;inset:0}
@@ -689,6 +694,11 @@ function dishArt(R,p){const k=R.kind,c=R.color||({pot:'#E9A23B',bowl:'#BFE3A5',c
     <ellipse cx="100" cy="52" rx="76" ry="22" fill="${c}"/><path d="M24 52 q10 26 20 6 q10 26 20 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q12 26 24 6 q10 22 16 -4" fill="${c}"/></svg>`;
   return ''}
 function serveArt(R){const IMG=window.DISH_IMG||{};if(IMG.soup)return `<img class="dishimg" src="${IMG.soup}" alt="">`;return `<svg class="dishart" viewBox="0 0 200 120" aria-hidden="true"><ellipse cx="100" cy="104" rx="94" ry="14" fill="#e8eef3" stroke="#c4cfd8" stroke-width="2"/><path d="M14 40 q8 66 86 70 q78 -4 86 -70z" fill="#fff" stroke="#c4cfd8" stroke-width="2"/><path d="M28 64 q72 22 144 0" stroke="#12A397" stroke-opacity=".5" stroke-width="5" fill="none"/><ellipse cx="100" cy="40" rx="86" ry="20" fill="#f7fafc" stroke="#c4cfd8" stroke-width="2"/><ellipse class="soupfill" cx="100" cy="43" rx="76" ry="14" fill="${R.color||'#E9A23B'}"/><circle cx="74" cy="40" r="5" fill="#F08A2C"/><circle cx="118" cy="44" r="4" fill="#7CC36B"/><circle cx="98" cy="38" r="3.5" fill="#FFD84D"/></svg>`}
+/* cute animals (Gemini) that come to eat; two pictures each, mouth closed and open */
+const EATERS={panda:'הפנדה',bunny:'הארנבון',puppy:'הכלבלב',kitten:'החתלתול'};
+function eaterHtml(d){const E=(window.EATER_IMG||{})[d.eater];
+  if(E)return `<span class="eater img"><img class="eo" src="${E[0]}" alt=""><img class="ec" src="${E[1]}" alt=""></span>`;
+  return `<span class="eater">${{panda:'🐼',bunny:'🐰',puppy:'🐶',kitten:'🐱'}[d.eater]||'🐼'}</span>`}
 /* a serving plate with a few bites of what was cooked; the creature eats from it */
 function plateArt(R,d){const IMG=window.DISH_IMG||{};const bites=d.added.slice(0,5).map((a,k)=>`<span class="pbite" style="left:${[50,32,68,42,58][k]}%;top:${[42,50,50,60,60][k]}%">${a[0]}</span>`).join('');
   const plate=IMG.plate?`<img class="dishimg" src="${IMG.plate}" alt="">`:`<svg class="dishart" viewBox="0 0 200 120" aria-hidden="true"><ellipse cx="100" cy="66" rx="96" ry="44" fill="#f7fafc" stroke="#c4cfd8" stroke-width="2"/><ellipse cx="100" cy="64" rx="66" ry="28" fill="#fff" stroke="#e1e8ee" stroke-width="2"/></svg>`;
@@ -1866,10 +1876,10 @@ function renderAct(){
     const sent=done?'':`אני רוצה ${R.verb||'לשים'} ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
     shell(`<div class="card stage"><p class="muted">מכינים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
       <div class="kitchen2 ph-${d.phase||'add'} k-${R.kind}">${R.kind==='pot'&&END?'':`<div class="dish ${R.kind} ${window.DISH_IMG&&DISH_IMG[R.kind]?'img':''} ${END&&R.kind!=='plate'?'small':''}" id="dish">${dishArt(R,d.n/R.ing.length)}${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}
-        ${d.phase==='stir'?SPOON+vapor(R.kind==='pot'):''}${d.phase==='bake'?'<div class="ovenglow"></div>':''}${END&&R.kind!=='plate'?vapor(R.kind!=='bowl'):''}${R.kind==='plate'&&d.phase==='eat'?`<span class="eater">${d.eater}</span>`:''}</div>`}
-        ${R.kind==='pot'&&(d.phase==='pour'||END)?`<div class="serve ${END?'big':''}">${d.phase==='pour'?'<i class="pourline"></i>':''}<div class="foodwrap ${d.phase==='eat'?'eatfood':''}">${serveArt(R)}</div>${END?vapor(d.phase!=='eat')+SPOON_REST:''}${d.phase==='eat'?`<span class="eater">${d.eater}</span>`:''}</div>`:''}
-        ${R.kind!=='pot'&&R.kind!=='plate'&&END?`<div class="serve plate">${plateArt(R,d)}${d.phase==='eat'?`<span class="eater">${d.eater}</span>`:''}</div>`:''}</div>
-      ${done?(!END?`<p class="drag-hint">${{stir:R.kind==='pot'?'מערבבים את המרק... 🥄':'מערבבים טוב טוב... 🥄',pour:'מוזגים לצלחת... 🥣',bake:'נכנס לתנור... 🔥'}[d.phase]||''}</p>`:`<div class="cheer">${d.phase==='eat'?`${d.eater} בא לאכול! בתיאבון! 😋`:`${R.final} ${R.rd}! מגישים לצלחת 🍽️`}</div>${d.phase==='eat'?'<button class="btn sun" id="eat">😋 סיימנו!</button>':''}`)
+        ${d.phase==='stir'?SPOON+vapor(R.kind==='pot'):''}${d.phase==='bake'?'<div class="ovenglow"></div>':''}${END&&R.kind!=='plate'?vapor(R.kind!=='bowl'):''}${R.kind==='plate'&&d.phase==='eat'?`${eaterHtml(d)}`:''}</div>`}
+        ${R.kind==='pot'&&(d.phase==='pour'||END)?`<div class="serve ${END?'big':''}">${d.phase==='pour'?'<i class="pourline"></i>':''}<div class="foodwrap ${d.phase==='eat'?'eatfood':''}">${serveArt(R)}</div>${END?vapor(d.phase!=='eat')+SPOON_REST:''}${d.phase==='eat'?`${eaterHtml(d)}`:''}</div>`:''}
+        ${R.kind!=='pot'&&R.kind!=='plate'&&END?`<div class="serve plate">${plateArt(R,d)}${d.phase==='eat'?`${eaterHtml(d)}`:''}</div>`:''}</div>
+      ${done?(!END?`<p class="drag-hint">${{stir:R.kind==='pot'?'מערבבים את המרק... 🥄':'מערבבים טוב טוב... 🥄',pour:'מוזגים לצלחת... 🥣',bake:'נכנס לתנור... 🔥'}[d.phase]||''}</p>`:`<div class="cheer">${d.phase==='eat'?`${EATERS[d.eater]||'מישהו'} בא לאכול! בתיאבון! 😋`:`${R.final} ${R.rd}! מגישים לצלחת 🍽️`}</div>${d.phase==='eat'?'<button class="btn sun" id="eat">😋 סיימנו!</button>':''}`)
         :d.ready?`<p class="drag-hint">עכשיו גוררים ${R.to}!</p><div class="platform"><button class="pitem ready ingr" id="ingr"><span style="font-size:52px">${cur.map(x=>x[0]).join('')}</span><span class="plabel">${cur.map(x=>x[1]).join(' וגם ')}</span></button></div>`
         :`<div class="saybox"><div class="pic" style="font-size:64px">${cur.map(x=>x[0]).join(' ')}</div><p class="muted">אומרים מה ${R.verb==='לערבב'?'מערבבים':'שמים'} ${R.in}:</p><div class="sentence">${hl(sent,L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
       </div>`);
@@ -1883,7 +1893,7 @@ function renderAct(){
             else if(R.kind!=='plate'){await step('stir',2800,()=>SFX.roll());if(R.kind==='pot')await step('pour',2400,()=>{SFX.zip();TIMERS.push(setTimeout(()=>SFX.plop(),900))})}
             if(S.act==='cook'&&S.data===d){d.phase='ready';SFX.fanfare();render();
               /* served on a plate, then a cute creature comes and eats it */
-              TIMERS.push(setTimeout(()=>{if(S.act!=='cook'||S.data!==d)return;d.phase='eat';d.eater=pick(['🐼','🐻','🐰','🦊','🐶','🐱','🐵','🦄','🐨','🐹'],1)[0];render();
+              TIMERS.push(setTimeout(()=>{if(S.act!=='cook'||S.data!==d)return;d.phase='eat';d.eater=pick(Object.keys(EATERS),1)[0];render();
                 TIMERS.push(setTimeout(()=>SFX.chomp(),900));TIMERS.push(setTimeout(()=>SFX.burp(),3000))},2200))}})()}
         else render()})};
       dragTo(ig,()=>document.getElementById('dish'),drop)}
