@@ -760,7 +760,26 @@ button.stars{cursor:pointer;color:var(--ink)}
 .tile{min-height:112px;padding:10px 8px;gap:4px}
 .tile .letter,.tile .big{min-width:58px;height:58px;font-size:32px}
 .dash .ring{width:80px;height:80px}
-}</style>
+}/* realistic Gemini characters */
+.monster.real{background:none;box-shadow:none;border-radius:0;width:200px;height:200px}
+.monster.real img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(0,0,0,.18))}
+.monster.real .mo-o{opacity:0}
+.monster.real.hungry .mo-o,.monster.real.yum .mo-o{opacity:1}.monster.real.hungry .mo-c,.monster.real.yum .mo-c{opacity:0}
+.monster.real.munch .mo-o{animation:mopen .15s steps(1) 4}
+@keyframes mopen{0%{opacity:1}50%{opacity:0}}
+.monster.real .m-mouth{background:none;width:70px;height:30px;top:112px;animation:none!important}
+.monster.real .m-tongue{bottom:-6px}
+.cookie2 .ck img{width:min(12vw,54px);height:auto;display:block;filter:drop-shadow(0 3px 3px rgba(0,0,0,.2))}
+.egg .egimg{width:78%;height:auto;filter:hue-rotate(var(--h)) saturate(1.4) drop-shadow(0 5px 5px rgba(0,0,0,.15))}
+.egg.cracking .egimg{animation:eggshake .15s ease-in-out infinite alternate}
+@keyframes eggshake{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+.bigegg img{width:min(46vw,190px);height:auto;display:block}
+.frog2.real{font-size:0;width:min(17vw,84px);height:min(17vw,84px)}
+.frog2.real img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
+.frog2.real .fr-o{opacity:0}
+.frog2.real.gulp .fr-o{opacity:1}.frog2.real.gulp .fr-c{opacity:0}
+.frog2.real.happy .fr-o{opacity:1}.frog2.real.happy .fr-c{opacity:0}
+.bug .bugimg{width:min(11vw,52px);height:auto;display:block}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1156,6 +1175,7 @@ function setupVrec(){let mic=null,mr=null,chunks=[],cur=null;const blobs={};let 
         if(!p.ok)throw new Error(p.status);st.textContent='✓ נשמר! הילדים ישמעו את ההקלטה תוך דקה-שתיים.'}
       catch(e){sb.disabled=false;st.textContent='השמירה לא הצליחה ('+e.message+'). נסי שוב.'}}})}
 /* personal games (mygames.js, built by Claude) and who sees them (assign.js, saved from the therapist screen) */
+const CH=k=>(window.CHAR_IMG||{})[k]||'';
 const HOUSE_COL=['#FF6A55','#3C8DDE','#22A86A','#B76CF0','#F6B21E','#FF8FB1'];
 const myGames=()=>window.MY_GAMES||[];
 function myAssigned(code){if(!code)return [];if(isTestCode(code))return myGames();const ids=(window.MY_ASSIGN||{})[fmtCode(code)]||[];return myGames().filter(g=>ids.includes(g.id))}
@@ -1746,6 +1766,7 @@ function startAct(act,from){
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
+  if(['eggs','monster','frog'].includes(act))loadScriptOnce('chars.js?v=1',()=>{if(S.view==='act'&&['eggs','monster','frog'].includes(S.act))render()});
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
   if(act==='frog'){const it=items();const bugs=shuffle(['🪰','🦟','🐞','🦗','🐛','🦋','🐝','🐜']);const start=Math.random()*Math.PI*2;d.paths=[0,1,2,3,4,5].map(i=>({a:start+i*Math.PI/3,bug:bugs[i],stones:[0,1,2].map(k=>it[(i*3+k)%it.length])}));d.pi=0;d.pos=-1;d.from=null}
@@ -1961,16 +1982,16 @@ function renderAct(){
   if(S.act==='eggs'){
     shell(`<div class="card stage"><p class="muted">מי מסתתר בביצה? נוגעים בביצה, ומי שבוקע אומר הברה. אחר כך אומרים כמוהו!</p>
       <div class="progress">${d.hatched.length} / ${d.eggs.length}</div>
-      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${it[1]}</span><span class="plabel syl">${it[0]}</span>`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`}</button>`}).join('')}</div></div>`);
+      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${it[1]}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
     app.querySelectorAll('.egg:not(.hatched)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
       b.classList.add('cracking');SFX.crack();
       TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();eggParty()}else render()})},900))});
     /* all eggs open: one more golden egg wobbles, a chick hatches out of it and walks off peeping */
     const eggParty=()=>{const old=document.getElementById('chickshow');if(old)old.remove();
-      document.body.insertAdjacentHTML('beforeend','<div class="chickshow" id="chickshow"><span class="bigegg" id="bigegg">🥚</span></div>');
+      document.body.insertAdjacentHTML('beforeend','<div class="chickshow" id="chickshow"><span class="bigegg" id="bigegg">'+(CH('egg')?'<img src="'+CH('egg')+'" alt="">':'🥚')+'</span></div>');
       TIMERS.push(setTimeout(()=>{const c=document.getElementById('chickshow');if(c)c.remove()},4300));
-      TIMERS.push(setTimeout(()=>{SFX.crack()},700));TIMERS.push(setTimeout(()=>{SFX.crack();const e=document.getElementById('bigegg');if(e){e.textContent='🐣';e.classList.add('hatch')}},1300));
-      TIMERS.push(setTimeout(()=>{const e=document.getElementById('bigegg');if(e){e.textContent='🐥';e.classList.remove('hatch');e.classList.add('walk')};SFX.peep()},2100));
+      TIMERS.push(setTimeout(()=>{SFX.crack()},700));TIMERS.push(setTimeout(()=>{SFX.crack();const e=document.getElementById('bigegg');if(e){if(CH('chick'))e.innerHTML='<img src="'+CH('chick')+'" alt="">';else e.textContent='🐣';e.classList.add('hatch')}},1300));
+      TIMERS.push(setTimeout(()=>{const e=document.getElementById('bigegg');if(e){if(!CH('chick'))e.textContent='🐥';e.classList.remove('hatch');e.classList.add('walk')};SFX.peep()},2100));
       TIMERS.push(setTimeout(()=>SFX.peep(),2700));TIMERS.push(setTimeout(()=>SFX.peep(),3300));
       TIMERS.push(setTimeout(finish,4300))};
     return;
@@ -1980,9 +2001,9 @@ function renderAct(){
     shell(`<div class="card stage"><p class="muted">${d.ready!=null?'<b class="drag-hint">עכשיו גוררים את העוגייה לפה של המפלצון! 😋</b>':'המפלצון רעב! נוגעים בעוגייה, אומרים את ההברה, ומאכילים אותו.'}</p>
       <div class="progress">נשארו ${left} עוגיות 🍪</div>
       <div class="mplay" id="mplay">
-        <div class="monster ${d.ready!=null?'hungry':''}" id="monster" style="--s:${.8+d.eaten.length*0.04}"><div class="m-eyes"><span></span><span></span></div><div class="m-mouth" id="mouth"></div><div class="m-horn l"></div><div class="m-horn r"></div></div>
+        ${CH('monster0')?`<div class="monster real ${d.ready!=null?'hungry':''}" id="monster" style="--s:${.8+d.eaten.length*0.04}"><img class="mo-c" src="${CH('monster0')}" alt=""><img class="mo-o" src="${CH('monster1')}" alt=""><div class="m-mouth" id="mouth"></div></div>`:`<div class="monster ${d.ready!=null?'hungry':''}" id="monster" style="--s:${.8+d.eaten.length*0.04}"><div class="m-eyes"><span></span><span></span></div><div class="m-mouth" id="mouth"></div><div class="m-horn l"></div><div class="m-horn r"></div></div>`}
         ${d.cookies.map((it,ix)=>{if(d.eaten.includes(ix))return '';const a=ix/N*Math.PI*2-Math.PI/2,x=50+Math.cos(a)*40,y=50+Math.sin(a)*40;
-          return `<button class="cookie2 ${d.ready===ix?'ready':''}" data-ix="${ix}" style="left:${x}%;top:${y}%" ${d.ready!=null&&d.ready!==ix?'disabled':''}><span class="ck">🍪</span><span class="plabel syl">${it[0]}</span></button>`}).join('')}
+          return `<button class="cookie2 ${d.ready===ix?'ready':''}" data-ix="${ix}" style="left:${x}%;top:${y}%" ${d.ready!=null&&d.ready!==ix?'disabled':''}><span class="ck">${CH('cookie')?`<img src="${CH('cookie')}" alt="">`:'🍪'}</span><span class="plabel syl">${it[0]}</span></button>`}).join('')}
       </div></div>`);
     const feed=el=>{const ix=d.ready;if(ix==null)return;d.ready=null;const m=document.getElementById('monster');
       flyTo(el,document.getElementById('mouth'),()=>{SFX.chomp();m.classList.add('munch');d.eaten.push(ix);
@@ -2007,9 +2028,9 @@ function renderAct(){
       <div class="bog" id="bog">
         <div class="bigpad"></div>
         ${P.map((p,pi)=>p.stones.map((it,si)=>{const [x,y]=xy(pi,si);const st=pi<d.pi?'gone':pi>d.pi?'later':si<=d.pos?'past':si===d.pos+1?'next':'';
-          return `<button class="stone ${st}" data-pi="${pi}" data-si="${si}" style="left:${x}%;top:${y}%"><span>${it[0]}</span></button>`}).join('')+(pi>=d.pi||(pi===d.pi)?(()=>{const [bx,by]=bugxy(pi);return `<span class="bug ${pi===d.pi?'active':''} ${pi<d.pi?'eaten':''}" id="bug${pi}" style="left:${bx}%;top:${by}%">${p.bug}</span>`})():'')).join('')}
+          return `<button class="stone ${st}" data-pi="${pi}" data-si="${si}" style="left:${x}%;top:${y}%"><span>${it[0]}</span></button>`}).join('')+(pi>=d.pi||(pi===d.pi)?(()=>{const [bx,by]=bugxy(pi);return `<span class="bug ${pi===d.pi?'active':''} ${pi<d.pi?'eaten':''}" id="bug${pi}" style="left:${bx}%;top:${by}%">${CH('fly')?`<img class="bugimg" src="${CH('fly')}" alt="">`:p.bug}</span>`})():'')).join('')}
         <div class="tongue" id="tongue"></div>
-        <div class="frog2" id="frog">🐸</div>
+        <div class="frog2 ${CH('frog0')?'real':''}" id="frog">${CH('frog0')?`<img class="fr-c" src="${CH('frog0')}" alt=""><img class="fr-o" src="${CH('frog1')}" alt="">`:'🐸'}</div>
       </div></div>`);
     const frog=document.getElementById('frog');
     const [fx,fy]=d.from||xy(d.pi,d.pos);const [tx,ty]=xy(d.pi,d.pos);
@@ -2018,7 +2039,7 @@ function renderAct(){
     /* the tongue starts at the frog's mouth (lower middle of the frog) and reaches the bug */
     /* (the screen is re-drawn after each stone, so always look up the frog that is on screen now) */
     const eat=()=>{const frog=document.getElementById('frog');if(!frog)return;const t=document.getElementById('tongue'),bogEl=document.getElementById('bog'),bog=bogEl.getBoundingClientRect(),fr=frog.getBoundingClientRect(),bug=document.getElementById('bug'+d.pi);
-      const mx=fr.left+fr.width/2-bog.left,my=fr.top+fr.height*.66-bog.top;
+      const mx=fr.left+fr.width/2-bog.left,my=fr.top+fr.height*(frog.classList.contains('real')?.6:.66)-bog.top;
       const br=bug?bug.getBoundingClientRect():null;const [bx,by]=bugxy(d.pi);
       const gx=br?br.left+br.width/2-bog.left:bx/100*bog.width,gy=br?br.top+br.height/2-bog.top:by/100*bog.height;
       const dx=gx-mx,dy=gy-my,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;
