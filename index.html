@@ -872,7 +872,22 @@ const SFX=(()=>{
     plop(){tone(500,.15,{vol:.2,to:150})},
     boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})},
     /* a little melody for "טוק טוק בדלת, דניאלה שואלת: מי הבא?" when there is no recording */
-    tune(){const n=[[523,.25],[523,.25],[659,.25],[784,.5],[698,.25],[659,.25],[587,.25],[523,.5],[587,.25],[659,.25],[784,.6]];let t=0;n.forEach(([f,d])=>{tone(f,d*.95,{vol:.16,at:t,type:'triangle'});tone(f/2,d*.95,{vol:.06,at:t,type:'sine'});t+=d})}
+    /* door song played on instruments, one note per syllable:
+       טוק-טוק-ב-דֶ-לֶת | דָ-נִי-אֵ-לָה-שׁוֹ-אֶ-לֶת | מִי-הַ-בָּא? | (שם)-(שם) בָּ-רוּךְ-הַ-בָּא
+       marimba melody + pizzicato bass + soft string chords + a glockenspiel sparkle at the end */
+    tune(){const B=.4,f=m=>440*Math.pow(2,(m-69)/12);
+      const mel=[[67,.5],[67,.5],[72,.25],[74,.25],[76,.5],
+                 [77,.25],[76,.25],[74,.25],[72,.25],[74,.25],[76,.25],[72,.5],
+                 [67,.5],[69,.5],[71,1],
+                 [76,.5],[76,.5],[74,.25],[76,.25],[79,.5],[84,1.5]];
+      let t=0;mel.forEach(([m,d])=>{const fr=f(m),len=Math.max(.35,d*B*1.6);
+        tone(fr,len,{vol:.2,at:t,type:'sine',attack:.004});tone(fr*4,.12,{vol:.05,at:t,type:'sine',attack:.002});tone(fr*2,len*.6,{vol:.05,at:t,type:'triangle',attack:.004});t+=d*B});
+      const ch=[[48,[60,64,67]],[53,[60,65,69]],[55,[59,62,67]],[48,[60,64,67]]];
+      ch.forEach(([bs,notes],i)=>{const at=i*2*B,last=i===3;
+        [0,1].forEach(k=>tone(f(bs),.35,{vol:.16,at:at+k*B,type:'triangle',attack:.004}));
+        notes.forEach(n=>tone(f(n),(last?3.2:2)*B,{vol:.035,at,type:'sawtooth',attack:.12}))});
+      [96,91,88,84].forEach((m,i)=>tone(f(m),.6,{vol:.05,at:t-1.2*B+i*.07,type:'sine',attack:.002}));
+      return t}
   };
 })();
 document.addEventListener('pointerdown',()=>SFX.unlock(),{once:true});
@@ -890,7 +905,7 @@ function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|i
 function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
-const VREC=[['door','שיר הדלת','טוק טוק בדלת, דניאלה שואלת: מי הבא?'],['welcomeB','ברכה לבן','ברוך הבא!'],['welcomeG','ברכה לבת','ברוכה הבאה!'],['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
+const VREC=[['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
 let VA=null;const VT=Math.floor(Date.now()/600000);
@@ -1045,7 +1060,7 @@ function renderWelcome(){
     <div class="row"><button class="ghost" id="rename" type="button" style="font-size:14px">לשנות את השם</button><button class="ghost" id="switch" type="button" style="font-size:14px">לא ${n}? כניסה עם קוד אחר</button></div></div>`;
   const dw=document.getElementById('doorway'),song=app.querySelector('.song');
   document.getElementById('door').onclick=()=>{if(dw.classList.contains('started'))return;dw.classList.add('started');song.classList.add('started');SFX.knock();
-    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{SFX.blip();voice('door',null,()=>SFX.tune())},3600));TIMERS.push(setTimeout(()=>SFX.fanfare(),5400));TIMERS.push(setTimeout(()=>voice(girl?'welcomeG':'welcomeB',(girl?'ברוכה הבאה ':'ברוך הבא ')+(kidName()||S.kname||'')),5900))};
+    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{SFX.tune();document.querySelectorAll('.hero').forEach(h=>h.classList.add('talking'))},3600));TIMERS.push(setTimeout(()=>document.querySelectorAll('.hero').forEach(h=>h.classList.remove('talking')),8000))};
   document.getElementById('start').onclick=()=>go('home');
   document.getElementById('again').onclick=()=>{S.view='welcome';render()};
   document.getElementById('rename').onclick=()=>go('name');
