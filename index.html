@@ -1156,7 +1156,7 @@ function setupVrec(){let mic=null,mr=null,chunks=[],cur=null;const blobs={};let 
 /* personal games (mygames.js, built by Claude) and who sees them (assign.js, saved from the therapist screen) */
 const HOUSE_COL=['#FF6A55','#3C8DDE','#22A86A','#B76CF0','#F6B21E','#FF8FB1'];
 const myGames=()=>window.MY_GAMES||[];
-function myAssigned(code){if(!code)return [];const ids=(window.MY_ASSIGN||{})[fmtCode(code)]||[];return myGames().filter(g=>ids.includes(g.id))}
+function myAssigned(code){if(!code)return [];if(isTestCode(code))return myGames();const ids=(window.MY_ASSIGN||{})[fmtCode(code)]||[];return myGames().filter(g=>ids.includes(g.id))}
 async function ghPutFile(path,text,msg){const tok=ghToken();if(!tok)throw new Error('nokey');
   const url='https://api.github.com/repos/danielagottlib/tirgul/contents/'+path,H={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'};
   let sha;const g=await fetch(url+'?ref=main&t='+Date.now(),{headers:H});if(g.ok)sha=(await g.json()).sha;
@@ -1171,7 +1171,11 @@ async function saveAssign(code,ids){const tok=ghToken();if(!tok)throw new Error(
 async function applyCodes(out,addBlocked,addReplaced,doneMsg){out.innerHTML='<p class="muted">שומר...</p>';
   try{await ghUpdateCodes(addBlocked,addReplaced);out.innerHTML=`<p class="cheer" style="font-size:20px">✓ ${doneMsg}</p><p class="muted" style="font-size:15px">נכנס לתוקף תוך דקה-שתיים.</p>`}
   catch(e){const why=e.message==='nokey'?'עוד לא חיברת את האתר ל-GitHub (בכרטיס "חיבור ל-GitHub" למטה). בינתיים אפשר לשמור ידנית:':'השמירה האוטומטית לא הצליחה ('+esc(e.message)+'). אפשר לבדוק את המפתח בכרטיס "חיבור ל-GitHub", או לשמור ידנית:';blockSteps(out,blockFileText(addBlocked,addReplaced),why)}}
+/* Daniela's own test code: opens every goal, every stage and every personal game */
+const TEST_CODE='DANI-TEST';
+const isTestCode=c=>normCode(c)===normCode(TEST_CODE);
 function login(code){
+  if(isTestCode(code)){S.bits=GOALMASK|0x601C00;S.code=TEST_CODE;S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);return true}
   const nb=replacedBy(code);if(nb){migrateCode(code,nb);code=nb}
   if(isBlocked(code))return false;
   const bits=decode(code);if(bits===null)return false;
@@ -2308,6 +2312,12 @@ function renderTherapist(){
     <button class="btn leaf" type="submit">יצירת קוד</button>
   </form></div>
   <div id="result"></div>
+  <div class="card form">
+    <h2>🔑 קוד הבדיקה שלך</h2>
+    <p>כדי להיכנס לאתר כמו ילד ולנסות הכול: <b class="mono" style="font-size:22px">${TEST_CODE}</b></p>
+    <p class="muted" style="font-size:15px">הקוד פותח את כל ההגאים, כל השלבים, השפה, הקולי ובלתי קולי וכל המשחקים האישיים. הוא לא מופיע בטבלה ולא צריך לשלוח אותו לאף אחד.</p>
+    <div class="row" style="justify-content:flex-start"><button class="ghost" id="testReset" type="button">🔄 איפוס הכוכבים של קוד הבדיקה</button></div>
+  </div>
   <div class="card form" id="mgCard">
     <h2>⭐ משחקים אישיים למטופלים</h2>
     <p class="muted">בוחרים מטופל, מסמנים וי ליד כל משחק שהוא יראה, ושומרים. אין צורך בקוד חדש: השינוי מופיע אצלו תוך דקה-שתיים.</p>
@@ -2397,6 +2407,7 @@ function renderTherapist(){
   document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b)};
   /* two-step buttons: the first press asks, the second press does it */
   const twoStep=(b,ask,act)=>b.onclick=()=>{if(b.dataset.armed){act();return}b.dataset.armed='1';const t=b.textContent;b.textContent=ask;b.classList.add('armed');setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=t;b.classList.remove('armed')}},4000)};
+  const tr=document.getElementById('testReset');if(tr)twoStep(tr,'לאפס? לחצי שוב',()=>{['stars-','prog-','name-','g-'].forEach(k=>store.del(k+TEST_CODE));if(isTestCode(store.get('kid-code')||''))store.del('kid-code');tr.textContent='✓ אופס';tr.disabled=true});
   app.querySelectorAll('[data-rm]').forEach(b=>twoStep(b,'בטוחה? לחצי שוב',()=>{const l=savedList();l.splice(+b.dataset.rm,1);store.set('th-codes',JSON.stringify(l));renderTherapist()}));
   app.querySelectorAll('[data-reset]').forEach(b=>twoStep(b,'לאפס? לחצי שוב',()=>{const r=savedList()[+b.dataset.reset];if(!r)return;const forms=[String(r.c).toUpperCase(),fmtCode(r.c),normCode(r.c)];
     ['stars-','prog-','name-','g-','gender-','kidg-'].forEach(k=>forms.forEach(f=>store.del(k+f)));if(store.get('kid-code')&&forms.includes(String(store.get('kid-code')).toUpperCase()))store.del('kid-code');
