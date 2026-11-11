@@ -806,6 +806,7 @@ const CARDS={
  sh:[['sh_s1','השבלול עף'],['sh_s2','לנחש יש כובע'],['sh_s3','השעון רוקד'],['sh_s4','השן יוצאת לטיול'],['sh_l1','הנחש שוכב על השמש'],['sh_l2','הנחש שותה שוקו'],['sh_l3','השבלול אוכל שוקולד'],['sh_l4','העכביש ישן על השעון']],
  s:[['s_s1','הסוס באמבטיה'],['s_s2','הסירה נוסעת בכביש'],['s_s3','האוטובוס עף'],['s_s4','לקקטוס יש כובע'],['s_l1','הסוס נוהג באוטובוס'],['s_l2','כוס על הראש של הסוס'],['s_l3','מטוס בתוך סל'],['s_l4','האננס קורא ספר']],
  k:[['k_s1','הכלב על הגג'],['k_s2','הקוף באמבטיה'],['k_s3','הקיפוד עף'],['k_s4','לדג יש כובע'],['k_l1','הקוף נוסע בקורקינט'],['k_l2','הכלב שותה מהקומקום'],['k_l3','הקיפוד בועט בכדור'],['k_l4','קקטוס בתוך כוס']],
+ g:[['g_s1','הגמל על סקייטבורד'],['g_s2','עוגה על הראש של החתול'],['g_s3','הדג רוכב על אופניים'],['g_s4','הגמד בתוך כוס'],['g_l1','הגמל אוכל עוגה'],['g_l2','הדג מנגן בגיטרה'],['g_l3','לגזר יש גרביים'],['g_l4','הגמל על הגג']],
  l:[['l_s1','הכלב עף'],['l_s2','הפיל יושב על כיסא קטן'],['l_s3','החתול נוהג באוטובוס'],['l_s4','הגמל בבריכה'],['l_l1','הכלב יושב על הפיל'],['l_l2','החתול אופה לחם'],['l_l3','הפיל לובש כובע'],['l_l4','השבלול נוהג בלימון']]
 };
 /* words where ש is a sin (sounds like S), not a shin: they are not ש-words for practice */
@@ -869,7 +870,9 @@ const SFX=(()=>{
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
-    boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})}
+    boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})},
+    /* a little melody for "טוק טוק בדלת, דניאלה שואלת: מי הבא?" when there is no recording */
+    tune(){const n=[[523,.25],[523,.25],[659,.25],[784,.5],[698,.25],[659,.25],[587,.25],[523,.5],[587,.25],[659,.25],[784,.6]];let t=0;n.forEach(([f,d])=>{tone(f,d*.95,{vol:.16,at:t,type:'triangle'});tone(f/2,d*.95,{vol:.06,at:t,type:'sine'});t+=d})}
   };
 })();
 document.addEventListener('pointerdown',()=>SFX.unlock(),{once:true});
@@ -886,14 +889,16 @@ function greet(text){if(SFX.muted)return;try{if(!HEV)pickVoice();if(!HEV)return;
 function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang));return v.find(x=>/hila|carmit|google/i.test(x.name))||v[0]||null}catch(e){return null}}
 function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
-const VOICE={door:'audio/door.mp3',welcomeB:'audio/welcome-boy.mp3',welcomeG:'audio/welcome-girl.mp3',byeB:'audio/bye-boy.mp3',byeG:'audio/bye-girl.mp3',done:'audio/well-done.mp3',
-  cheer:['audio/cheer1.mp3','audio/cheer2.mp3','audio/cheer3.mp3','audio/cheer4.mp3','audio/cheer5.mp3']};
-let VA=null;
-function voice(key,fallback){if(SFX.muted)return;let src=VOICE[key];if(Array.isArray(src))src=src[Math.floor(Math.random()*src.length)];
+/* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
+const VREC=[['door','שיר הדלת','טוק טוק בדלת, דניאלה שואלת: מי הבא?'],['welcomeB','ברכה לבן','ברוך הבא!'],['welcomeG','ברכה לבת','ברוכה הבאה!'],['done','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
+const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done.webm',
+  cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
+let VA=null;const VT=Math.floor(Date.now()/600000);
+function voice(key,fallback,alt){if(SFX.muted)return;let src=VOICE[key];if(Array.isArray(src))src=src[Math.floor(Math.random()*src.length)];
   const talk=on=>document.querySelectorAll('.hero').forEach(h=>h.classList.toggle('talking',on));
-  let fell=false;const fb=()=>{talk(false);if(fell)return;fell=true;if(fallback)greet(fallback)};
+  let fell=false;const fb=()=>{talk(false);if(fell)return;fell=true;if(alt)alt();if(fallback)greet(fallback)};
   if(!src){fb();return}
-  try{if(VA)VA.pause();VA=new Audio(src);VA.onplay=()=>talk(true);VA.onended=()=>talk(false);VA.onerror=fb;VA.play().catch(fb)}catch(e){fb()}}
+  try{if(VA)VA.pause();VA=new Audio(src+'?t='+VT);VA.onplay=()=>talk(true);VA.onended=()=>talk(false);VA.onerror=fb;VA.play().catch(fb)}catch(e){fb()}}
 
 /* ---------- state ---------- */
 const S={overlay:false,stage:null,gback:null,bits:null,code:'',view:'login',stars:0,sound:null,act:null,data:null};
@@ -929,6 +934,31 @@ async function ghUpdateCodes(addBlocked,addReplaced){const tok=ghToken();if(!tok
   const file=blockFileText(addBlocked,addReplaced);
   const put=await fetch(GH_FILE,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify({message:'עדכון קודים',content:btoa(unescape(encodeURIComponent(file))),sha:j.sha,branch:'main'})});
   if(!put.ok)throw new Error('write '+put.status);const w2={};new Function('window',file)(w2);window.BLOCKED=w2.BLOCKED;window.REPLACED=w2.REPLACED;return true}
+/* therapist voice recordings: record with the microphone, listen, save to audio/<key>.webm in the repo */
+function setupVrec(){let mic=null,mr=null,chunks=[],cur=null;const blobs={};let pa=null;
+  const play=src=>{try{if(pa)pa.pause();pa=new Audio(src);pa.play().catch(()=>{})}catch(e){}};
+  const stopAll=()=>{if(mr&&mr.state==='recording')mr.stop()};
+  document.querySelectorAll('#vrecCard .vrow').forEach(row=>{const k=row.dataset.vk,st=row.querySelector('.vr-st'),rb=row.querySelector('.vr-rec'),pb=row.querySelector('.vr-play'),sb=row.querySelector('.vr-save');
+    rb.onclick=async()=>{
+      if(mr&&mr.state==='recording'){if(cur===k)stopAll();return}
+      if(!navigator.mediaDevices||!window.MediaRecorder){st.textContent='הדפדפן הזה לא מאפשר הקלטה. נסי ב-Chrome במחשב.';return}
+      try{if(!mic||!mic.active)mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+      catch(e){st.textContent='המיקרופון חסום. לוחצים על סמל המנעול 🔒 שליד כתובת האתר, מאפשרים "מיקרופון", ומרעננים את הדף.';return}
+      chunks=[];cur=k;const mt=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'';
+      mr=new MediaRecorder(mic,mt?{mimeType:mt}:{});mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      mr.onstop=()=>{blobs[k]=new Blob(chunks,{type:mr.mimeType||'audio/webm'});rb.textContent='🎙️ הקלטה מחדש';rb.classList.remove('sun');pb.disabled=false;sb.disabled=!ghToken();
+        st.textContent='✓ הוקלט ('+Math.round(blobs[k].size/1024)+'KB). מקשיבים, ואם טוב לוחצים "שמירה".';play(URL.createObjectURL(blobs[k]))};
+      mr.start();rb.textContent='⏹ עצירה';st.textContent='🔴 מקליט... מדברים עכשיו, ולוחצים "עצירה" בסוף.';
+      setTimeout(()=>{if(cur===k)stopAll()},30000)};
+    pb.onclick=()=>{if(blobs[k])play(URL.createObjectURL(blobs[k]))};
+    row.querySelector('.vr-site').onclick=()=>{const a=new Audio('audio/'+k+'.webm?t='+Date.now());a.onerror=()=>{st.textContent='עדיין אין באתר הקלטה לשורה הזו.'};a.play().catch(()=>{})};
+    sb.onclick=async()=>{const b=blobs[k],tok=ghToken();if(!b||!tok)return;sb.disabled=true;st.textContent='שומר...';
+      try{const b64=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=no;fr.readAsDataURL(b)});
+        const url='https://api.github.com/repos/danielagottlib/tirgul/contents/audio/'+k+'.webm',H={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'};
+        let sha;const g=await fetch(url+'?ref=main&t='+Date.now(),{headers:H});if(g.ok)sha=(await g.json()).sha;
+        const p=await fetch(url,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify(Object.assign({message:'הקלטה: '+k,content:b64,branch:'main'},sha?{sha}:{}))});
+        if(!p.ok)throw new Error(p.status);st.textContent='✓ נשמר! הילדים ישמעו את ההקלטה תוך דקה-שתיים.'}
+      catch(e){sb.disabled=false;st.textContent='השמירה לא הצליחה ('+e.message+'). נסי שוב.'}}})}
 /* tries the automatic save; without a key (or on failure) falls back to the copy-and-paste steps */
 async function applyCodes(out,addBlocked,addReplaced,doneMsg){out.innerHTML='<p class="muted">שומר...</p>';
   try{await ghUpdateCodes(addBlocked,addReplaced);out.innerHTML=`<p class="cheer" style="font-size:20px">✓ ${doneMsg}</p><p class="muted" style="font-size:15px">נכנס לתוקף תוך דקה-שתיים.</p>`}
@@ -1008,14 +1038,14 @@ function renderWelcome(){
   app.innerHTML=`<div class="brand"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div><div class="card stage song">
     <div class="doorway" id="doorway">${heroSVG()}<button class="door" id="door" aria-label="דופקים בדלת"><span class="knob"></span><span class="knockhint">👆 דופקים בדלת!</span></button></div>
     <div class="chat">
-      <div class="bubble from-dani ly" style="--d:3.6s">תוק תוק בדלת,<br>דניאלה שואלת:<br><b>מי הבא?</b></div>
+      <div class="bubble from-dani ly" style="--d:3.6s">טוק טוק בדלת,<br>דניאלה שואלת:<br><b>מי הבא?</b></div>
       <div class="bubble from-kid ly" style="--d:5.4s"><span class="kid" aria-hidden="true">${girl?'👧':'👦'}</span><b class="name">${n}</b> ${girl?'ברוכה הבאה!':'ברוך הבא!'} 🎉</div>
     </div>
     <div class="row"><button class="btn sun" id="again" type="button">🚪 שוב</button><button class="btn leaf" id="start" type="button">בואו נתחיל!</button></div>
     <div class="row"><button class="ghost" id="rename" type="button" style="font-size:14px">לשנות את השם</button><button class="ghost" id="switch" type="button" style="font-size:14px">לא ${n}? כניסה עם קוד אחר</button></div></div>`;
   const dw=document.getElementById('doorway'),song=app.querySelector('.song');
   document.getElementById('door').onclick=()=>{if(dw.classList.contains('started'))return;dw.classList.add('started');song.classList.add('started');SFX.knock();
-    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{SFX.blip();voice('door')},3600));TIMERS.push(setTimeout(()=>SFX.fanfare(),5400));TIMERS.push(setTimeout(()=>voice(girl?'welcomeG':'welcomeB',(girl?'ברוכה הבאה ':'ברוך הבא ')+(kidName()||S.kname||'')),5900))};
+    TIMERS.push(setTimeout(()=>SFX.creak(),2600));TIMERS.push(setTimeout(()=>{const dd=document.getElementById('door');if(dd)dd.classList.add('gone')},3800));TIMERS.push(setTimeout(()=>{SFX.blip();voice('door',null,()=>SFX.tune())},3600));TIMERS.push(setTimeout(()=>SFX.fanfare(),5400));TIMERS.push(setTimeout(()=>voice(girl?'welcomeG':'welcomeB',(girl?'ברוכה הבאה ':'ברוך הבא ')+(kidName()||S.kname||'')),5900))};
   document.getElementById('start').onclick=()=>go('home');
   document.getElementById('again').onclick=()=>{S.view='welcome';render()};
   document.getElementById('rename').onclick=()=>go('name');
@@ -1993,6 +2023,15 @@ function renderTherapist(){
     <div class="row" style="justify-content:flex-start"><input class="txt" id="ghTok" type="password" dir="ltr" style="max-width:280px" placeholder="github_pat_..." autocomplete="off"><button class="btn" id="ghSave" type="button">שמירה</button></div>
     <p class="muted" id="ghStat"></p>
   </div>
+  <div class="card form" id="vrecCard">
+    <h2>🎙️ ההקלטות שלי</h2>
+    <p class="muted">כאן מקליטים את הקול שלך, והילדים ישמעו אותו באתר. לוחצים "הקלטה", אומרים (או שרים) את המשפט, לוחצים "עצירה", מקשיבים, ואם טוב לוחצים "שמירה". בפעם הראשונה הדפדפן ישאל אם לאפשר מיקרופון: לוחצים "אפשר" (Allow).</p>
+    ${ghToken()?'':'<p class="err">כדי לשמור הקלטות צריך קודם לחבר את המכשיר ל-GitHub (בכרטיס שלמעלה).</p>'}
+    ${VREC.map(([k,t,say])=>`<div class="vrow" data-vk="${k}" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0;border-top:1px solid #0001">
+      <div style="flex:1 1 220px;min-width:0"><b>${esc(t)}</b><br><span class="muted" style="font-size:15px">"${esc(say)}"</span></div>
+      <button class="btn coral vr-rec" type="button">🎙️ הקלטה</button><button class="ghost vr-play" type="button" disabled>▶ השמעה</button><button class="btn sun vr-save" type="button" disabled>💾 שמירה</button><button class="ghost vr-site" type="button">🔊 מה שומעים באתר</button>
+      <span class="muted vr-st" style="flex-basis:100%;font-size:15px"></span></div>`).join('')}
+  </div>
   <div class="card form">
     <h2>בדיקת קוד</h2>
     <div class="row" style="justify-content:flex-start"><input class="txt" id="chk" dir="ltr" style="max-width:200px" placeholder="ABCD-1234"><button class="btn" id="chkBtn" type="button">מה הקוד פותח?</button></div>
@@ -2027,6 +2066,7 @@ function renderTherapist(){
     out.scrollIntoView({behavior:'smooth',block:'center'});applyCodes(out,codes,null,`סיום טיפול${r.n?' של '+esc(r.n):''}: ${codes.length===1?'הקוד נחסם':'כל '+codes.length+' הקודים נחסמו'}.`)});
   const ghIn=document.getElementById('ghTok');document.getElementById('ghSave').onclick=async()=>{const v=ghIn.value.trim();const st=document.getElementById('ghStat');if(!v){store.del('gh-token');st.textContent='המפתח נמחק מהמכשיר.';return}
     store.set('gh-token',v);ghIn.value='';st.textContent='בודק...';try{const r=await fetch(GH_FILE+'?ref=main',{headers:{'Authorization':'Bearer '+v,'Accept':'application/vnd.github+json'}});st.textContent=r.ok?'✓ מחובר. מעכשיו חסימות והחלפות נשמרות לבד.':'המפתח לא עובד ('+r.status+'). בדקי שנתת הרשאת Contents: Read and write למאגר tirgul.'}catch(e){st.textContent='אין חיבור ל-GitHub מהמכשיר הזה.'}};
+  setupVrec();
   document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b)};
   app.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const l=savedList();l.splice(+b.dataset.del,1);store.set('th-codes',JSON.stringify(l));renderTherapist()});
 }
