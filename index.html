@@ -473,6 +473,23 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .house2 .new{animation:dropin .5s ease-out both}
 .house2 .p-deco.new{animation:popin .5s ease-out both}
 .hplot2.done .house2{animation:popin .6s ease-out}
+.farmscene{position:relative;width:min(94vw,860px,calc((100vh - 260px)*1.79));aspect-ratio:1024/572;background-size:cover;background-position:center;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+.fspot{position:absolute;width:17%;height:33%;transform:translateX(-50%)}
+.fspot .fa{position:absolute;left:10%;width:80%;bottom:6%;z-index:1;filter:drop-shadow(0 4px 3px rgba(0,0,0,.18))}
+.fspot.cur .fa{animation:abob .8s ease-in-out infinite alternate}
+.fspot.cur::before{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;border-radius:50%;background:radial-gradient(rgba(255,240,150,.9),rgba(255,240,150,0) 70%);animation:pulse 1.2s ease-in-out infinite}
+.fspot .p-wl,.fspot .p-wr{width:15%;height:60%}
+.fspot .p-roof{bottom:66%;height:40%}
+.fspot .p-deco::before{top:18%}
+.fspot .new{animation:fly .6s ease-in both}
+@keyframes fly{from{transform:translate(var(--px),var(--py)) scale(.5) rotate(-25deg);opacity:.6}to{transform:none;opacity:1}}
+.fspot .p-roof.new{animation:flyroof .6s ease-in both}
+@keyframes flyroof{from{transform:translate(var(--px),var(--py)) scale(.5);opacity:.6}to{transform:none;opacity:1}}
+.fgirl{position:absolute;bottom:2%;right:-22%;width:20%;z-index:5;animation:fgwalk 2.8s ease-out forwards}
+.fgirl.yay{animation:girljump .4s ease-in-out infinite alternate;right:16%}
+@keyframes fgwalk{to{right:16%}}
+.fconf{position:absolute;top:-6%;width:10px;height:16px;border-radius:3px;background:hsl(var(--h),85%,60%);z-index:6;animation:confall 2.4s var(--d) linear forwards}
+@keyframes confall{to{transform:translateY(560px) rotate(540deg)}}
 .reps{display:flex;gap:8px;justify-content:center}
 .reps i{width:18px;height:18px;border-radius:50%;background:#E6E1F5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
 .reps i.on{background:#F6B21E}
@@ -501,6 +518,19 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .fc-front{transform:rotateY(180deg);background:#fff}
 .fc-front img{width:100%;height:100%;object-fit:cover;display:block}
 .fc-front .ccap{position:absolute;left:0;right:0;bottom:0;margin:0;border-radius:0;background:rgba(255,255,255,.92);padding:6px 8px;font-size:min(5vw,22px)}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:min(78vw,560px,calc((100vh - 280px)*1.9))}
+.gslot{position:relative;aspect-ratio:1;border-radius:14px}
+.gslot.done{border:3px dashed #D9D0F5;display:flex;align-items:center;justify-content:center;color:#B9A9EE;font-size:28px}
+.gcard{position:absolute;inset:0;perspective:700px;border-radius:14px;transition:transform .12s,box-shadow .12s}
+.gcard .flipcard{inset:0}
+.gcard .cback span{font-size:min(9vw,52px)}
+.gcard.lit{transform:scale(1.08);box-shadow:0 0 0 5px #FFE066,0 0 26px 8px rgba(255,214,0,.85);z-index:2}
+.cardzoom{position:fixed;inset:0;z-index:70;background:rgba(40,30,80,0);transition:background .5s}
+.cardzoom.on{background:rgba(40,30,80,.45)}
+.zcard{position:fixed;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 0 0 6px #fff,0 16px 40px rgba(0,0,0,.35);transition:left .6s ease-in-out,top .6s ease-in-out,width .6s ease-in-out,height .6s ease-in-out,opacity .6s}
+.zcard img{width:100%;height:100%;object-fit:cover;display:block}
+.zcard .ccap{position:absolute;left:0;right:0;bottom:0;margin:0;background:rgba(255,255,255,.93);padding:8px;font-family:var(--display);font-size:min(5vw,24px);text-align:center}
+.zpanel{position:fixed;left:50%;transform:translateX(-50%);width:min(90vw,460px);background:#fff;border-radius:18px;padding:10px 14px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .abrow{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap}
 .donepile{position:relative;width:96px;height:124px;flex:none}
 .donepile i{position:absolute;left:6px;top:16px;width:76px;height:96px;border-radius:10px;border:3px solid #fff;box-shadow:0 0 0 2px #8E6CEF,0 3px 6px rgba(0,0,0,.15);background:repeating-linear-gradient(45deg,#8E6CEF 0 8px,#A58BF5 8px 16px);transform:translate(calc(var(--k)*2px),calc(var(--k)*-3px)) rotate(calc(var(--r)*1deg))}
@@ -764,7 +794,7 @@ button.stars{cursor:pointer;color:var(--ink)}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=2"></script><script src="mygames.js?v=2"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=2"></script><script src="mygames.js?v=3"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1697,7 +1727,7 @@ function startAct(act,from){
     if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[]}
   if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[]}
   if(act==='absurd'){let sid=SOUNDS[S.sound].id;if(!(CARDS[sid]||[]).length)sid='r';
-    d.sid=sid;d.cards=shuffle(CARDS[sid]);d.ci=0;d.phase='deck';
+    d.sid=sid;d.cards=shuffle(CARDS[sid]);d.ci=0;d.used=[];d.phase='deck';
     loadScriptOnce('cards-'+sid+'.js?v='+CARDS_V,()=>{if(S.act==='absurd')render()})}
   if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;
     /* short sentences: always "צריך לתקן/לצבוע את ה..." with an object that has the target sound */
@@ -1746,6 +1776,33 @@ function newRound(){
 function renderAct(){
   const d=S.data;let body='';
   const shell=b=>{app.innerHTML=header(titleFor(),backTo())+b;bindCommon()};
+  if(S.act==='mine'&&d.game.kind==='farm'){
+    /* personal game on a farm (Gemini art): all the animals stand in the meadow, the building materials lie in the corner.
+       each time the child says the sentence, one more piece flies from the pile and builds the current animal's house.
+       when every animal has a house, a little girl comes and cheers */
+    const F=window.FARM_IMG;if(!F){shell('<div class="card stage"><p class="muted">טוען את החווה... 🐮</p></div>');loadScriptOnce('farm.js?v=1',()=>{if(S.act==='mine')render()});return}
+    const reps=d.game.reps||5,SP=[{x:20,b:40},{x:50,b:42},{x:22,b:5},{x:50,b:7}];
+    const fresh=d.fresh;d.fresh=false;const end=d.phase==='end';
+    const spots=d.items.map((it,i)=>{const n=i<d.k?reps:i===d.k&&!end?d.n:end?reps:0,cur=i===d.k&&!end,sp=SP[i%SP.length],col=HOUSE_COL[i%HOUSE_COL.length];
+      const part=(k,cls)=>n>=k?`<i class="${cls}${cur&&fresh&&n===k?' new':''}"></i>`:'';
+      return `<div class="fspot ${cur?'cur':''} ${n>=reps?'built':''}" style="left:${sp.x}%;bottom:${sp.b}%;--c:${col};z-index:${sp.b<20?3:2}">${part(1,'p-floor')}${part(2,'p-wl')}${part(3,'p-wr')}${part(4,'p-roof')}${part(5,'p-deco')}<img class="fa" src="${F[it[1]]||''}" alt="${esc(it[0])}"></div>`}).join('');
+    const it=d.items[Math.min(d.k,d.items.length-1)];
+    shell(`<div class="card stage"><div class="farmscene" id="farm" style="background-image:url(${F.bg})">${spots}${end?`<img class="fgirl" id="fgirl" src="${F.girlWalk}" alt="">`:''}</div>
+      ${end?'<h2 class="cheer">לכל החיות יש בית! 🎉</h2>':`<div class="reps">${Array.from({length:reps},(x,k)=>`<i class="${k<d.n?'on':''}"></i>`).join('')}</div>
+      <div class="sentence">${esc(d.game.frame)}<b>${esc(it[0])}</b></div>
+      ${d.n<reps?`<p class="muted">${d.n?'עוד פעם! ':''}אומרים, ועוד חלק עף לבית 🔨</p><div id="rh"></div>`:'<p class="cheer">ל'+esc(it[0])+' יש בית! 🎉</p>'}`}</div>`);
+    const farm=document.getElementById('farm');
+    const nw=farm&&farm.querySelector('.new');
+    if(nw){const fr=farm.getBoundingClientRect(),pr=nw.getBoundingClientRect();nw.style.setProperty('--px',(fr.left+fr.width*.8-(pr.left+pr.width/2))+'px');nw.style.setProperty('--py',(fr.top+fr.height*.86-(pr.top+pr.height/2))+'px');SFX.whoosh&&SFX.whoosh();TIMERS.push(setTimeout(()=>SFX.thud?SFX.thud():SFX.blip(),550))}
+    if(end){SFX.fanfare();TIMERS.push(setTimeout(()=>{const g=document.getElementById('fgirl');if(g){g.src=F.girlYay;g.classList.add('yay');SFX.cheer?SFX.cheer():SFX.star()}
+        if(farm)farm.insertAdjacentHTML('beforeend',Array.from({length:18},(x,k)=>`<i class="fconf" style="left:${5+k*5.3}%;--d:${(k%6)*.12}s;--h:${k*40}deg"></i>`).join(''))},2800));
+      TIMERS.push(setTimeout(finish,6500));return}
+    const rh=document.getElementById('rh');
+    if(rh)recStep(rh,()=>{addStar();d.n++;d.fresh=true;
+      if(d.n>=reps){render();SFX.fanfare();TIMERS.push(setTimeout(()=>{d.k++;d.n=0;if(d.k>=d.items.length)d.phase='end';render()},2400))}
+      else render()},{max:12000});
+    return;
+  }
   if(S.act==='mine'&&d.game.kind==='house'){
     /* personal game "בונים בית ל...": every time the child says the sentence, one more part of the house
        is built around the animal (5 times per animal). At the end: a zoo of all the houses and a happy girl */
@@ -1826,37 +1883,42 @@ function renderAct(){
     return;
   }
   if(S.act==='absurd'){
-    /* absurd picture cards (Gemini): shuffle, draw one, the child tells what is funny, until the deck is done */
-    const IMG=window.CARD_IMG||{},c=d.cards[d.ci],L=SOUNDS[S.sound],left=d.cards.length-d.ci;
-    let body='';
-    /* slot machine: the cards race through the window, the child stops it */
-    /* the same card stays in the machine window: face down while racing, then it turns over in place.
-       finished cards go face down onto a pile at the side, so the child sees the pile grow */
+    /* absurd picture cards (Gemini) in a slot machine: face-down cards race through the window, the child stops it,
+       the card turns over in place, grows to the middle of the screen (focus) while the child tells what is funny,
+       then shrinks back into the window and goes onto the pile of finished cards */
+    const IMG=window.CARD_IMG||{},c=d.cards[d.ci],L=SOUNDS[S.sound];
     const racing=d.phase==='deck'||d.phase==='shuffle';
     const win=racing?`<div class="cback" id="slotimg"><span>?</span></div>`
-      :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">טוען תמונה...</div>`}${d.phase==='reveal'?`<div class="ccap">${hl(c[1],d.sid===L.id?L.hl:'')}</div>`:''}</div></div>`;
+      :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">טוען תמונה...</div>`}</div></div>`;
     d.flip=false;
-    const pile=`<div class="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
+    const pile=`<div class="donepile" id="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
     d.justAdded=false;
-    body=`<div class="abrow">${pile}<div class="slotm ${d.phase==='shuffle'?'running':''}"><div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
-        <div class="slotwin">${win}</div>
+    shell(`<div class="card stage"><div class="progress">קלף ${Math.min(d.ci+1,d.cards.length)} מתוך ${d.cards.length}</div>
+      <div class="abrow">${pile}<div class="slotm ${d.phase==='shuffle'?'running':''}"><div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
+        <div class="slotwin" id="slotwin">${win}</div>
         <div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k+4}"></i>`).join('')}</div></div></div>
-        ${d.phase==='deck'?`<button class="btn coral bigspin" id="draw">🎰 מפעילים!</button>`:d.phase==='shuffle'?`<button class="btn sun bigspin" id="stop">✋ עוצרים!</button>`
-          :d.phase==='open'?'<p class="drag-hint">מה מצחיק בקלף? 🤪 מספרים!</p><div id="rh"></div>':'<p class="cheer">כל הכבוד! 🎉</p>'}`;
-    shell(`<div class="card stage"><div class="progress">קלף ${Math.min(d.ci+1,d.cards.length)} מתוך ${d.cards.length}</div>${body}</div>`);
+      ${d.phase==='deck'?`<button class="btn coral bigspin" id="draw">🎰 מפעילים!</button>`:d.phase==='shuffle'?`<button class="btn sun bigspin" id="stop">✋ עוצרים!</button>`:'<p class="muted">🤪</p>'}</div>`);
     const dr=document.getElementById('draw');
     if(dr)dr.onclick=()=>{d.phase='shuffle';render()};
     if(d.phase==='shuffle'){const im=document.getElementById('slotimg');let k=0,delay=70,stopping=false;
-      /* face-down cards race past; the picture is seen only when the chosen card flips over */
       const tick=()=>{if(S.data!==d||d.phase!=='shuffle')return;k++;if(im){im.className='cback b'+(k%4);void im.offsetWidth;im.classList.add('slide')}SFX.tick();
-        if(stopping){delay*=1.28;if(delay>420){d.phase='open';d.flip=true;SFX.fanfare();render();return}}
+        if(stopping){delay*=1.28;if(delay>420){d.phase='open';d.flip=true;d.zoomed=false;SFX.fanfare();render();return}}
         TIMERS.push(setTimeout(tick,delay))};
       tick();
-      /* stops by itself after a while if nobody presses */
       const stop=()=>{if(stopping)return;stopping=true;const b=document.getElementById('stop');if(b){b.disabled=true;b.textContent='🎰 ...'}};
       const sb=document.getElementById('stop');if(sb)sb.onclick=stop;TIMERS.push(setTimeout(stop,8000))}
-    const rh=document.getElementById('rh');
-    if(rh)recStep(rh,()=>{addStar();d.phase='reveal';render();TIMERS.push(setTimeout(()=>{d.ci++;d.justAdded=true;if(d.ci>=d.cards.length)finish();else{d.phase='deck';render();SFX.whoosh&&SFX.whoosh()}},2600))},{max:12000});
+    if(d.phase==='open'&&!d.zoomed){d.zoomed=true;TIMERS.push(setTimeout(()=>{
+      const sw=document.getElementById('slotwin');if(!sw)return;const r=sw.getBoundingClientRect();S.overlay=true;
+      const ov=document.createElement('div');ov.className='cardzoom';
+      ov.innerHTML=`<div class="zcard" style="left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px"><img src="${IMG[c[0]]||''}" alt=""><div class="ccap" id="zcap" hidden></div></div><div class="zpanel" hidden><p class="drag-hint">מה מצחיק בקלף? 🤪 מספרים!</p><div id="rh"></div></div>`;
+      document.body.appendChild(ov);const z=ov.querySelector('.zcard'),p=ov.querySelector('.zpanel');sw.style.visibility='hidden';
+      const size=Math.min(innerWidth*.86,innerHeight*.62,480),tl=(innerWidth-size)/2,tt=Math.max(12,innerHeight*.05);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ov.classList.add('on');Object.assign(z.style,{left:tl+'px',top:tt+'px',width:size+'px',height:size+'px'})}));
+      TIMERS.push(setTimeout(()=>{p.hidden=false;p.style.top=(tt+size+14)+'px';
+        recStep(ov.querySelector('#rh'),()=>{addStar();const cap=ov.querySelector('#zcap');cap.innerHTML=hl(c[1],d.sid===L.id?L.hl:'');cap.hidden=false;p.innerHTML='<p class="cheer">כל הכבוד! 🎉</p>';
+          TIMERS.push(setTimeout(()=>{p.hidden=true;cap.hidden=true;ov.classList.remove('on');
+            Object.assign(z.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+            TIMERS.push(setTimeout(()=>{ov.remove();S.overlay=false;sw.style.visibility='';d.ci++;d.justAdded=true;if(d.ci>=d.cards.length)finish();else{d.phase='deck';render()}},650))},2400))},{max:12000})},700))},1000))}
     return;
   }
   if(S.act==='scene'||S.act==='pscene'){
