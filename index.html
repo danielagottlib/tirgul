@@ -641,12 +641,12 @@ const SPOON_REST=`<svg class="spoon rest" viewBox="0 0 40 170" aria-hidden="true
 function vapor(on){return on?`<div class="vapor">${[18,38,58,76].map((x,i)=>`<i style="--x:${x};--d:${i*.55}s"></i>`).join('')}</div>`:''}
 /* a different dish in the long-sentences stage, so the child who climbs the stages meets something new */
 const COOK2={
- r:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🌽','תירס'],['🍄','פטריות'],['🫑','פלפל אדום'],['🫒','זיתים שחורים'],['🥦','ברוקולי']]},
+ r:{name:'סלט',final:'הסלט',rd:'מוכן',kind:'bowl',color:'#BFE3A5',verb:'לערבב',in:'בקערה',to:'לקערה',ing:[['🥕','גזר'],['🌽','תירס'],['🫑','פלפל אדום'],['🍅','עגבניות שרי'],['🔴','צנונית אדומה']]},
  l:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E8C26A',in:'בסיר הגדול',to:'לסיר',ing:[['🧅','בצל'],['🫑','פלפל'],['🧂','מלח'],['🌿','פטרוזיליה'],['⚪','שעועית לבנה']]},
  sh:{name:'שקשוקה',final:'השקשוקה',rd:'מוכנה',kind:'pan',color:'#D9472B',in:'בשקשוקה',to:'למחבת',ing:[['🧄','שום'],['🫒','שמן זית'],['🧂','פלפל שחור'],['🥛','שמנת'],['🥚','שתי ביצים']]},
  s:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#D9A441',in:'בסיר',to:'לסיר',ing:[['🥬','סלרי'],['🍚','קוסקוס'],['🌱','אספרגוס'],['🟣','סלק'],['🍝','ספגטי']]},
  k:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E2B04A',in:'בסיר הקטן',to:'לסיר',ing:[['🥒','קישוא'],['🥕','קוביות גזר'],['🎃','קוביות דלעת'],['🌿','כמון'],['🥔','תפוח אדמה קטן']]},
- g:{name:'פיצה',final:'הפיצה',rd:'מוכנה',kind:'pizza',in:'בפיצה',to:'לפיצה',ing:[['🫑','גמבה'],['🍅','עגבנייה'],['🌿','אורגנו'],['🌽','גרעיני תירס'],['🧀','גבינה']]},
+ g:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E39B4A',in:'בסיר הגדול',to:'לסיר',ing:[['🥕','גזר'],['🫑','גמבה'],['🍅','עגבנייה'],['🌾','גריסים'],['🌽','גרעיני תירס']]},
  z:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',color:'#E6B85C',in:'בסיר',to:'לסיר',ing:[['🍚','אורז'],['🥕','גזר'],['🌿','זעתר'],['🫚','זנגביל'],['🫒','זיתים']]},
  ts:{name:'ארוחת בוקר',final:'ארוחת הבוקר',rd:'מוכנה',kind:'bowl',color:'#FFF1C9',in:'בצלחת',to:'לצלחת',ing:[['🥚','ביצה'],['🔴','צנון'],['🍇','צימוקים'],['🫑','פלפל צהוב'],['🧅','בצל']]}
 };
@@ -655,7 +655,7 @@ const FIXSHORT={
  r:[['🗄️','הארון','🔨'],['🪞','המראה','🔨'],['🪑','הרגליים של הכיסא','🔨'],['🚂','הרכבת','🔧'],['🤖','הרובוט','🪛'],['📻','הרדיו','🪛'],['🏡','הגדר','🖌️'],['📦','הארגז','🔨']],
  ts:[['🖼️','הציור','🖌️'],['📿','הצמיד','🪡'],['👗','החצאית','🪡'],['🪴','העציץ','🔨'],['🛖','הצריף','🔨'],['🧸','הצעצוע','🪡']],
  l:[['🚲','הגלגל','🔧'],['🪣','הדלי','🔨'],['🚪','הדלת','🔨'],['🧸','הלב של הדובי','🪡'],['🏠','הקיר הלבן','🖌️'],['🎒','התיק הכחול','🪡'],['⏰','השעון הגדול','🪛']],
- sh:[['🕰️','השעון','🪛'],['🚚','המשאית','🔧'],['🪑','השולחן','🔨'],['🪆','השיער של הבובה','🪡'],['🛏️','השמיכה','🪡'],['🚪','השער','🖌️']],
+ sh:[['🕰️','השעון','🪛'],['🛣️','הכביש','🔨'],['🪑','השולחן','🔨'],['📿','השרשרת','🪡'],['🌈','הקשת','🖌️'],['🚪','השער','🖌️']],
  s:[['⛵','הסירה','🔨'],['🚌','האוטובוס','🔧'],['🧺','הסל','🪡'],['🛋️','הספה','🪡'],['🪜','הסולם','🔨'],['✂️','המספריים','🪛']],
  k:[['🪑','הכיסא','🔨'],['🧱','הקיר','🖌️'],['🎩','הכובע','🪡'],['🛴','הקורקינט','🔧'],['🫖','הקומקום','🪛'],['🚪','הכפתור של הדלת','🪛']],
  g:[['🎸','הגיטרה','🪛'],['🏠','הגג','🔨'],['🧦','הגרב','🪡'],['🚲','הגלגל','🔧'],['🧱','הגדר','🖌️'],['👢','המגפיים','🪡']],
@@ -731,7 +731,11 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const pick=(a,n)=>shuffle(a).slice(0,n);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* words where ש is a sin (sounds like S), not a shin: they are not ש-words for practice */
+const SIN=new Set('כבשה כבשים משאית משאיות שמיכה שמלה שמח שמחה שמחים שמחות שיער שדה לשים שם שמים שק שקית לשחק משחק משחקים עשב עשר עשרה שמאל שפה שפם שיחה ישראל'.split(' '));
+function isSin(tok){const t=String(tok).replace(/[,.!?:]/g,'');return SIN.has(t)||(t.length>2&&SIN.has(t.slice(1)))||(t.length>3&&SIN.has(t.slice(2)))}
 function hl(word,letters){
+  if(letters==='ש'){return String(word).split(' ').map(tok=>isSin(tok)?tok:[...tok].map(ch=>ch==='ש'?'<span class="hl">'+ch+'</span>':ch).join('')).join(' ')}
   if(letters==='כק'){return word.split(' ').map(tok=>[...tok].map((ch,i)=>(ch==='ק'||(ch==='כ'&&(i===0||(i===1&&tok[0]==='ה'))))?'<span class="hl">'+ch+'</span>':ch).join('')).join(' ')}
   return [...word].map(ch=>letters.includes(ch)?'<span class="hl">'+ch+'</span>':ch).join('')}
 const CHEERS=['כל הכבוד!','מצוין!','איזה יופי!','נהדר!','יופי של עבודה!'];
@@ -1025,7 +1029,7 @@ const STAGES=[
 const PHRASES={
  r:[['רכבת ארוכה','🚆'],['רוצה ארנב','🐰'],['רואה נמר','🐅'],['פרח אדום','🌹'],['רובוט ירוק','🤖'],['ספר ורוד','📖'],['רוצה גזר','🥕'],['רואה ירח','🌙'],['כדור אדום','⚽'],['ארנב רץ','🐇']],
  l:[['כלב לבן','🐕'],['פיל גדול','🐘'],['גמל גדול','🐫'],['בלון כחול','🎈'],['חתול לבן','🐈'],['לימון גדול','🍋'],['סל כחול','🧺'],['לב כחול','💙']],
- sh:[['שעון חדש','⌚'],['שוקולד שחור','🍫'],['שן חדשה','🦷'],['משאית חדשה','🚚'],['נחש שחור','🐍'],['שבלול שמח','🐌'],['שמיכה חדשה','🛏️'],['יש שמש','☀️']],
+ sh:[['שעון חדש','⌚'],['שוקולד שחור','🍫'],['שן חדשה','🦷'],['שעון שחור','🕰️'],['נחש שחור','🐍'],['שבלול שקט','🐌'],['שלג שקט','❄️'],['יש שמש','☀️']],
  s:[['סוס סגול','🐴'],['סבון סגול','🧼'],['סל סגול','🧺'],['סירה סגולה','⛵'],['כוס סגולה','🥛'],['ספר סגול','📖'],['אוטובוס סגול','🚌'],['מטוס סגול','✈️']],
  k:[['כלב קטן','🐕'],['כדור קטן','⚽'],['קוף קטן','🐒'],['כובע כחול','🎩'],['כוכב קטן','⭐'],['קיפוד קטן','🦔'],['בקבוק קטן','🍼'],['כוס קטנה','🥛']],
  g:[['גמל גדול','🐫'],['גזר גדול','🥕'],['דג גדול','🐟'],['גיטרה גדולה','🎸'],['עוגה גדולה','🎂'],['גרב גדולה','🧦'],['מגדל גבוה','🗼'],['גשם גדול','🌧️']],
@@ -1218,7 +1222,7 @@ const PHOTO_SCENES=[
    ['🌸','פרחים',17,92,8],['🌳','עץ',89,9,10]]},
  {id:'road-sh',name:'בדרך לכפר',snd:'sh',img:'@',
   q:['מה נוסע בכביש?','מה יש בשמיים?','מי זוחל על העלה?','מה יש על השולחן?'],
-  items:[['☀️','שמש',22,16,13],['🌈','קשת',51,12,12],['🚚','משאית',40,59,14],['🐑','כבשה',16,55,12],['🐌','שבלול',14,79,9],['🐍','נחש',65,67,10],['🕷️','עכביש',86,74,7],['🍯','דבש',33,79,7],['🪑','שולחן',33,90,6],['🕰️','שעון',65,30,6],['🛣️','כביש',37,93,8],
+  items:[['☀️','שמש',22,16,13],['🌈','קשת',51,12,12],['🚚','משאית',40,59,14],['🐑','כבשה',16,55,12],['🐌','שבלול',14,79,9],['🐍','נחש',65,67,10],['🕷️','עכביש',86,74,7],['🍯','דבש',33,79,7],['🪑','שולחן',33,90,7],['🕰️','שעון',65,30,8],['🛣️','כביש',54,50,8],
    ['🐄','פרה',86,53,11],['🏠','בית',78,37,9],['🌳','עץ',91,25,12],['☁️','ענן',74,9,8]]},
  {id:'beach-s',name:'בעיר שליד הים',snd:'s',img:'@',
   q:['מה עף בשמיים?','מי הולך על החול?','מה יש בסל?','מה שט בים?'],
@@ -1242,7 +1246,7 @@ const PHOTO_SCENES=[
    ['🐕','כלב',44,63,9],['🌹','ורדים',7,89,8]]}
 ];
 function sceneHas(it,sid){const w=it[1];
-  if(sid==='r')return /ר/.test(w);if(sid==='l')return /ל/.test(w);if(sid==='sh')return /ש/.test(w);if(sid==='s')return /ס/.test(w);
+  if(sid==='r')return /ר/.test(w);if(sid==='l')return /ל/.test(w);if(sid==='sh')return String(w).split(' ').some(t=>/ש/.test(t)&&!isSin(t));if(sid==='s')return /ס/.test(w);
   if(sid==='k')return /ק/.test(w)||/(^|\s)כ/.test(w)||it[6]==='k';if(sid==='g')return /ג/.test(w);if(sid==='z')return /ז/.test(w);if(sid==='ts')return /[צץ]/.test(w);return false}
 function sceneDecor(sc){let h='';if(sc.outdoor)h+='<span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>';if(sc.bg==='sea')h+='<div class="waves"></div>';if(sc.bg==='city')h+='<div class="roadline"></div>';return h}
 function sceneItemHtml(it,ix,cls,extra){return `<button class="sitem ${it[5]?'a-'+it[5]:''} ${cls||''}" data-i="${ix}" style="left:${it[2]}%;top:${it[3]}%;--sz:${it[4]}" aria-label="${it[1]}"><span class="se">${it[0]}</span>${extra||''}</button>`}
@@ -1344,6 +1348,7 @@ function clearTimers(){try{speechSynthesis.cancel()}catch(e){}REC.gen++;try{REC.
 const EXTRA_CLUSTERS=new Set('ברוקולי כרוב כרובית טרקטור דרקון קרואסון ברז כריש בלון גלידה דלי קלפים פלמינגו פלסטר שתיים שתי שלושה שמונה שמיכה שקדים סנאי ספוג ספינה סקייטבורד פסנתר ספגטי קציצות קלמנטינה גבינה גדי זבוב זרוע זרעים צפרדע צריף צבעים צדף'.split(' '));
 function excluded(){const set=new Set();const s=SOUNDS[S.sound];
   if(!has(S.bits,21)){SOUNDS.forEach(x=>(x.w.c||[]).forEach(w=>set.add(w[0])));EXTRA_CLUSTERS.forEach(w=>set.add(w))}
+  if(s&&s.id==='sh')SIN.forEach(w=>set.add(w));
   if(!has(S.bits,22)&&s&&s.w.x){const own=new Set(['s','m','e'].flatMap(p=>(s.w[p]||[]).map(w=>w[0])));s.w.x.forEach(w=>set.add(w[0]))}
   return set}
 function okText(text,ex){ex=ex||excluded();if(!ex.size)return true;
@@ -1730,14 +1735,14 @@ function renderAct(){
     /* the sentence is part of the cooking: "אני רוצה לשים גזר בסיר"; in long sentences two ingredients at once */
     const R=d.recipe,L=SOUNDS[S.sound];const done=d.n>=R.ing.length;
     const cur=done?[]:R.ing.slice(d.n,d.n+(d.pairs?2:1));
-    const sent=done?'':`אני רוצה לשים ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
+    const sent=done?'':`אני רוצה ${R.verb||'לשים'} ${cur.map(x=>x[1]).join(' וגם ')} ${R.in}`;
     shell(`<div class="card stage"><p class="muted">מכינים ${R.name}! כל משפט מוסיף מצרך 👩‍🍳 · ${Math.min(d.n,R.ing.length)} / ${R.ing.length}</p>
       <div class="kitchen2 ph-${d.phase||'add'} k-${R.kind}">${R.kind==='pot'&&d.phase==='ready'?'':`<div class="dish ${R.kind} ${window.DISH_IMG&&DISH_IMG[R.kind]?'img':''}" id="dish">${dishArt(R,d.n/R.ing.length)}${d.added.map(a=>`<span class="topping" style="left:${a[1]}%;top:${a[2]}%">${a[0]}</span>`).join('')}
         ${d.phase==='stir'?SPOON+vapor(R.kind==='pot'):''}${d.phase==='bake'?'<div class="ovenglow"></div>':''}${d.phase==='ready'?vapor(R.kind!=='bowl'):''}</div>`}
         ${R.kind==='pot'&&(d.phase==='pour'||d.phase==='ready')?`<div class="serve ${d.phase==='ready'?'big':''}">${d.phase==='pour'?'<i class="pourline"></i>':''}${serveArt(R)}${d.phase==='ready'?vapor(true)+SPOON_REST:''}</div>`:''}</div>
       ${done?(d.phase!=='ready'?`<p class="drag-hint">${{stir:R.kind==='pot'?'מערבבים את המרק... 🥄':'מערבבים טוב טוב... 🥄',pour:'מוזגים לצלחת... 🥣',bake:'נכנס לתנור... 🔥'}[d.phase]||''}</p>`:`<div class="cheer">${R.final} ${R.rd}! בתיאבון! 😋</div><button class="btn sun" id="eat">😋 סיימנו!</button>`)
         :d.ready?`<p class="drag-hint">עכשיו גוררים ${R.to}!</p><div class="platform"><button class="pitem ready ingr" id="ingr"><span style="font-size:52px">${cur.map(x=>x[0]).join('')}</span><span class="plabel">${cur.map(x=>x[1]).join(' וגם ')}</span></button></div>`
-        :`<div class="saybox"><div class="pic" style="font-size:64px">${cur.map(x=>x[0]).join(' ')}</div><p class="muted">אומרים מה שמים ${R.in}:</p><div class="sentence">${hl(sent,L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
+        :`<div class="saybox"><div class="pic" style="font-size:64px">${cur.map(x=>x[0]).join(' ')}</div><p class="muted">אומרים מה ${R.verb==='לערבב'?'מערבבים':'שמים'} ${R.in}:</p><div class="sentence">${hl(sent,L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`}
       </div>`);
     const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(`${cur.map(x=>x[0]).join(' ')} ${hl(sent,L.hl)}`,()=>{addStar();d.ready=true;render()});
     const ig=document.getElementById('ingr');
@@ -1757,8 +1762,8 @@ function renderAct(){
     const L=SOUNDS[S.sound],r=d.cur,two=S.stage==='phr';
     shell(`<div class="card stage"><p class="muted">${two?'מכונת הזוגות':'מכונת המשפטים'} 🎰 · ${d.n+1} / ${d.goal}</p>
       <div class="sillybox ${r&&!d.rolling?'show':''}" id="sb">${r?(two?`<div class="slot pair2"><span>${r.A[1]}</span><span>${r.B[1]}</span></div>`:`<div class="silly ${r.p}"><span class="sB">${r.B[1]}</span><span class="sA">${r.A[1]}</span></div>`):'<div class="slot">🎰</div>'}</div>
-      ${r&&!d.rolling?`<div class="sentence">${hl(r.text,L.hl)}</div>${two?'<p class="note">להורה: הילד אומר את שתי המילים ביחד, בלי הפסקה ביניהן.</p>':`<p class="note">להורה: הילד אומר את המשפט, ואז מסביר מה מצחיק. למשל: למה ${r.A[0]} לא יכול להיות ${r.pw} ${r.B[0]}? איפה הוא צריך להיות?</p>`}
-        <button class="btn leaf" id="said">⭐ אמרתי והסברתי!</button>`:`<button class="btn sun" id="roll" ${d.rolling?'disabled':''}>🎰 מפעילים את המכונה!</button>`}
+      ${r&&!d.rolling?`<div class="sentence">${hl(r.text,L.hl)}</div>${two?'<p class="note">להורה: הילד אומר את שתי המילים ביחד, בלי הפסקה ביניהן.</p>':''}
+        <button class="btn leaf" id="said">⭐ אמרתי!</button>`:`<button class="btn sun" id="roll" ${d.rolling?'disabled':''}>🎰 מפעילים את המכונה!</button>`}
       </div>`);
     const rb=document.getElementById('roll');if(rb)rb.onclick=()=>{d.rolling=true;render();const box=document.getElementById('sb');const w=soundWords().filter(x=>!x[0].includes(' '));let k=0;
       const t=setInterval(()=>{SFX.tick();box.innerHTML=`<div class="slot">${pick(w,1)[0][1]} ${pick(w,1)[0][1]}</div>`;if(++k>14){clearInterval(t);
