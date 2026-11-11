@@ -2498,7 +2498,7 @@ function swapPics(root){const W=window.WORD_IMG;if(!W||!root)return;const tw=doc
   while(tw.nextNode()){const t=tw.currentNode,v=t.nodeValue.trim();if(v.length<=4&&W[v]&&okImg(W[v])&&t.parentNode&&!t.parentNode.closest('.top,.ghost,.stars,textarea,option'))hits.push([t,v])}
   hits.forEach(([t,v])=>{const im=document.createElement('img');im.className='wimg';im.src=W[v];im.alt=v;t.parentNode.replaceChild(im,t)})}
 let swapQ=false;new MutationObserver(()=>{if(swapQ||!window.WORD_IMG)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
-setTimeout(()=>loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body)),800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
+setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
 </body>
