@@ -1034,13 +1034,15 @@ function toast(e,t){const d=document.createElement('div');d.className='toast';d.
   let done=false;const unlock=()=>{try{typeof SFX!=='undefined'&&!SFX.muted&&SFX.wake()}catch(e){}if(done)return;done=true;try{const a=new Audio(silentWav());a.loop=true;a.volume=0.01;a.setAttribute('playsinline','');a.play().catch(()=>{done=false})}catch(e){}
     try{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}}catch(e){}};
   ['touchend','pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true,passive:true}))})();
+/* older iPhones return nothing from resume(): never let that stop the sound */
+function safeResume(x){try{const r=x.resume();if(r&&r.catch)r.catch(()=>{})}catch(e){}}
 const SFX=(()=>{
   let ctx=null,muted=store.get('muted')==='1';
-  function c(){if(muted)return null;try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume().catch(()=>{});return ctx}catch(e){return null}}
+  function c(){if(muted)return null;try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')safeResume(ctx);return ctx}catch(e){return null}}
   function tone(f,dur,{type='sine',vol=.25,at=0,to=null,attack=.005}={}){const a=c();if(!a)return;const t=a.currentTime+at;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
   function noise(dur,{at=0,vol=.4,hp=800,lp=12000}={}){const a=c();if(!a)return;const t=a.currentTime+at;const n=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,n,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource();s.buffer=buf;const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;const l=a.createBiquadFilter();l.type='lowpass';l.frequency.value=lp;const g=a.createGain();g.gain.value=vol;s.connect(h).connect(l).connect(g).connect(a.destination);s.start(t)}
   const knock1=at=>{tone(140,.12,{vol:.6,at,to:70});noise(.05,{at,vol:.5,hp:200,lp:1500})};
-  function engine(){try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume().catch(()=>{});return ctx}catch(e){return null}}
+  function engine(){try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')safeResume(ctx);return ctx}catch(e){return null}}
   return{
     unlock(){engine()},
     engine,
@@ -1068,7 +1070,7 @@ const SFX=(()=>{
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
-    wake(){const a=c();if(a&&a.state!=='running')a.resume().catch(()=>{});try{const o=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=o;s.connect(a.destination);s.start(0)}catch(e){}},
+    wake(){const a=c();if(a&&a.state!=='running')safeResume(a);try{const o=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=o;s.connect(a.destination);s.start(0)}catch(e){}},
     boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})},
     splash(){noise(.7,{vol:.5,hp:300,lp:4000});noise(.35,{at:.05,vol:.35,hp:2000,lp:9000});[0,.12,.22,.35].forEach((t,i)=>tone(900+i*250,.08,{at:.15+t,vol:.08,to:1800+i*200}))},
     slurp(){tone(300,.25,{vol:.18,to:900,type:'triangle'});tone(500,.2,{at:.3,vol:.15,to:1200,type:'triangle'})},
