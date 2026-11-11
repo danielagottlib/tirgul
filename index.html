@@ -585,7 +585,7 @@ button.stars{cursor:pointer;color:var(--ink)}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="scenes-a.js"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="blocked.js"></script><script src="scenes-a.js"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -828,7 +828,11 @@ function addStar(n=1){SFX.star();const before=Math.floor(S.stars/PER_STICKER);S.
   const after=Math.floor(S.stars/PER_STICKER);
   if(after>before&&after<=STICKERS.length)toast(STICKERS[after-1],'מדבקה חדשה באלבום!');
   else if(day.t-n<DAY_GOAL&&day.t>=DAY_GOAL)toast('🎯','הגעת ליעד של היום!')}
+/* codes of children who finished treatment are listed in blocked.js on the site; such a code no longer opens the site */
+const normCode=c=>String(c||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
+function isBlocked(code){return (window.BLOCKED||[]).some(b=>normCode(b)===normCode(code))}
 function login(code){
+  if(isBlocked(code))return false;
   const bits=decode(code);if(bits===null)return false;
   S.bits=bits;S.code=code.toUpperCase();S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);return true;
 }
@@ -987,7 +991,7 @@ function renderLogin(){
     </form>
   </div>`;
   document.getElementById('lf').onsubmit=e=>{e.preventDefault();const v=document.getElementById('codeIn').value.trim();
-    if(login(v))render();else document.getElementById('err').textContent='הקוד לא נכון. בדקו שהקלדתם את כל 8 התווים כמו בהודעה.'};
+    if(login(v))render();else document.getElementById('err').textContent=isBlocked(v)?'הקוד הזה כבר לא פעיל. לפרטים פונים לדניאלה.':'הקוד לא נכון. בדקו שהקלדתם את כל 8 התווים כמו בהודעה.'};
 }
 
 function renderHome(){
@@ -1832,6 +1836,13 @@ function renderTherapist(){
     <input class="txt" id="siteLink" dir="ltr" placeholder="https://claude.ai/..." value="${esc(link)}">
   </div>
   <div class="card form">
+    <h2>חסימת ילד שסיים טיפול</h2>
+    <p class="muted">מקלידים את הקוד שלו ולוחצים "חסימה". אחר כך מעתיקים את הרשימה ושומרים אותה ב-GitHub. מאותו רגע הקוד לא נכנס לאתר, גם במכשיר שכבר היה מחובר.</p>
+    <div class="row" style="justify-content:flex-start"><input class="txt" id="blk" dir="ltr" style="max-width:200px" placeholder="ABCD-1234"><button class="btn coral" id="blkBtn" type="button">חסימה</button></div>
+    <div id="blkOut"></div>
+    <p class="muted" style="font-size:15px">חסומים כרגע: ${(window.BLOCKED||[]).length?(window.BLOCKED||[]).map(esc).join(', '):'אין'}</p>
+  </div>
+  <div class="card form">
     <h2>בדיקת קוד</h2>
     <div class="row" style="justify-content:flex-start"><input class="txt" id="chk" dir="ltr" style="max-width:200px" placeholder="ABCD-1234"><button class="btn" id="chkBtn" type="button">מה הקוד פותח?</button></div>
     <p id="chkOut"></p>
@@ -1854,6 +1865,12 @@ function renderTherapist(){
     document.getElementById('result').scrollIntoView({behavior:'smooth'});
     setTimeout(()=>{},0);
   };
+  document.getElementById('blkBtn').onclick=()=>{const v=document.getElementById('blk').value.trim(),out=document.getElementById('blkOut');
+    if(decode(v)===null){out.innerHTML='<p class="err">הקוד לא תקין. בדקי שהקלדת את כל 8 התווים.</p>';return}
+    const list=[...new Set([...(window.BLOCKED||[]).map(c=>String(c).toUpperCase()),v.toUpperCase()])];const file='window.BLOCKED=[\n'+list.map(c=>"'"+c+"'").join(',\n')+'\n];\n';
+    out.innerHTML=`<ol style="margin:0;padding-inline-start:22px;line-height:1.8"><li>לוחצים על "העתקת הרשימה".</li><li>פותחים את <a href="https://github.com/danielagottlib/tirgul/edit/main/blocked.js" target="_blank" rel="noopener">קובץ החסימות ב-GitHub</a>.</li><li>לוחצים בתוך הקובץ, Ctrl+A ואז Ctrl+V.</li><li>לוחצים על הכפתור הירוק Commit changes, ובחלון שנפתח שוב על Commit changes.</li></ol>
+      <textarea class="txt" id="blkTxt" rows="4" readonly dir="ltr">${esc(file)}</textarea><div class="row" style="justify-content:flex-start"><button class="btn sun" id="blkCopy" type="button">העתקת הרשימה</button></div><p class="muted" id="blkOk"></p><p class="muted" style="font-size:15px">החסימה נכנסת לתוקף תוך דקה-שתיים אחרי השמירה.</p>`;
+    document.getElementById('blkCopy').onclick=async()=>{try{await navigator.clipboard.writeText(file);document.getElementById('blkOk').textContent='הרשימה הועתקה.'}catch(e){const t=document.getElementById('blkTxt');t.select();document.getElementById('blkOk').textContent='הרשימה מסומנת. מעתיקים עם Ctrl+C.'}}};
   document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b)};
   app.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const l=savedList();l.splice(+b.dataset.del,1);store.set('th-codes',JSON.stringify(l));renderTherapist()});
 }
@@ -1871,7 +1888,7 @@ function renderTherapist(){
 /* ---------- start ---------- */
 function isAdmin(){return location.hash==='#therapist'||location.hash==='#admin'}
 window.addEventListener('hashchange',()=>{if(!isAdmin()&&S.view==='therapist')S.view=S.bits===null?'login':'home';render()});
-const saved=store.get('kid-code');if(saved)login(saved);
+const saved=store.get('kid-code');if(saved){if(isBlocked(saved))store.del('kid-code');else login(saved)}
 render();
 </script>
 </body>
