@@ -473,7 +473,7 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .house2 .new{animation:dropin .5s ease-out both}
 .house2 .p-deco.new{animation:popin .5s ease-out both}
 .hplot2.done .house2{animation:popin .6s ease-out}
-.farmscene{position:relative;width:min(94vw,860px,calc((100vh - 260px)*1.79));aspect-ratio:1024/572;background-size:cover;background-position:center;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+.farmscene{position:relative;width:min(94vw,860px,calc((100vh - 390px)*1.79));aspect-ratio:1024/572;background-size:cover;background-position:center;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
 .fspot{position:absolute;width:17%;height:33%;transform:translateX(-50%)}
 .fspot .fa{position:absolute;left:10%;width:80%;bottom:6%;z-index:1;filter:drop-shadow(0 4px 3px rgba(0,0,0,.18))}
 .fspot.cur .fa{animation:abob .8s ease-in-out infinite alternate}
@@ -782,6 +782,11 @@ button.stars{cursor:pointer;color:var(--ink)}
 .bug .bugimg{width:min(11vw,52px);height:auto;display:block}
 .critimg{display:block;max-width:100%;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(0,0,0,.18))}
 .egg .critimg{max-width:74%;height:auto!important}
+
+.fspot .fa.fe{display:flex;align-items:flex-end;justify-content:center;font-size:min(7vw,58px);line-height:1}
+.fgirl.fe{font-size:min(9vw,70px);line-height:1;width:auto}
+
+.wimg{width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle;display:inline-block;filter:drop-shadow(0 3px 3px rgba(0,0,0,.15))}
 </style>
 </head>
 <body>
@@ -1178,9 +1183,11 @@ function setupVrec(){let mic=null,mr=null,chunks=[],cur=null;const blobs={};let 
         if(!p.ok)throw new Error(p.status);st.textContent='✓ נשמר! הילדים ישמעו את ההקלטה תוך דקה-שתיים.'}
       catch(e){sb.disabled=false;st.textContent='השמירה לא הצליחה ('+e.message+'). נסי שוב.'}}})}
 /* personal games (mygames.js, built by Claude) and who sees them (assign.js, saved from the therapist screen) */
-const CH=k=>(window.CHAR_IMG||{})[k]||'';
+const okImg=s=>!!s&&s.length>5000;
+const CH=k=>{const s=(window.CHAR_IMG||{})[k];return okImg(s)?s:''};
 /* a syllable creature as a realistic picture (creatures.js) or, until it loads, its emoji */
-const crit=(e,px)=>{const s=(window.CRIT_IMG||{})[e];return s?`<img class="critimg" src="${s}" alt="" style="width:${px}px;height:${px}px">`:e};
+const crit=(e,px)=>{const s=(window.CRIT_IMG||{})[e];return okImg(s)?`<img class="critimg" src="${s}" alt="" style="width:${px}px;height:${px}px">`:e};
+const FARM_EMO={cow:'🐮',horse:'🐴',tiger:'🐯',elephant:'🐘',camel:'🐫',dog:'🐶'};
 const HOUSE_COL=['#FF6A55','#3C8DDE','#22A86A','#B76CF0','#F6B21E','#FF8FB1'];
 const myGames=()=>window.MY_GAMES||[];
 function myAssigned(code){if(!code)return [];if(isTestCode(code))return myGames();const ids=(window.MY_ASSIGN||{})[fmtCode(code)]||[];return myGames().filter(g=>ids.includes(g.id))}
@@ -1819,16 +1826,16 @@ function renderAct(){
     const fresh=d.fresh;d.fresh=false;const end=d.phase==='end';
     const spots=d.items.map((it,i)=>{const n=i<d.k?reps:i===d.k&&!end?d.n:end?reps:0,cur=i===d.k&&!end,sp=SP[i%SP.length],col=HOUSE_COL[i%HOUSE_COL.length];
       const part=(k,cls)=>n>=k?`<i class="${cls}${cur&&fresh&&n===k?' new':''}"></i>`:'';
-      return `<div class="fspot ${cur?'cur':''} ${n>=reps?'built':''}" style="left:${sp.x}%;bottom:${sp.b}%;--c:${col};z-index:${sp.b<20?3:2}">${part(1,'p-floor')}${part(2,'p-wl')}${part(3,'p-wr')}${part(4,'p-roof')}${part(5,'p-deco')}<img class="fa" src="${F[it[1]]||''}" alt="${esc(it[0])}"></div>`}).join('');
+      return `<div class="fspot ${cur?'cur':''} ${n>=reps?'built':''}" style="left:${sp.x}%;bottom:${sp.b}%;--c:${col};z-index:${sp.b<20?3:2}">${part(1,'p-floor')}${part(2,'p-wl')}${part(3,'p-wr')}${part(4,'p-roof')}${part(5,'p-deco')}${okImg(F[it[1]])?`<img class="fa" src="${F[it[1]]}" alt="${esc(it[0])}">`:`<span class="fa fe">${FARM_EMO[it[1]]||'🐾'}</span>`}</div>`}).join('');
     const it=d.items[Math.min(d.k,d.items.length-1)];
-    shell(`<div class="card stage"><div class="farmscene" id="farm" style="background-image:url(${F.bg})">${spots}${end?`<img class="fgirl" id="fgirl" src="${F.girlWalk}" alt="">`:''}</div>
+    shell(`<div class="card stage"><div class="farmscene" id="farm" style="background-image:url(${F.bg})">${spots}${end?(okImg(F.girlWalk)?`<img class="fgirl" id="fgirl" src="${F.girlWalk}" alt="">`:`<span class="fgirl fe" id="fgirl">🚶‍♀️</span>`):''}</div>
       ${end?'<h2 class="cheer">לכל החיות יש בית! 🎉</h2>':`<div class="reps">${Array.from({length:reps},(x,k)=>`<i class="${k<d.n?'on':''}"></i>`).join('')}</div>
       <div class="sentence">${esc(d.game.frame)}<b>${esc(it[0])}</b></div>
       ${d.n<reps?`<p class="muted">${d.n?'עוד פעם! ':''}אומרים, ועוד חלק עף לבית 🔨</p><div id="rh"></div>`:'<p class="cheer">ל'+esc(it[0])+' יש בית! 🎉</p>'}`}</div>`);
     const farm=document.getElementById('farm');
     const nw=farm&&farm.querySelector('.new');
     if(nw){const fr=farm.getBoundingClientRect(),pr=nw.getBoundingClientRect();nw.style.setProperty('--px',(fr.left+fr.width*.8-(pr.left+pr.width/2))+'px');nw.style.setProperty('--py',(fr.top+fr.height*.86-(pr.top+pr.height/2))+'px');SFX.whoosh&&SFX.whoosh();TIMERS.push(setTimeout(()=>SFX.thud?SFX.thud():SFX.blip(),550))}
-    if(end){SFX.fanfare();TIMERS.push(setTimeout(()=>{const g=document.getElementById('fgirl');if(g){g.src=F.girlYay;g.classList.add('yay');SFX.cheer?SFX.cheer():SFX.star()}
+    if(end){SFX.fanfare();TIMERS.push(setTimeout(()=>{const g=document.getElementById('fgirl');if(g){if(g.tagName==='IMG'&&okImg(F.girlYay))g.src=F.girlYay;else g.textContent='🙆‍♀️';g.classList.add('yay');SFX.cheer?SFX.cheer():SFX.star()}
         if(farm)farm.insertAdjacentHTML('beforeend',Array.from({length:18},(x,k)=>`<i class="fconf" style="left:${5+k*5.3}%;--d:${(k%6)*.12}s;--h:${k*40}deg"></i>`).join(''))},2800));
       TIMERS.push(setTimeout(finish,6500));return}
     const rh=document.getElementById('rh');
@@ -2456,7 +2463,13 @@ function renderTherapist(){
 /* ---------- start ---------- */
 function isAdmin(){return location.hash==='#therapist'||location.hash==='#admin'}
 window.addEventListener('hashchange',()=>{if(!isAdmin()&&S.view==='therapist')S.view=S.bits===null?'login':'home';render()});
-const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
+/* realistic word pictures (words-*.js, Gemini): an element whose whole text is one emoji we have a picture for
+   shows the picture instead (in every game, for every sound and goal). A picture blocked by a network filter keeps the emoji */
+function swapPics(root){const W=window.WORD_IMG;if(!W||!root)return;const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const hits=[];
+  while(tw.nextNode()){const t=tw.currentNode,v=t.nodeValue.trim();if(v.length<=4&&W[v]&&okImg(W[v])&&t.parentNode&&!t.parentNode.closest('.top,.ghost,.stars,textarea,option'))hits.push([t,v])}
+  hits.forEach(([t,v])=>{const im=document.createElement('img');im.className='wimg';im.src=W[v];im.alt=v;t.parentNode.replaceChild(im,t)})}
+let swapQ=false;new MutationObserver(()=>{if(swapQ||!window.WORD_IMG)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
+setTimeout(()=>loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body)),800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
 </body>
