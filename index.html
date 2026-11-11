@@ -2330,6 +2330,7 @@ function describe(bits){
   const v=VOICING.filter(x=>has(bits,x.bit)).map(x=>x.name);
   return [t,v.length?'קולי/בלתי קולי: '+v.join(', '):'',l.length?'שפה: '+l.join(', '):''].filter(Boolean).join(' · ');
 }
+const SITE_URL='https://danielagottlib.github.io/tirgul/';
 function renderTherapist(){
   const list=savedList();const link=store.get('th-link')||'';
   app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div><div class="top"><h1>מסך המטפלת</h1></div>
@@ -2365,8 +2366,8 @@ function renderTherapist(){
   </div>
   <div class="card form">
     <h2>הקישור לאתר</h2>
-    <p class="muted">הדביקי כאן פעם אחת את קישור השיתוף של האתר, והוא ייכנס להודעה שנשלחת להורים.</p>
-    <input class="txt" id="siteLink" dir="ltr" placeholder="https://claude.ai/..." value="${esc(link)}">
+    <p class="muted">זה הקישור שנכנס להודעה להורים:</p>
+    <p class="mono" dir="ltr" style="font-size:18px">${SITE_URL}</p>
   </div>
   <div class="card form">
     <h2>חסימת ילד שסיים טיפול</h2>
@@ -2399,7 +2400,7 @@ function renderTherapist(){
   </div>
   <div class="card"><h2>קודים ששמרת במכשיר הזה</h2>${list.length?`<div style="overflow-x:auto"><table><tr><th>שם המטופל</th><th>קוד</th><th>מטרות</th><th></th></tr>${list.map((r,ix)=>`<tr><td>${esc(r.n||'—')}</td><td class="mono">${esc(r.c)}</td><td>${esc(describe(decode(r.c)||0))}</td><td><div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;white-space:nowrap">${isBlocked(r.c)?'<span class="muted">חסום</span>':replacedBy(r.c)?'<span class="muted">הוחלף</span>':`<button class="ghost" data-end="${ix}">סיום טיפול</button>`} <button class="ghost" data-reset="${ix}" title="מוחק את הכוכבים וההתקדמות של הקוד הזה רק במכשיר הזה">🔄 איפוס במכשיר</button> <button class="ghost" data-rm="${ix}">🗑 הסרה מהרשימה</button></div></td></tr>`).join('')}</table></div>
     <p class="muted" style="font-size:14px">"איפוס במכשיר" מוחק את הכוכבים, ההתקדמות והשם שנשמרו במכשיר הזה עבור הקוד (למשל אחרי שהתאמנת בעצמך). אצל המטופל בבית זה לא משנה דבר. "הסרה מהרשימה" מוחקת רק את השורה מהטבלה, והקוד עצמו ממשיך לעבוד.</p>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}<div id="endOut"></div></div>`;
-  document.getElementById('siteLink').oninput=e=>store.set('th-link',e.target.value.trim());
+
   document.getElementById('tf').onsubmit=e=>{
     e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const ms=+document.getElementById('stageSel').value;if(ms<6)bits|=ms<<18;
     if(!document.getElementById('nick').value.trim()){document.getElementById('terr').textContent='כתבי את שם המטופל, או בחרי אותו מהרשימה.';return}
@@ -2409,7 +2410,7 @@ function renderTherapist(){
     document.getElementById('terr').textContent='';
     /* a fresh code that no saved patient and no personal-games patient already has */
     const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);let code=encode(bits),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=encode(bits);
-    const nick=document.getElementById('nick').value.trim(),site=store.get('th-link')||'[קישור לאתר]';
+    const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
     const msg=`שלום${nick?' '+nick:''}! זה אתר התרגול של ${CLINIC}: ${site}\nהקוד האישי שלך: ${code}\nנכנסים לאתר, מקלידים את הקוד ומתאמנים כמה דקות כל יום. בהצלחה!`;
