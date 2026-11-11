@@ -5,5 +5,8 @@ window.MY_ASSIGN={
  ],
  "Y9SR-8FP5": [
   "house-l"
+ ],
+ "R4PQ-6Y5V": [
+  "house-l"
  ]
 };
