@@ -958,7 +958,7 @@ function heroSVG(doorOpen){
   <text x="232" y="90" font-size="18">🧩</text><text x="258" y="90" font-size="18">🚂</text><text x="282" y="90" font-size="16">🎈</text>
   <g class="dani">
     <defs><clipPath id="avClip"><rect x="92" y="22" width="136" height="178" rx="22"/></clipPath></defs>
-    <g clip-path="url(#avClip)"><g class="head avimg"><image href="${AVATAR}" x="70" y="22" width="180" height="180" preserveAspectRatio="xMidYMid slice"/></g></g>
+    ${AVATAR.length>5000?`<g clip-path="url(#avClip)"><g class="head avimg"><image href="${AVATAR}" x="70" y="22" width="180" height="180" preserveAspectRatio="xMidYMid slice"/></g></g>`:`<g class="head avimg"><image href="${LOGO}" x="40" y="40" width="240" height="136" preserveAspectRatio="xMidYMid meet"/></g>`}
   </g>
   <g class="olddani" display="none">
     <defs><linearGradient id="hairG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9824F"/><stop offset=".45" stop-color="#D6B47C"/><stop offset="1" stop-color="#EBD3A0"/></linearGradient></defs>
