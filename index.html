@@ -831,7 +831,33 @@ function addStar(n=1){SFX.star();const before=Math.floor(S.stars/PER_STICKER);S.
 /* codes of children who finished treatment are listed in blocked.js on the site; such a code no longer opens the site */
 const normCode=c=>String(c||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
 function isBlocked(code){return (window.BLOCKED||[]).some(b=>normCode(b)===normCode(code))}
+/* a new code can replace an old one (window.REPLACED in blocked.js): the old code moves the child to the new code, keeping stars & stickers */
+const fmtCode=c=>{const x=normCode(c);return x.slice(0,4)+'-'+x.slice(4)};
+function replacedBy(code){const R=window.REPLACED||{};let c=fmtCode(code),n=0;while(R[c]&&n++<10)c=fmtCode(R[c]);return c===fmtCode(code)?null:c}
+function migrateCode(oldC,newC){const forms=[String(oldC).toUpperCase(),fmtCode(oldC),normCode(oldC)];['stars-','prog-','name-','g-'].forEach(k=>{if(store.get(k+newC)!=null)return;for(const f of forms){const v=store.get(k+f);if(v!=null){store.set(k+newC,v);break}}})}
+function blockFileText(addBlocked,addReplaced){const B=new Set((window.BLOCKED||[]).map(fmtCode));(addBlocked||[]).forEach(c=>B.add(fmtCode(c)));
+  const R={};Object.entries(window.REPLACED||{}).forEach(([o,n])=>R[fmtCode(o)]=fmtCode(n));Object.entries(addReplaced||{}).forEach(([o,n])=>R[fmtCode(o)]=fmtCode(n));
+  return 'window.BLOCKED=[\n'+[...B].map(c=>"'"+c+"'").join(',\n')+'\n];\nwindow.REPLACED={\n'+Object.entries(R).map(([o,n])=>"'"+o+"':'"+n+"'").join(',\n')+'\n};\n'}
+function blockSteps(out,file,intro){out.innerHTML=`${intro?`<p>${intro}</p>`:''}<ol style="margin:0;padding-inline-start:22px;line-height:1.8"><li>לוחצים על "העתקת הרשימה".</li><li>פותחים את <a href="https://github.com/danielagottlib/tirgul/edit/main/blocked.js" target="_blank" rel="noopener">קובץ הקודים ב-GitHub</a>.</li><li>לוחצים בתוך הקובץ, Ctrl+A ואז Ctrl+V.</li><li>לוחצים על הכפתור הירוק Commit changes, ובחלון שנפתח שוב על Commit changes.</li></ol>
+    <textarea class="txt bk-txt" rows="4" readonly dir="ltr">${esc(file)}</textarea><div class="row" style="justify-content:flex-start"><button class="btn sun bk-copy" type="button">העתקת הרשימה</button></div><p class="muted bk-ok"></p><p class="muted" style="font-size:15px">השינוי נכנס לתוקף תוך דקה-שתיים אחרי השמירה.</p>`;
+  out.querySelector('.bk-copy').onclick=async()=>{try{await navigator.clipboard.writeText(file);out.querySelector('.bk-ok').textContent='הרשימה הועתקה.'}catch(e){const t=out.querySelector('.bk-txt');t.select();out.querySelector('.bk-ok').textContent='הרשימה מסומנת. מעתיקים עם Ctrl+C.'}}}
+/* automatic saving of blocked / replaced codes to GitHub, with a key kept only in the therapist's browser */
+const GH_FILE='https://api.github.com/repos/danielagottlib/tirgul/contents/blocked.js';
+const ghToken=()=>store.get('gh-token')||'';
+async function ghUpdateCodes(addBlocked,addReplaced){const tok=ghToken();if(!tok)throw new Error('nokey');
+  const H={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'};
+  const cur=await fetch(GH_FILE+'?ref=main&t='+Date.now(),{headers:H});if(!cur.ok)throw new Error('read '+cur.status);const j=await cur.json();
+  const txt=decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));const w={};try{new Function('window',txt)(w)}catch(e){}
+  window.BLOCKED=w.BLOCKED||[];window.REPLACED=w.REPLACED||{};
+  const file=blockFileText(addBlocked,addReplaced);
+  const put=await fetch(GH_FILE,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify({message:'עדכון קודים',content:btoa(unescape(encodeURIComponent(file))),sha:j.sha,branch:'main'})});
+  if(!put.ok)throw new Error('write '+put.status);const w2={};new Function('window',file)(w2);window.BLOCKED=w2.BLOCKED;window.REPLACED=w2.REPLACED;return true}
+/* tries the automatic save; without a key (or on failure) falls back to the copy-and-paste steps */
+async function applyCodes(out,addBlocked,addReplaced,doneMsg){out.innerHTML='<p class="muted">שומר...</p>';
+  try{await ghUpdateCodes(addBlocked,addReplaced);out.innerHTML=`<p class="cheer" style="font-size:20px">✓ ${doneMsg}</p><p class="muted" style="font-size:15px">נכנס לתוקף תוך דקה-שתיים.</p>`}
+  catch(e){const why=e.message==='nokey'?'עוד לא חיברת את האתר ל-GitHub (בכרטיס "חיבור ל-GitHub" למטה). בינתיים אפשר לשמור ידנית:':'השמירה האוטומטית לא הצליחה ('+esc(e.message)+'). אפשר לבדוק את המפתח בכרטיס "חיבור ל-GitHub", או לשמור ידנית:';blockSteps(out,blockFileText(addBlocked,addReplaced),why)}}
 function login(code){
+  const nb=replacedBy(code);if(nb){migrateCode(code,nb);code=nb}
   if(isBlocked(code))return false;
   const bits=decode(code);if(bits===null)return false;
   S.bits=bits;S.code=code.toUpperCase();S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);return true;
@@ -1820,7 +1846,9 @@ function renderTherapist(){
   app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת"></div><div class="top"><h1>מסך המטפלת</h1></div>
   <p class="muted">כאן יוצרים קוד אישי לכל מטופל. הקוד פותח לו רק את המטרות שסימנת. מסך זה לא מופיע אצל הילדים. שמרי את הכתובת שלו במועדפים.</p>
   <div class="card"><form id="tf" class="form">
-    <div><label for="nick">כינוי לזיהוי שלך (לא חובה, למשל שם פרטי בלבד)</label><input class="txt" id="nick" maxlength="30"></div>
+    <div><label for="nick">שם המטופל</label><input class="txt" id="nick" maxlength="30" list="patients" autocomplete="off" placeholder="בוחרים מהרשימה או כותבים שם חדש">
+      <datalist id="patients">${[...new Set(list.map(r=>r.n).filter(Boolean))].map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
+      <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
     <fieldset><legend>היגוי</legend><div class="checks">${SOUNDS.map((s,i)=>`<label><input type="checkbox" id="g${i}" data-bit="${i}"> הגה ${s.name}</label>`).join('')}</div></fieldset>
     <fieldset><legend>מיקום ההגה במילה</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א)':''}</label>`).join('')}</div></fieldset>
     <fieldset><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select></fieldset>
@@ -1843,34 +1871,46 @@ function renderTherapist(){
     <p class="muted" style="font-size:15px">חסומים כרגע: ${(window.BLOCKED||[]).length?(window.BLOCKED||[]).map(esc).join(', '):'אין'}</p>
   </div>
   <div class="card form">
+    <h2>חיבור ל-GitHub (פעם אחת)</h2>
+    <p class="muted">כדי שחסימה והחלפה של קודים יישמרו לבד, מדביקים כאן פעם אחת מפתח מ-GitHub. המפתח נשמר רק במכשיר הזה ולא נשלח לאף אחד חוץ מ-GitHub.</p>
+    <p style="font-size:15px">${ghToken()?'✓ המכשיר הזה מחובר.':'המכשיר הזה עוד לא מחובר.'}</p>
+    <div class="row" style="justify-content:flex-start"><input class="txt" id="ghTok" type="password" dir="ltr" style="max-width:280px" placeholder="github_pat_..." autocomplete="off"><button class="btn" id="ghSave" type="button">שמירה</button></div>
+    <p class="muted" id="ghStat"></p>
+  </div>
+  <div class="card form">
     <h2>בדיקת קוד</h2>
     <div class="row" style="justify-content:flex-start"><input class="txt" id="chk" dir="ltr" style="max-width:200px" placeholder="ABCD-1234"><button class="btn" id="chkBtn" type="button">מה הקוד פותח?</button></div>
     <p id="chkOut"></p>
   </div>
-  <div class="card"><h2>קודים ששמרת במכשיר הזה</h2>${list.length?`<div style="overflow-x:auto"><table><tr><th>כינוי</th><th>קוד</th><th>מטרות</th><th></th></tr>${list.map((r,ix)=>`<tr><td>${esc(r.n||'—')}</td><td class="mono">${esc(r.c)}</td><td>${esc(describe(decode(r.c)||0))}</td><td><button class="ghost" data-del="${ix}">מחיקה</button></td></tr>`).join('')}</table></div>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}</div>`;
+  <div class="card"><h2>קודים ששמרת במכשיר הזה</h2>${list.length?`<div style="overflow-x:auto"><table><tr><th>שם המטופל</th><th>קוד</th><th>מטרות</th><th></th></tr>${list.map((r,ix)=>`<tr><td>${esc(r.n||'—')}</td><td class="mono">${esc(r.c)}</td><td>${esc(describe(decode(r.c)||0))}</td><td style="white-space:nowrap">${isBlocked(r.c)?'<span class="muted">חסום</span>':replacedBy(r.c)?'<span class="muted">הוחלף</span>':`<button class="ghost" data-end="${ix}">סיום טיפול</button>`} <button class="ghost" data-del="${ix}">מחיקה</button></td></tr>`).join('')}</table></div>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}<div id="endOut"></div></div>`;
   document.getElementById('siteLink').oninput=e=>store.set('th-link',e.target.value.trim());
   document.getElementById('tf').onsubmit=e=>{
     e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const ms=+document.getElementById('stageSel').value;if(ms<6)bits|=ms<<18;
+    if(!document.getElementById('nick').value.trim()){document.getElementById('terr').textContent='כתבי את שם המטופל, או בחרי אותו מהרשימה.';return}
     if(!(bits&GOALMASK)){document.getElementById('terr').textContent='סמני לפחות מטרה אחת.';return}
     if((bits&0xFF)&&!(bits&0x601C00)){document.getElementById('terr').textContent='סמני לפחות מיקום אחד של ההגה במילה.';return}
     document.getElementById('terr').textContent='';
     const code=encode(bits),nick=document.getElementById('nick').value.trim(),site=store.get('th-link')||'[קישור לאתר]';
-    const l=savedList();l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
+    const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
+    l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
     const msg=`שלום${nick?' '+nick:''}! זה אתר התרגול של ${CLINIC}: ${site}\nהקוד האישי שלך: ${code}\nנכנסים לאתר, מקלידים את הקוד ומתאמנים כמה דקות כל יום. בהצלחה!`;
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc(describe(bits))}</p>
       <textarea class="txt" id="msg" rows="4" readonly>${esc(msg)}</textarea>
       <div class="row"><button class="btn sun" id="copy" type="button">העתקת ההודעה</button></div><p class="muted" id="copied"></p>
       <p class="muted" style="font-size:15px">הקוד נשמר בטבלה למטה רק במכשיר הזה. כדי לשנות מטרות, יוצרים קוד חדש ושולחים אותו.</p></div>`;
     document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(msg);document.getElementById('copied').textContent='ההודעה הועתקה. אפשר להדביק בוואטסאפ.'}catch(err){const t=document.getElementById('msg');t.select();document.getElementById('copied').textContent='סמנתי את ההודעה. העתיקי עם Ctrl+C.'}};
+    if(prev.length){const ro=document.createElement('div');ro.className='card form';document.getElementById('result').appendChild(ro);const map={};prev.forEach(c=>map[c]=code);
+      applyCodes(ro,null,map,`הקוד הקודם של ${esc(nick)} (${prev.map(esc).join(', ')}) הוחלף בקוד החדש. מי שנכנס עם הקוד הישן יעבור לבד לקוד החדש, עם כל הכוכבים והמדבקות.`)}
     document.getElementById('result').scrollIntoView({behavior:'smooth'});
     setTimeout(()=>{},0);
   };
   document.getElementById('blkBtn').onclick=()=>{const v=document.getElementById('blk').value.trim(),out=document.getElementById('blkOut');
     if(decode(v)===null){out.innerHTML='<p class="err">הקוד לא תקין. בדקי שהקלדת את כל 8 התווים.</p>';return}
-    const list=[...new Set([...(window.BLOCKED||[]).map(c=>String(c).toUpperCase()),v.toUpperCase()])];const file='window.BLOCKED=[\n'+list.map(c=>"'"+c+"'").join(',\n')+'\n];\n';
-    out.innerHTML=`<ol style="margin:0;padding-inline-start:22px;line-height:1.8"><li>לוחצים על "העתקת הרשימה".</li><li>פותחים את <a href="https://github.com/danielagottlib/tirgul/edit/main/blocked.js" target="_blank" rel="noopener">קובץ החסימות ב-GitHub</a>.</li><li>לוחצים בתוך הקובץ, Ctrl+A ואז Ctrl+V.</li><li>לוחצים על הכפתור הירוק Commit changes, ובחלון שנפתח שוב על Commit changes.</li></ol>
-      <textarea class="txt" id="blkTxt" rows="4" readonly dir="ltr">${esc(file)}</textarea><div class="row" style="justify-content:flex-start"><button class="btn sun" id="blkCopy" type="button">העתקת הרשימה</button></div><p class="muted" id="blkOk"></p><p class="muted" style="font-size:15px">החסימה נכנסת לתוקף תוך דקה-שתיים אחרי השמירה.</p>`;
-    document.getElementById('blkCopy').onclick=async()=>{try{await navigator.clipboard.writeText(file);document.getElementById('blkOk').textContent='הרשימה הועתקה.'}catch(e){const t=document.getElementById('blkTxt');t.select();document.getElementById('blkOk').textContent='הרשימה מסומנת. מעתיקים עם Ctrl+C.'}}};
+    applyCodes(out,[v],null,'הקוד '+esc(v.toUpperCase())+' נחסם.')};
+  app.querySelectorAll('[data-end]').forEach(b=>b.onclick=()=>{const l=savedList(),r=l[+b.dataset.end];const codes=r.n?l.filter(x=>x.n===r.n).map(x=>x.c):[r.c];const out=document.getElementById('endOut');
+    out.scrollIntoView({behavior:'smooth',block:'center'});applyCodes(out,codes,null,`סיום טיפול${r.n?' של '+esc(r.n):''}: ${codes.length===1?'הקוד נחסם':'כל '+codes.length+' הקודים נחסמו'}.`)});
+  const ghIn=document.getElementById('ghTok');document.getElementById('ghSave').onclick=async()=>{const v=ghIn.value.trim();const st=document.getElementById('ghStat');if(!v){store.del('gh-token');st.textContent='המפתח נמחק מהמכשיר.';return}
+    store.set('gh-token',v);ghIn.value='';st.textContent='בודק...';try{const r=await fetch(GH_FILE+'?ref=main',{headers:{'Authorization':'Bearer '+v,'Accept':'application/vnd.github+json'}});st.textContent=r.ok?'✓ מחובר. מעכשיו חסימות והחלפות נשמרות לבד.':'המפתח לא עובד ('+r.status+'). בדקי שנתת הרשאת Contents: Read and write למאגר tirgul.'}catch(e){st.textContent='אין חיבור ל-GitHub מהמכשיר הזה.'}};
   document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b)};
   app.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const l=savedList();l.splice(+b.dataset.del,1);store.set('th-codes',JSON.stringify(l));renderTherapist()});
 }
@@ -1888,7 +1928,7 @@ function renderTherapist(){
 /* ---------- start ---------- */
 function isAdmin(){return location.hash==='#therapist'||location.hash==='#admin'}
 window.addEventListener('hashchange',()=>{if(!isAdmin()&&S.view==='therapist')S.view=S.bits===null?'login':'home';render()});
-const saved=store.get('kid-code');if(saved){if(isBlocked(saved))store.del('kid-code');else login(saved)}
+const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
 </body>
