@@ -423,6 +423,18 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .tt-bub{position:absolute;left:66%;top:28%;width:14px;height:14px;border-radius:50%;border:2px solid rgba(120,180,230,.8);background:radial-gradient(circle at 30% 30%,#fff 0 20%,rgba(200,230,255,.3) 50%);opacity:0;animation:ttbub 3.6s ease-out var(--d) infinite}
 @keyframes ttbub{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-120px) scale(1.3)}}
 @media (prefers-reduced-motion:reduce){.toytable *{animation:none!important}}
+/* absurd cards slot machine */
+.slotm{display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(#F06A4F,#C94A38);border-radius:28px;padding:12px 14px;box-shadow:0 8px 0 #9e3426,0 14px 24px rgba(34,52,79,.3);margin:6px 0 12px}
+.slotwin{position:relative;width:min(70vw,300px);aspect-ratio:1;border-radius:18px;overflow:hidden;border:6px solid #FFD84D;background:#fff;box-shadow:inset 0 0 0 4px rgba(0,0,0,.08)}
+.slotwin img{width:100%;height:100%;object-fit:cover;display:block}
+.slotm.running .slotwin img{filter:blur(1.5px) saturate(1.2)}
+.slotq{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:110px;color:#fff;text-shadow:0 4px 0 #8E6CEF}
+.slotm:not(.running) .slotwin img{filter:blur(8px) brightness(.8)}
+.slotlights{display:flex;gap:10px}
+.slotlights i{width:12px;height:12px;border-radius:50%;background:#FFE066;box-shadow:0 0 6px #FFE066;animation:blinkl 1s steps(2) calc(var(--k)*-.12s) infinite}
+.slotm.running .slotlights i{animation-duration:.25s}
+@keyframes blinkl{50%{background:#fff;box-shadow:none}}
+.bigspin{font-size:26px;padding:16px 34px;border-radius:999px;animation:pulse 1.1s ease-in-out infinite}
 /* absurd picture cards */
 .deck{position:relative;width:min(70vw,260px);aspect-ratio:3/4;margin:10px auto 14px}
 .dcardx{position:absolute;inset:0;transform:translate(calc(var(--k)*4px),calc(var(--k)*-4px)) rotate(calc(var(--k)*2deg - 4deg))}
@@ -1562,16 +1574,27 @@ function renderAct(){
   if(S.act==='absurd'){
     /* absurd picture cards (Gemini): shuffle, draw one, the child tells what is funny, until the deck is done */
     const IMG=window.CARD_IMG||{},c=d.cards[d.ci],L=SOUNDS[S.sound],left=d.cards.length-d.ci;
-    const back=`<div class="cback"><span>🤪</span></div>`;
     let body='';
-    if(d.phase==='deck'||d.phase==='shuffle')body=`<div class="deck ${d.phase==='shuffle'?'shuffling':''}">${Array.from({length:Math.min(left,5)},(x,k)=>`<div class="dcardx" style="--k:${k}">${back}</div>`).join('')}</div>
-        ${d.phase==='deck'?`<button class="btn sun" id="draw">🔀 מערבבים ושולפים קלף</button>`:'<p class="drag-hint">מערבבים...</p>'}`;
+    /* slot machine: the cards race through the window, the child stops it */
+    if(d.phase==='deck'||d.phase==='shuffle')body=`<div class="slotm ${d.phase==='shuffle'?'running':''}"><div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
+        <div class="slotwin"><img id="slotimg" src="${IMG[d.cards[(d.ci+d.cards.length-1)%d.cards.length][0]]||''}" alt=""><div class="slotq">${d.phase==='deck'?'?':''}</div></div>
+        <div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k+4}"></i>`).join('')}</div></div>
+        ${d.phase==='deck'?`<button class="btn coral bigspin" id="draw">🎰 מפעילים!</button>`:`<button class="btn sun bigspin" id="stop">✋ עוצרים!</button>`}`;
     else body=`<div class="bigcard flipin">${IMG[c[0]]?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">טוען תמונה...</div>`}
         ${d.phase==='reveal'?`<div class="ccap">${hl(c[1],d.sid===L.id?L.hl:'')}</div>`:''}</div>
         ${d.phase==='open'?'<p class="drag-hint">מה מצחיק בקלף? 🤪 מספרים!</p><div id="rh"></div>':'<p class="cheer">כל הכבוד! 🎉</p>'}`;
     shell(`<div class="card stage"><div class="progress">קלף ${Math.min(d.ci+1,d.cards.length)} מתוך ${d.cards.length}</div>${body}</div>`);
     const dr=document.getElementById('draw');
-    if(dr)dr.onclick=()=>{d.phase='shuffle';SFX.roll&&SFX.roll();render();TIMERS.push(setTimeout(()=>{d.phase='open';SFX.flip();render()},1500))};
+    if(dr)dr.onclick=()=>{d.phase='shuffle';render()};
+    if(d.phase==='shuffle'){const im=document.getElementById('slotimg');let k=0,delay=70,stopping=false;
+      const all=d.cards.map(c=>IMG[c[0]]).filter(Boolean);
+      const tick=()=>{if(S.data!==d||d.phase!=='shuffle')return;k++;if(im&&all.length)im.src=all[k%all.length];SFX.tick();
+        if(stopping){delay*=1.28;if(delay>420){if(im)im.src=IMG[c[0]]||'';d.phase='open';SFX.fanfare();TIMERS.push(setTimeout(()=>render(),650));return}}
+        TIMERS.push(setTimeout(tick,delay))};
+      tick();
+      /* stops by itself after a while if nobody presses */
+      const stop=()=>{if(stopping)return;stopping=true;const b=document.getElementById('stop');if(b){b.disabled=true;b.textContent='🎰 ...'}};
+      const sb=document.getElementById('stop');if(sb)sb.onclick=stop;TIMERS.push(setTimeout(stop,8000))}
     const rh=document.getElementById('rh');
     if(rh)recStep(rh,()=>{addStar();d.phase='reveal';render();TIMERS.push(setTimeout(()=>{d.ci++;if(d.ci>=d.cards.length)finish();else{d.phase='deck';render()}},2600))},{max:12000});
     return;
