@@ -529,7 +529,7 @@ body{background:#BFE6FF}
 .cookie2.ready{animation:bob2 .9s ease-in-out infinite;touch-action:none;cursor:grab}
 .cookie2.ready .ck{filter:drop-shadow(0 0 8px #FFC43D)}
 .cookie2[disabled]{opacity:.45}
-.bog{position:relative;width:min(94vw,600px);aspect-ratio:1;margin:0 auto;border-radius:50%;background:radial-gradient(circle,#8FD6E8 0 55%,#6CC3A0 56% 62%,#4FA76F 63%);box-shadow:inset 0 0 0 6px rgba(255,255,255,.4)}
+.bog{position:relative;width:min(94vw,600px,calc(100vh - 230px));min-width:min(94vw,300px);aspect-ratio:1;margin:0 auto;border-radius:50%;background:radial-gradient(circle,#8FD6E8 0 55%,#6CC3A0 56% 62%,#4FA76F 63%);box-shadow:inset 0 0 0 6px rgba(255,255,255,.4)}
 .bigpad{position:absolute;left:50%;top:50%;width:20%;height:20%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 40%,#8EE08E,#3F9E4A);clip-path:polygon(50% 50%,100% 40%,100% 0,0 0,0 100%,100% 100%,100% 60%)}
 .stone{position:absolute;width:10.5%;height:10.5%;transform:translate(-50%,-50%);border-radius:50%;border:none;padding:0;background:radial-gradient(circle at 40% 35%,#E4E7EA,#A9B1B9);box-shadow:0 3px 0 #7f8892;display:flex;align-items:center;justify-content:center}
 .stone span{font-family:var(--display);color:var(--coral);font-size:min(4vw,19px);line-height:1}
@@ -1157,7 +1157,7 @@ function header(title,back){
   return `<div class="top">
     ${back?`<button class="ghost" data-go="${back}">→ חזרה</button>`:`<button class="ghost" id="logout">יציאה</button>`}
     <h1>${title}</h1>
-    <div class="row" style="gap:6px;flex-wrap:nowrap"><button class="ghost mute" id="mute" aria-label="צלילים">${SFX.muted?'🔇':'🔊'}</button>${S.view==='act'?`<div class="stars" aria-label="כוכבים">⭐ <span id="starCount">${S.stars}</span></div>`:`<button class="stars" id="starsBtn" type="button" aria-label="הכוכבים שלי, פותח את האלבום">⭐ <span id="starCount">${S.stars}</span></button>`}</div>
+    <div class="row" style="gap:6px;flex-wrap:nowrap"><button class="ghost mute" id="mute" aria-label="צלילים">${SFX.muted?'🔇':'🔊'}</button>${document.fullscreenEnabled&&matchMedia('(pointer:fine)').matches?`<button class="ghost mute" id="fsBtn" type="button" aria-label="מסך מלא" title="מסך מלא">⛶</button>`:''}${S.view==='act'?`<div class="stars" aria-label="כוכבים">⭐ <span id="starCount">${S.stars}</span></div>`:`<button class="stars" id="starsBtn" type="button" aria-label="הכוכבים שלי, פותח את האלבום">⭐ <span id="starCount">${S.stars}</span></button>`}</div>
   </div>`;
 }
 
@@ -1315,6 +1315,7 @@ function renderLang(){
 }
 function bindCommon(){
   const mu=document.getElementById('mute');if(mu)mu.onclick=()=>{SFX.toggle();mu.textContent=SFX.muted?'🔇':'🔊';SFX.blip()};
+  const fs=document.getElementById('fsBtn');if(fs)fs.onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
   app.querySelectorAll('.tile,.step').forEach(t=>t.addEventListener('click',()=>SFX.blip()));
   const sb=document.getElementById('starsBtn');if(sb)sb.onclick=()=>go('album');
   const lo=document.getElementById('logout');if(lo)lo.onclick=()=>{store.del('kid-code');S.bits=null;S.code='';go('login')};
@@ -1807,7 +1808,8 @@ function renderAct(){
     frog.style.left=fx+'%';frog.style.top=fy+'%';
     if(d.from){requestAnimationFrame(()=>requestAnimationFrame(()=>{frog.classList.add('hop');frog.style.left=tx+'%';frog.style.top=ty+'%';TIMERS.push(setTimeout(()=>frog.classList.remove('hop'),480))}));d.from=null}
     /* the tongue starts at the frog's mouth (lower middle of the frog) and reaches the bug */
-    const eat=()=>{const t=document.getElementById('tongue'),bogEl=document.getElementById('bog'),bog=bogEl.getBoundingClientRect(),fr=frog.getBoundingClientRect(),bug=document.getElementById('bug'+d.pi);
+    /* (the screen is re-drawn after each stone, so always look up the frog that is on screen now) */
+    const eat=()=>{const frog=document.getElementById('frog');if(!frog)return;const t=document.getElementById('tongue'),bogEl=document.getElementById('bog'),bog=bogEl.getBoundingClientRect(),fr=frog.getBoundingClientRect(),bug=document.getElementById('bug'+d.pi);
       const mx=fr.left+fr.width/2-bog.left,my=fr.top+fr.height*.66-bog.top;
       const br=bug?bug.getBoundingClientRect():null;const [bx,by]=bugxy(d.pi);
       const gx=br?br.left+br.width/2-bog.left:bx/100*bog.width,gy=br?br.top+br.height/2-bog.top:by/100*bog.height;
@@ -1817,7 +1819,7 @@ function renderAct(){
       TIMERS.push(setTimeout(()=>{d.pi++;if(d.pi>=P.length){frogParty();return}
         d.from=xy(d.pi-1,d.pos);d.pos=-1;SFX.boing();render()},900))};
     /* all bugs eaten: the frog jumps onto its big lily pad in the middle and splashes water */
-    const frogParty=()=>{SFX.burp();TIMERS.push(setTimeout(()=>{frog.classList.add('hop','bigjump');frog.style.left='50%';frog.style.top='50%';SFX.boing()},500));
+    const frogParty=()=>{SFX.burp();const frog=document.getElementById('frog');if(!frog)return finish();TIMERS.push(setTimeout(()=>{frog.classList.add('hop','bigjump');frog.style.left='50%';frog.style.top='50%';SFX.boing()},500));
       TIMERS.push(setTimeout(()=>{const bog=document.getElementById('bog');if(!bog)return;SFX.splash();
         bog.insertAdjacentHTML('beforeend','<i class="ripple"></i><i class="ripple r2"></i>'+Array.from({length:14},(x,k)=>{const a=k/14*Math.PI*2;return `<i class="drop" style="--dx:${Math.cos(a)*(70+(k%3)*30)}px;--dy:${Math.sin(a)*(60+(k%3)*25)-40}px;--d:${(k%4)*.04}s"></i>`}).join(''));
         frog.classList.remove('hop');frog.classList.add('happy')},1050));
