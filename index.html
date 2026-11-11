@@ -541,7 +541,33 @@ body{background:#BFE6FF}
 .frog2{position:absolute;transform:translate(-50%,-60%);font-size:min(13vw,56px);line-height:1;transition:left .45s ease-out,top .45s ease-out;z-index:3;pointer-events:none}
 .frog2.hop{animation:hop .45s ease-out}
 @keyframes hop{50%{transform:translate(-50%,-110%) scale(1.25)}}
-.tongue{position:absolute;height:8px;width:0;background:#FF6F91;border-radius:8px;transform-origin:0 50%;z-index:2;margin-top:-4px}
+.tongue{position:absolute;height:9px;width:0;background:linear-gradient(90deg,#E8506F,#FF7A98);border-radius:8px;transform-origin:0 50%;z-index:4;margin-top:-4.5px;pointer-events:none}
+.tongue::after{content:"";position:absolute;right:-5px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#FF7A98;opacity:0}
+.tongue.lick::after{opacity:1}
+.frog2.gulp{animation:gulp .7s ease-in-out}
+@keyframes gulp{0%,100%{transform:translate(-50%,-60%)}20%{transform:translate(-50%,-60%) scale(1.12,.9)}60%{transform:translate(-50%,-60%) scale(.95,1.08)}}
+.frog2.bigjump{transition:left .55s ease-out,top .55s ease-out;font-size:min(16vw,72px)}
+.frog2.happy{animation:froghappy .5s ease-in-out 4 alternate}
+@keyframes froghappy{from{transform:translate(-50%,-60%) rotate(-8deg)}to{transform:translate(-50%,-75%) rotate(8deg)}}
+.ripple{position:absolute;left:50%;top:52%;width:20%;aspect-ratio:1;border-radius:50%;border:4px solid rgba(255,255,255,.8);transform:translate(-50%,-50%) scale(.6);animation:ripple 1.4s ease-out forwards;pointer-events:none;z-index:2}
+.ripple.r2{animation-delay:.35s;opacity:0}
+@keyframes ripple{0%{opacity:1;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}}
+.drop{position:absolute;left:50%;top:50%;width:12px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#BDEBFF;box-shadow:inset -2px -3px 0 #7FCDF0;z-index:5;pointer-events:none;animation:drop .9s var(--d) ease-out forwards}
+@keyframes drop{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}60%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 50px)) scale(.6);opacity:0}}
+.monster.yum{animation:yum 2.6s ease-in-out forwards}
+.mplay .monster.yum{animation:yum2 2.6s ease-in-out forwards}
+@keyframes yum{0%{transform:scale(var(--s))}25%{transform:scale(1.35,1.2)}40%{transform:scale(1.25,1.32)}55%{transform:scale(1.45,1.3)}70%{transform:scale(1.4,1.42)}100%{transform:scale(1.5)}}
+@keyframes yum2{0%{transform:translate(-50%,-50%) scale(var(--s))}25%{transform:translate(-50%,-50%) scale(1.35,1.2)}40%{transform:translate(-50%,-50%) scale(1.25,1.32)}55%{transform:translate(-50%,-50%) scale(1.45,1.3)}70%{transform:translate(-50%,-50%) scale(1.4,1.42)}100%{transform:translate(-50%,-50%) scale(1.5)}}
+.m-tongue{position:absolute;left:50%;bottom:-14px;width:34px;height:26px;margin-left:-17px;background:#FF7A98;border-radius:0 0 50% 50%;box-shadow:inset 0 -4px 0 #E8506F;animation:licklips .5s .9s ease-in-out 4 alternate;transform-origin:50% 0}
+@keyframes licklips{from{transform:translateX(-14px) rotate(14deg)}to{transform:translateX(14px) rotate(-14deg)}}
+.yumbub{position:absolute;left:50%;top:6%;transform:translateX(-50%);background:#fff;border-radius:22px;padding:8px 18px;font-family:var(--display);font-size:min(9vw,36px);color:#8E6CEF;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .5s ease-out;white-space:nowrap}
+.chickshow{position:relative;height:130px;margin-top:10px;overflow:hidden}
+.bigegg{position:absolute;left:50%;bottom:10px;font-size:84px;line-height:1;transform:translateX(-50%);animation:wobble .25s ease-in-out infinite alternate}
+.bigegg.hatch{animation:popin .4s ease-out}
+.bigegg.walk{animation:chickwalk 2.2s linear forwards,bob .2s ease-in-out infinite alternate}
+@keyframes wobble{from{transform:translateX(-50%) rotate(-10deg)}to{transform:translateX(-50%) rotate(10deg)}}
+@keyframes chickwalk{from{left:50%}to{left:115%}}
+@keyframes bob{from{transform:translateX(-50%) translateY(0) rotate(-6deg)}to{transform:translateX(-50%) translateY(-12px) rotate(6deg)}}
 .tongue.lick{animation:lick .7s ease-in-out}
 @keyframes lick{50%{width:var(--len)}100%{width:0}}
 .hl{color:var(--coral)}
@@ -652,7 +678,7 @@ button.stars{cursor:pointer;color:var(--ink)}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js"></script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=2"></script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -881,6 +907,9 @@ const SFX=(()=>{
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
     boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})},
+    splash(){noise(.7,{vol:.5,hp:300,lp:4000});noise(.35,{at:.05,vol:.35,hp:2000,lp:9000});[0,.12,.22,.35].forEach((t,i)=>tone(900+i*250,.08,{at:.15+t,vol:.08,to:1800+i*200}))},
+    slurp(){tone(300,.25,{vol:.18,to:900,type:'triangle'});tone(500,.2,{at:.3,vol:.15,to:1200,type:'triangle'})},
+    peep(){tone(2400,.08,{vol:.12,to:3200});tone(2600,.09,{at:.12,vol:.12,to:3400})},
     /* a little melody for "טוק טוק בדלת, דניאלה שואלת: מי הבא?" when there is no recording */
     /* door song played on instruments, one note per syllable:
        טוק-טוק-ב-דֶ-לֶת | דָ-נִי-אֵ-לָה-שׁוֹ-אֶ-לֶת | מִי-הַ-בָּא? | (שם)-(שם) בָּ-רוּךְ-הַ-בָּא
@@ -919,10 +948,22 @@ function pickVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)
   /* only a woman's voice; if the device has only a man's Hebrew voice (e.g. "Asaf" on Windows), stay silent */
   HEV=v.find(x=>/carmit|hila|female|אישה|google/i.test(x.name))||v.find(x=>!/asaf|avri|male/i.test(x.name))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function greet(text){if(SFX.muted)return;try{if(!HEV)pickVoice();if(!HEV)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=HEV;u.lang=HEV.lang;u.rate=.92;u.pitch=1.15;speechSynthesis.speak(u)}catch(e){}}
+function greet(text){if(SFX.muted)return;try{if(!HEV)pickVoice();if(!HEV)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(niq(text));u.voice=HEV;u.lang=HEV.lang;u.rate=.92;u.pitch=1.15;speechSynthesis.speak(u)}catch(e){}}
 /* any Hebrew voice (a man's voice is fine here) to say single words in the listening stage */
 function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang));return v.find(x=>/hila|carmit|google/i.test(x.name))||v[0]||null}catch(e){return null}}
-function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
+/* vowel marks so the speech voice says every practice word correctly (without them it guesses, e.g. כלב / כלוב) */
+const NIQ={'אבוקדו':'אָבוֹקָדוֹ','אגוז':'אֱגוֹז','אגס':'אַגָּס','אוזן':'אֹזֶן','אוטובוס':'אוֹטוֹבּוּס','אור':'אוֹר','אורז':'אֹרֶז','אננס':'אֲנָנָס','ארגז':'אַרְגָּז','אריה':'אַרְיֵה','ארמון':'אַרְמוֹן','ארנב':'אַרְנָב',
+ 'ביצה':'בֵּיצָה','בלון':'בָּלוֹן','בקבוק':'בַּקְבּוּק','ברווז':'בַּרְוָז','ברז':'בֶּרֶז','ברק':'בָּרָק','גבינה':'גְּבִינָה','גג':'גַּג','גדי':'גְּדִי','גזר':'גֶּזֶר','גיטרה':'גִּיטָרָה','גלידה':'גְּלִידָה','גמד':'גַּמָּד','גמל':'גָּמָל','גרב':'גֶּרֶב','גשם':'גֶּשֶׁם',
+ 'דבש':'דְּבַשׁ','דג':'דָּג','דלי':'דְּלִי','דרקון':'דְּרָקוֹן','זבוב':'זְבוּב','זברה':'זֶבְּרָה','זהב':'זָהָב','זחל':'זַחַל','זית':'זַיִת','זקן':'זָקָן','זרוע':'זְרוֹעַ','חץ':'חֵץ','חצאית':'חֲצָאִית','חתול':'חָתוּל','טרקטור':'טְרַקְטוֹר',
+ 'ירוק':'יָרֹק','ירח':'יָרֵחַ','ירקות':'יְרָקוֹת','כביש':'כְּבִישׁ','כדור':'כַּדּוּר','כובע':'כּוֹבַע','כוכב':'כּוֹכָב','כוס':'כּוֹס','כוסות':'כּוֹסוֹת','כיור':'כִּיּוֹר','כלב':'כֶּלֶב','כרוב':'כְּרוּב','כריש':'כָּרִישׁ',
+ 'לב':'לֵב','לוויתן':'לִוְיָתָן','לחם':'לֶחֶם','לטאה':'לְטָאָה','לימון':'לִימוֹן','ליצן':'לֵיצָן','לק':'לַק','מגדל':'מִגְדָּל','מגפיים':'מַגָּפַיִם','מזוודה':'מִזְוָדָה','מזלג':'מַזְלֵג','מטוס':'מָטוֹס','מיץ':'מִיץ','מלך':'מֶלֶךְ','מלפפון':'מְלָפְפוֹן','מסוק':'מַסּוֹק','מספריים':'מִסְפָּרַיִם','משאית':'מַשָּׂאִית','משקפיים':'מִשְׁקָפַיִם',
+ 'נחש':'נָחָשׁ','נמר':'נָמֵר','נעל':'נַעַל','נקניקייה':'נַקְנִיקִיָּה','נשיקה':'נְשִׁיקָה','סבון':'סַבּוֹן','סוכרייה':'סֻכָּרִיָּה','סוס':'סוּס','סירה':'סִירָה','סל':'סַל','סנאי':'סְנָאִי','ספוג':'סְפוֹג','ספינה':'סְפִינָה','ספר':'סֵפֶר','סקייטבורד':'סְקֵייטְבּוֹרְד',
+ 'עגבנייה':'עַגְבָנִיָּה','עוגה':'עוּגָה','עיר':'עִיר','עכביש':'עַכָּבִישׁ','עכבר':'עַכְבָּר','עלה':'עָלֶה','עץ':'עֵץ','עצים':'עֵצִים','עציץ':'עָצִיץ','פיל':'פִּיל','פיצה':'פִּיצָה','פלמינגו':'פְלָמִינְגוֹ','פלסטר':'פְּלַסְטֶר','פסנתר':'פְּסַנְתֵּר','פרה':'פָּרָה','פרח':'פֶּרַח','פרפר':'פַּרְפַּר',
+ 'צב':'צָב','צבע':'צֶבַע','צדף':'צֶדֶף','צהוב':'צָהֹב','ציור':'צִיּוּר','ציפור':'צִפּוֹר','צלחת':'צַלַּחַת','צפרדע':'צְפַרְדֵּעַ','צריף':'צְרִיף','קוף':'קוֹף','קורא':'קוֹרֵא','קיפוד':'קִפּוֹד','קלפים':'קְלָפִים','קסם':'קֶסֶם','קקטוס':'קַקְטוּס','קרואסון':'קְרוּאָסוֹן','קשת':'קֶשֶׁת',
+ 'ראי':'רְאִי','ראש':'רֹאשׁ','רגל':'רֶגֶל','רגליים':'רַגְלַיִם','רדיו':'רַדְיוֹ','רואה':'רוֹאֶה','רובוט':'רוֹבּוֹט','ריבוע':'רִיבּוּעַ','ריקוד':'רִקּוּד','רכבת':'רַכֶּבֶת','רעיון':'רַעְיוֹן','רקטה':'רָקֶטָה',
+ 'שבלול':'שַׁבְּלוּל','שוקולד':'שׁוֹקוֹלָד','שיר':'שִׁיר','שלג':'שֶׁלֶג','שלושה':'שְׁלוֹשָׁה','שמונה':'שְׁמוֹנָה','שמיכה':'שְׂמִיכָה','שמש':'שֶׁמֶשׁ','שן':'שֵׁן','שעון':'שָׁעוֹן','שתיים':'שְׁתַּיִם','תולעת':'תּוֹלַעַת','תיק':'תִּיק','תפוז':'תַּפּוּז','תרנגול':'תַּרְנְגוֹל'};
+const niq=t=>String(t).replace(/[א-ת]+/g,w=>NIQ[w]||w);
+function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(niq(w));u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
 const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
@@ -1714,7 +1755,14 @@ function renderAct(){
       <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${it[1]}</span><span class="plabel syl">${it[0]}</span>`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`}</button>`}).join('')}</div></div>`);
     app.querySelectorAll('.egg:not(.hatched)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
       b.classList.add('cracking');SFX.crack();
-      TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();TIMERS.push(setTimeout(finish,600))}else render()})},900))});
+      TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();eggParty()}else render()})},900))});
+    /* all eggs open: one more golden egg wobbles, a chick hatches out of it and walks off peeping */
+    const eggParty=()=>{const st=app.querySelector('.card.stage');if(!st)return finish();
+      st.insertAdjacentHTML('beforeend','<div class="chickshow"><span class="bigegg" id="bigegg">🥚</span></div>');
+      TIMERS.push(setTimeout(()=>{SFX.crack()},700));TIMERS.push(setTimeout(()=>{SFX.crack();const e=document.getElementById('bigegg');if(e){e.textContent='🐣';e.classList.add('hatch')}},1300));
+      TIMERS.push(setTimeout(()=>{const e=document.getElementById('bigegg');if(e){e.textContent='🐥';e.classList.remove('hatch');e.classList.add('walk')};SFX.peep()},2100));
+      TIMERS.push(setTimeout(()=>SFX.peep(),2700));TIMERS.push(setTimeout(()=>SFX.peep(),3300));
+      TIMERS.push(setTimeout(finish,4300))};
     return;
   }
   if(S.act==='monster'){
@@ -1728,7 +1776,12 @@ function renderAct(){
       </div></div>`);
     const feed=el=>{const ix=d.ready;if(ix==null)return;d.ready=null;const m=document.getElementById('monster');
       flyTo(el,document.getElementById('mouth'),()=>{SFX.chomp();m.classList.add('munch');d.eaten.push(ix);
-        TIMERS.push(setTimeout(()=>{if(d.eaten.length>=N){SFX.burp();m.classList.add('full');TIMERS.push(setTimeout(finish,1000))}else render()},700))})};
+        TIMERS.push(setTimeout(()=>{if(d.eaten.length>=N)monsterParty(m);else render()},700))})};
+    /* all cookies eaten: the monster puffs up, licks its lips and says "יאמי!" */
+    const monsterParty=m=>{m.classList.remove('munch','hungry');m.classList.add('yum');
+      const mo=document.getElementById('mouth');if(mo)mo.insertAdjacentHTML('beforeend','<i class="m-tongue"></i>');
+      TIMERS.push(setTimeout(()=>{SFX.slurp();const pl=document.getElementById('mplay');if(pl)pl.insertAdjacentHTML('beforeend','<div class="yumbub">יאמי! 😋</div>');greet('יאמי!')},900));
+      TIMERS.push(setTimeout(()=>SFX.burp(),2300));TIMERS.push(setTimeout(finish,3600))};
     app.querySelectorAll('.cookie2').forEach(b=>{const ix=+b.dataset.ix;
       if(d.ready===ix)dragTo(b,()=>document.getElementById('monster'),()=>feed(b));
       else b.onclick=()=>{if(d.ready!=null)return;SFX.blip();const c=d.cookies[ix];sayIt(c[2]==='syl'?[c[0],'👾','syl','המפלצון',0]:c,()=>{d.ready=ix;render()})}});
@@ -1752,12 +1805,22 @@ function renderAct(){
     const [fx,fy]=d.from||xy(d.pi,d.pos);const [tx,ty]=xy(d.pi,d.pos);
     frog.style.left=fx+'%';frog.style.top=fy+'%';
     if(d.from){requestAnimationFrame(()=>requestAnimationFrame(()=>{frog.classList.add('hop');frog.style.left=tx+'%';frog.style.top=ty+'%';TIMERS.push(setTimeout(()=>frog.classList.remove('hop'),480))}));d.from=null}
-    const eat=()=>{const [bx,by]=bugxy(d.pi);const t=document.getElementById('tongue');const bog=document.getElementById('bog').getBoundingClientRect();
-      const dx=(bx-tx)/100*bog.width,dy=(by-ty)/100*bog.height,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;
-      Object.assign(t.style,{left:tx+'%',top:ty+'%',transform:`rotate(${ang}deg)`});t.classList.add('lick');t.style.setProperty('--len',len+'px');SFX.zip();
-      TIMERS.push(setTimeout(()=>{const b=document.getElementById('bug'+d.pi);if(b)b.classList.add('eaten');SFX.chomp()},300));
-      TIMERS.push(setTimeout(()=>{d.pi++;if(d.pi>=P.length){SFX.burp();TIMERS.push(setTimeout(finish,700));return}
+    /* the tongue starts at the frog's mouth (lower middle of the frog) and reaches the bug */
+    const eat=()=>{const t=document.getElementById('tongue'),bogEl=document.getElementById('bog'),bog=bogEl.getBoundingClientRect(),fr=frog.getBoundingClientRect(),bug=document.getElementById('bug'+d.pi);
+      const mx=fr.left+fr.width/2-bog.left,my=fr.top+fr.height*.66-bog.top;
+      const br=bug?bug.getBoundingClientRect():null;const [bx,by]=bugxy(d.pi);
+      const gx=br?br.left+br.width/2-bog.left:bx/100*bog.width,gy=br?br.top+br.height/2-bog.top:by/100*bog.height;
+      const dx=gx-mx,dy=gy-my,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;
+      Object.assign(t.style,{left:mx+'px',top:my+'px',transform:`rotate(${ang}deg)`});t.classList.add('lick');t.style.setProperty('--len',len+'px');frog.classList.add('gulp');SFX.zip();
+      TIMERS.push(setTimeout(()=>{const b=document.getElementById('bug'+d.pi);if(b)b.classList.add('eaten');SFX.chomp()},350));
+      TIMERS.push(setTimeout(()=>{d.pi++;if(d.pi>=P.length){frogParty();return}
         d.from=xy(d.pi-1,d.pos);d.pos=-1;SFX.boing();render()},900))};
+    /* all bugs eaten: the frog jumps onto its big lily pad in the middle and splashes water */
+    const frogParty=()=>{SFX.burp();TIMERS.push(setTimeout(()=>{frog.classList.add('hop','bigjump');frog.style.left='50%';frog.style.top='50%';SFX.boing()},500));
+      TIMERS.push(setTimeout(()=>{const bog=document.getElementById('bog');if(!bog)return;SFX.splash();
+        bog.insertAdjacentHTML('beforeend','<i class="ripple"></i><i class="ripple r2"></i>'+Array.from({length:14},(x,k)=>{const a=k/14*Math.PI*2;return `<i class="drop" style="--dx:${Math.cos(a)*(70+(k%3)*30)}px;--dy:${Math.sin(a)*(60+(k%3)*25)-40}px;--d:${(k%4)*.04}s"></i>`}).join(''));
+        frog.classList.remove('hop');frog.classList.add('happy')},1050));
+      TIMERS.push(setTimeout(finish,3400))};
     app.querySelectorAll('.stone.next').forEach(b=>b.onclick=()=>{if(S.overlay)return;const si=+b.dataset.si;SFX.blip();
       sayIt([cur.stones[si][0],'🐸','syl','הצפרדע',1],()=>{d.from=xy(d.pi,d.pos);d.pos=si;SFX.boing();render();
         if(d.pos===cur.stones.length-1)TIMERS.push(setTimeout(eat,600))})});
