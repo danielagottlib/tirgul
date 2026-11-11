@@ -145,9 +145,9 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .hero .mouth{transform-box:fill-box;transform-origin:center top}
 .hero.talking .mouth{animation:talk .22s ease-in-out infinite alternate}
 .hero .avimg{transform-origin:160px 200px;animation:sway 4.5s ease-in-out infinite}
-@keyframes sway{0%,100%{transform:rotate(0) translateY(0)}25%{transform:rotate(-1.6deg) translateY(-1.5px)}75%{transform:rotate(1.6deg) translateY(-1px)}}
-.hero.talking .avimg{animation:talkbob .28s ease-in-out infinite alternate}
-@keyframes talkbob{from{transform:translateY(0) scale(1)}to{transform:translateY(-2.5px) scale(1.015)}}
+@keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(-2.5deg)}75%{transform:rotate(2.5deg)}}
+.hero.talking .avimg{animation:talkbob .7s ease-in-out infinite alternate}
+@keyframes talkbob{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
 @keyframes talk{from{transform:scaleY(.45)}to{transform:scaleY(1.25)}}
 .gsel{display:inline-flex;gap:6px;align-items:center;border:2px solid var(--line);border-radius:14px;padding:8px 14px;background:#fff;font-size:20px}
 .doorway{position:relative;width:100%;max-width:340px;perspective:700px}
@@ -642,7 +642,27 @@ button.stars{cursor:pointer;color:var(--ink)}
 .checks label:has(input:checked){border-color:var(--sky);background:#E3F6F3}
 @media (max-width:420px){.dash{grid-template-columns:1fr;justify-items:center;text-align:center}.dstats{justify-content:center}.step .num{width:52px;height:52px;font-size:26px}}
 @media (prefers-reduced-motion:reduce){#world *{animation:none!important}*{animation:none!important;transition:none!important}.ly{opacity:1}.door{display:none}.closing .door{display:block}}
-</style>
+/* computer screens of normal height (e.g. a laptop at 125%): everything fits without scrolling */
+@media (min-width:700px) and (max-height:900px){
+.wrap{padding-top:10px;padding-bottom:12px;gap:10px}
+.card{padding:14px 20px}
+.stage{gap:10px}
+.logo{width:min(240px,62vw,20vh)}
+.brand.small .logo{width:min(130px,11vh)}
+.toytable{width:min(86vw,400px,32vh)}
+.doorway,.hero{max-width:min(340px,32vh)}
+.bubble{font-size:20px;padding:8px 16px}
+.chat{gap:8px}
+.trail{gap:8px;padding:2px 0}
+.step{padding:6px 10px;padding-inline-end:20px}
+.step .num{width:46px;height:46px;font-size:24px}
+.scenebox{max-width:calc((100vh - 300px)*4/3);margin:0 auto}
+.kitchen2{min-height:170px;padding-top:14px}
+.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.tile{min-height:112px;padding:10px 8px;gap:4px}
+.tile .letter,.tile .big{min-width:58px;height:58px;font-size:32px}
+.dash .ring{width:80px;height:80px}
+}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1064,7 +1084,7 @@ function heroSVG(doorOpen){
   <rect x="226" y="92" width="74" height="8" rx="4" fill="#C98F56"/>
   <text x="232" y="90" font-size="18">🧩</text><text x="258" y="90" font-size="18">🚂</text><text x="282" y="90" font-size="16">🎈</text>
   <g class="dani">
-    <defs><clipPath id="avClip"><rect x="92" y="22" width="136" height="178" rx="22"/></clipPath></defs>
+    <defs><clipPath id="avClip"><rect x="64" y="18" width="192" height="184" rx="22"/></clipPath></defs>
     ${AVATAR.length>5000?`<g clip-path="url(#avClip)"><g class="head avimg"><image href="${AVATAR}" x="70" y="22" width="180" height="180" preserveAspectRatio="xMidYMid slice"/></g></g>`:`<g class="head avimg"><image href="${LOGO}" x="40" y="40" width="240" height="136" preserveAspectRatio="xMidYMid meet"/></g>`}
   </g>
   <g class="olddani" display="none">
