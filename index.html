@@ -530,6 +530,7 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .cardzoom.on{background:rgba(40,30,80,.45)}
 .zcard{position:fixed;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 0 0 6px #fff,0 16px 40px rgba(0,0,0,.35);transition:left .6s ease-in-out,top .6s ease-in-out,width .6s ease-in-out,height .6s ease-in-out,opacity .6s}
 .zcard img{width:100%;height:100%;object-fit:cover;display:block}
+.zcard .cload,.fc-front .cload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:min(6vw,26px);text-align:center;padding:16px;background:#FFF8E6;color:var(--ink)}
 .zcard .ccap{position:absolute;left:0;right:0;bottom:0;margin:0;background:rgba(255,255,255,.93);padding:8px;font-family:var(--display);font-size:min(5vw,24px);text-align:center}
 .zpanel{position:fixed;left:50%;transform:translateX(-50%);width:min(90vw,460px);background:#fff;border-radius:18px;padding:10px 14px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .abrow{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap}
@@ -1895,7 +1896,7 @@ function renderAct(){
     const IMG=window.CARD_IMG||{},c=d.cards[d.ci],L=SOUNDS[S.sound];
     const racing=d.phase==='deck'||d.phase==='shuffle';
     const win=racing?`<div class="cback" id="slotimg"><span>?</span></div>`
-      :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">טוען תמונה...</div>`}</div></div>`;
+      :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]&&IMG[c[0]].length>5000?`<img src="${IMG[c[0]]}" alt="">`:IMG[c[0]]?`<div class="cload">🖼️ ${esc(c[1])}</div>`:`<div class="cload">טוען תמונה...</div>`}</div></div>`;
     d.flip=false;
     const pile=`<div class="donepile" id="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
     d.justAdded=false;
@@ -1916,7 +1917,7 @@ function renderAct(){
     if(d.phase==='open'&&!d.zoomed){d.zoomed=true;TIMERS.push(setTimeout(()=>{
       const sw=document.getElementById('slotwin');if(!sw)return;const r=sw.getBoundingClientRect();S.overlay=true;
       const ov=document.createElement('div');ov.className='cardzoom';
-      ov.innerHTML=`<div class="zcard" style="left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px"><img src="${IMG[c[0]]||''}" alt=""><div class="ccap" id="zcap" hidden></div></div><div class="zpanel" hidden><p class="drag-hint">מה מצחיק בקלף? 🤪 מספרים!</p><div id="rh"></div></div>`;
+      ov.innerHTML=`<div class="zcard" style="left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px">${(IMG[c[0]]||'').length>5000?`<img src="${IMG[c[0]]}" alt="">`:`<div class="cload">🖼️ ${esc(c[1])}</div>`}<div class="ccap" id="zcap" hidden></div></div><div class="zpanel" hidden><p class="drag-hint">מה מצחיק בקלף? 🤪 מספרים!</p><div id="rh"></div></div>`;
       document.body.appendChild(ov);const z=ov.querySelector('.zcard'),p=ov.querySelector('.zpanel');sw.style.visibility='hidden';
       const size=Math.min(innerWidth*.86,innerHeight*.62,480),tl=(innerWidth-size)/2,tt=Math.max(12,innerHeight*.05);
       requestAnimationFrame(()=>requestAnimationFrame(()=>{ov.classList.add('on');Object.assign(z.style,{left:tl+'px',top:tt+'px',width:size+'px',height:size+'px'})}));
