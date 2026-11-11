@@ -1025,6 +1025,15 @@ function starsWord(n){return n===1?'כוכב אחד':n+' כוכבים'}
 function toast(e,t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.innerHTML=`<span class="te">${e}</span><span>${t}</span>`;document.body.appendChild(d);setTimeout(()=>d.remove(),3100);setTimeout(()=>{try{SFX.fanfare()}catch(x){}},300)}
 
 /* ---------- sound effects (made in the page, no files) ---------- */
+/* phones: on iPhone the ring/silent switch mutes web sounds. Asking for "playback" audio (and starting a silent
+   looping audio element on the first touch) makes the game sounds play like a video does, even in silent mode */
+(()=>{try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  const silentWav=()=>{const n=800,b=new ArrayBuffer(44+n),v=new DataView(b),w=(o,s)=>[...s].forEach((ch,i)=>v.setUint8(o+i,ch.charCodeAt(0)));
+    w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);for(let i=0;i<n;i++)v.setUint8(44+i,128);
+    return URL.createObjectURL(new Blob([b],{type:'audio/wav'}))};
+  let done=false;const unlock=()=>{try{typeof SFX!=='undefined'&&!SFX.muted&&SFX.wake()}catch(e){}if(done)return;done=true;try{const a=new Audio(silentWav());a.loop=true;a.volume=0.01;a.setAttribute('playsinline','');a.play().catch(()=>{done=false})}catch(e){}
+    try{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}}catch(e){}};
+  ['touchend','pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true,passive:true}))})();
 const SFX=(()=>{
   let ctx=null,muted=store.get('muted')==='1';
   function c(){if(muted)return null;try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}catch(e){return null}}
@@ -1059,6 +1068,7 @@ const SFX=(()=>{
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
+    wake(){const a=c();if(a&&a.state!=='running')a.resume().catch(()=>{});try{const o=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=o;s.connect(a.destination);s.start(0)}catch(e){}},
     boing(){tone(200,.35,{vol:.2,to:600});tone(600,.2,{at:.3,vol:.12,to:300})},
     splash(){noise(.7,{vol:.5,hp:300,lp:4000});noise(.35,{at:.05,vol:.35,hp:2000,lp:9000});[0,.12,.22,.35].forEach((t,i)=>tone(900+i*250,.08,{at:.15+t,vol:.08,to:1800+i*200}))},
     slurp(){tone(300,.25,{vol:.18,to:900,type:'triangle'});tone(500,.2,{at:.3,vol:.15,to:1200,type:'triangle'})},
