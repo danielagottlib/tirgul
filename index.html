@@ -460,6 +460,27 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .hplot.move .hanimal,.hplot.say .hanimal,.hplot.done .hanimal{transform:translateX(min(22vw,120px)) scale(.55);transform-origin:50% 100%}
 .hplot.say .hanimal,.hplot.done .hanimal{transition:none}
 .hplot.done .house::after{content:"💛";position:absolute;left:50%;top:-10%;font-size:34px;transform:translateX(-50%);animation:popin .4s ease-out}
+.hplot2{position:relative;width:min(80vw,380px);height:min(50vw,230px);background:linear-gradient(#DFF3FF 0 74%,#9BD77A 74%);border-radius:20px;overflow:hidden;display:flex;justify-content:center;align-items:flex-end}
+.house2{position:relative;width:62%;height:94%;margin-bottom:5%}
+.h2animal{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);font-size:min(14vw,72px);line-height:1;z-index:1;animation:abob 1s ease-in-out infinite alternate}
+.p-floor{position:absolute;left:-4%;right:-4%;bottom:0;height:9%;background:#B98A5A;border-radius:6px;z-index:2}
+.p-wl,.p-wr{position:absolute;bottom:9%;width:17%;height:52%;background:var(--c);border-radius:4px 4px 0 0;box-shadow:inset 0 -6px 0 rgba(0,0,0,.15);background-image:repeating-linear-gradient(0deg,transparent 0 22%,rgba(0,0,0,.12) 22% 25%);z-index:2}
+.p-wl{left:2%}.p-wr{right:2%}
+.p-roof{position:absolute;left:-10%;right:-10%;bottom:60%;height:38%;background:#8E4B2E;clip-path:polygon(50% 0,100% 100%,0 100%);z-index:2}
+.p-deco{position:absolute;inset:0;z-index:3;pointer-events:none}
+.p-deco::before{content:"💛";position:absolute;left:50%;top:22%;transform:translateX(-50%);font-size:min(7vw,30px)}
+.p-deco::after{content:"🌷🌼";position:absolute;right:-16%;bottom:2%;font-size:min(6vw,26px)}
+.house2 .new{animation:dropin .5s ease-out both}
+.house2 .p-deco.new{animation:popin .5s ease-out both}
+.hplot2.done .house2{animation:popin .6s ease-out}
+.reps{display:flex;gap:8px;justify-content:center}
+.reps i{width:18px;height:18px;border-radius:50%;background:#E6E1F5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
+.reps i.on{background:#F6B21E}
+.zoo{position:relative;padding-bottom:70px;overflow:hidden}
+.zoogirl{position:absolute;bottom:0;right:-60px;font-size:60px;line-height:1;animation:girlwalk 2.6s linear forwards}
+.zoogirl.yay{animation:girljump .45s ease-in-out infinite alternate;right:calc(50% - 30px)}
+@keyframes girlwalk{to{right:calc(50% - 30px)}}
+@keyframes girljump{from{transform:translateY(0)}to{transform:translateY(-22px)}}
 .street{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 .street .mini{position:relative;width:74px;height:80px;animation:popin .4s var(--d) ease-out both}
 .street .walls{position:absolute;left:8px;right:8px;bottom:0;height:46px;background:var(--c);border-radius:4px}
@@ -738,7 +759,7 @@ button.stars{cursor:pointer;color:var(--ink)}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=2"></script><script src="mygames.js?v=1"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=2"></script><script src="mygames.js?v=2"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1691,7 +1712,7 @@ function startAct(act,from){
     const pool=(S.sound!=null&&SOUNDS[S.sound]&&!['pair','vocab'].includes(S.stage))?soundWords():d.items.filter(x=>x[1]&&x[2]!=='syl');
     const prev=S.lastPuzzle;let pz=pick(pool.filter(x=>x[1]!==prev),1)[0]||pool[0];S.lastPuzzle=pz[1];d.puzzle=pz}
   if(act==='story'){d.round=0;d.trio=null;d.count=0}
-  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice());d.k=0;d.phase='ready';S.gkey='mine|'+d.game.id}
+  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.phase='play';S.gkey='mine|'+d.game.id}
   S.data=d;
   if(['phear','find','odd','quest','where','sort','two'].includes(act)){Object.assign(S,{view:'act',act});window.scrollTo(0,0);newRound()}
   else go('act',{act});
@@ -1721,25 +1742,27 @@ function renderAct(){
   const d=S.data;let body='';
   const shell=b=>{app.innerHTML=header(titleFor(),backTo())+b;bindCommon()};
   if(S.act==='mine'&&d.game.kind==='house'){
-    /* personal game "בונים בית ל...": tap to build a house, the animal moves in, then the child says the sentence */
-    const it=d.items[d.k],col=HOUSE_COL[d.k%HOUSE_COL.length],sent=d.game.frame+it[0];
-    if(d.phase==='street'){shell(`<div class="card stage"><h2>כל החיות קיבלו בית! 🎉</h2><div class="street">${d.items.map((x,i)=>`<div class="mini" style="--c:${HOUSE_COL[i%HOUSE_COL.length]};--d:${i*.15}s"><i class="roof"></i><i class="walls"></i><span>${x[1]}</span></div>`).join('')}</div></div>`);
-      SFX.fanfare();TIMERS.push(setTimeout(finish,3200));return}
-    const built=d.phase!=='ready';
-    shell(`<div class="card stage"><div class="progress">בית ${d.k+1} מתוך ${d.items.length}</div>
-      <div class="hplot ${d.phase}" style="--c:${col}">
-        <div class="house">${built?`<i class="hb b1"></i><i class="hb b2"></i><i class="hb b3"></i><i class="hroof"></i><i class="hdoor"></i><i class="hwin"></i>`:''}<i class="plot"></i></div>
-        <div class="hanimal" id="hanimal">${it[1]}</div>
+    /* personal game "בונים בית ל...": every time the child says the sentence, one more part of the house
+       is built around the animal (5 times per animal). At the end: a zoo of all the houses and a happy girl */
+    const reps=d.game.reps||5;
+    if(d.phase==='zoo'){shell(`<div class="card stage"><h2>גן החיות מוכן! 🎉</h2><div class="zoo"><div class="street">${d.items.map((x,i)=>`<div class="mini" style="--c:${HOUSE_COL[i%HOUSE_COL.length]};--d:${i*.2}s"><i class="roof"></i><i class="walls"></i><span>${x[1]}</span></div>`).join('')}</div><span class="zoogirl" id="zoogirl">🚶‍♀️</span></div></div>`);
+      SFX.fanfare();TIMERS.push(setTimeout(()=>{const g=document.getElementById('zoogirl');if(g){g.textContent='🙆‍♀️';g.classList.add('yay');SFX.cheer?SFX.cheer():SFX.fanfare()}},2600));
+      TIMERS.push(setTimeout(finish,5600));return}
+    const it=d.items[d.k],col=HOUSE_COL[d.k%HOUSE_COL.length],n=d.n,last=d.fresh?n:-1;d.fresh=false;
+    const part=(k,cls)=>n>=k?`<i class="${cls}${last===k?' new':''}"></i>`:'';
+    shell(`<div class="card stage"><div class="progress">${it[1]} חיה ${d.k+1} מתוך ${d.items.length}</div>
+      <div class="hplot2 ${n>=reps?'done':''}" style="--c:${col}">
+        <div class="house2">${part(1,'p-floor')}${part(2,'p-wl')}${part(3,'p-wr')}${part(4,'p-roof')}${part(5,'p-deco')}<span class="h2animal">${it[1]}</span></div>
       </div>
-      ${d.phase==='ready'?`<p class="drag-hint">${esc(d.game.ask||'למי נבנה בית?')} ${it[1]}</p><button class="btn coral bigspin" id="build">🔨 בונים בית!</button>`
-        :d.phase==='build'?`<p class="muted">בונים... 🔨</p>`
-        :`<div class="sentence">${esc(d.game.frame)}<b>${esc(it[0])}</b></div>${d.phase==='say'?'<p class="muted">אומרים את המשפט 🗣️</p><div id="rh"></div>':'<p class="cheer">כל הכבוד! 🎉</p>'}`}
+      <div class="reps">${Array.from({length:reps},(x,k)=>`<i class="${k<n?'on':''}"></i>`).join('')}</div>
+      <div class="sentence">${esc(d.game.frame)}<b>${esc(it[0])}</b></div>
+      ${n<reps?`<p class="muted">${n?'עוד פעם! ':''}אומרים את המשפט, ונבנה עוד חלק בבית 🔨</p><div id="rh"></div>`:'<p class="cheer">ל'+esc(it[0])+' יש בית! 🎉</p>'}
     </div>`);
-    const b=document.getElementById('build');
-    if(b)b.onclick=()=>{d.phase='build';render();[0,450,900].forEach(t=>TIMERS.push(setTimeout(()=>SFX.thud?SFX.thud():SFX.blip(),t)));
-      TIMERS.push(setTimeout(()=>{SFX.boing();d.phase='move';render();TIMERS.push(setTimeout(()=>{d.phase='say';render()},1300))},1800))};
+    if(last>0)SFX.thud?SFX.thud():SFX.blip();
     const rh=document.getElementById('rh');
-    if(rh)recStep(rh,()=>{addStar();d.phase='done';render();TIMERS.push(setTimeout(()=>{d.k++;if(d.k>=d.items.length)d.phase='street';else d.phase='ready';render()},1600))},{max:12000});
+    if(rh)recStep(rh,()=>{addStar();d.n++;d.fresh=true;
+      if(d.n>=reps){render();SFX.fanfare();TIMERS.push(setTimeout(()=>{d.k++;d.n=0;if(d.k>=d.items.length)d.phase='zoo';render()},2600))}
+      else render()},{max:12000});
     return;
   }
   if(S.act==='balloon'){
