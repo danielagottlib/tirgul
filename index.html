@@ -807,17 +807,17 @@ button.stars{cursor:pointer;color:var(--ink)}
 @keyframes mbout{from{left:50%;top:80%;transform:translate(-50%,-50%) scale(.2);opacity:0}to{opacity:1}}
 .mbbig{width:min(48vw,200px);height:auto;filter:drop-shadow(0 8px 8px rgba(0,0,0,.18))}
 .hlr{color:#E5484D}/* personal game: airplane */
-.pscene{position:relative;width:min(92vw,640px,calc((100vh - 250px)*1.35));aspect-ratio:1.35;border-radius:22px;background:linear-gradient(#9FD8FF 0,#DDF1FF 70%,#B9E59A 70%);overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7)}
-.pscene .runway{position:absolute;left:0;right:0;top:80%;height:9%;background:repeating-linear-gradient(90deg,#fff 0 6%,transparent 6% 12%) center/100% 14% no-repeat,#6B7280}
-.pscene .cloud{position:absolute;width:20%;aspect-ratio:2.2;background:#fff;border-radius:999px;opacity:.9;box-shadow:18px -12px 0 6px #fff;animation:cloudmove 18s linear infinite}
-.pscene .c1{top:8%;left:10%}.pscene .c2{top:20%;left:58%;animation-duration:24s}.pscene .c3{top:4%;left:80%;animation-duration:30s}
+.plscene{position:relative;width:min(92vw,640px,calc((100vh - 250px)*1.35));aspect-ratio:1.35;border-radius:22px;background:linear-gradient(#9FD8FF 0,#DDF1FF 70%,#B9E59A 70%);overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7)}
+.plscene .runway{position:absolute;left:0;right:0;top:80%;height:9%;background:repeating-linear-gradient(90deg,#fff 0 6%,transparent 6% 12%) center/100% 14% no-repeat,#6B7280}
+.plscene .cloud{position:absolute;width:20%;aspect-ratio:2.2;background:#fff;border-radius:999px;opacity:.9;box-shadow:18px -12px 0 6px #fff;animation:cloudmove 18s linear infinite}
+.plscene .c1{top:8%;left:10%}.plscene .c2{top:20%;left:58%;animation-duration:24s}.plscene .c3{top:4%;left:80%;animation-duration:30s}
 @keyframes cloudmove{from{transform:translateX(0)}to{transform:translateX(-140%)}}
 .plane{position:absolute;left:50%;top:79%;width:52%;transform:translate(-50%,-78%);z-index:2}
 .plane .pimg{width:100%;display:block;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
 .plane .pwin{position:absolute;top:49.6%;width:7.5%;transform:translate(-50%,-50%);border-radius:50%;background:#E6F6FF;animation:popin .4s ease-out}
-.pscene.fly .plane{animation:takeoff 4.6s ease-in forwards}
+.plscene.lift .plane{animation:takeoff 4.6s ease-in forwards}
 @keyframes takeoff{0%{transform:translate(-50%,-78%)}25%{transform:translate(-30%,-78%)}45%{transform:translate(-10%,-110%) rotate(-12deg)}100%{transform:translate(160%,-420%) rotate(-18deg) scale(.6)}}
-.pscene.fly .cloud{animation-duration:3s}</style>
+.plscene.lift .cloud{animation-duration:3s}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1872,9 +1872,9 @@ function renderAct(){
     const reps=d.game.reps||2,N=d.items.length,end=d.phase==='fly',tail=d.game.tail||'';
     const first=w=>{const m=w.match(/^.[֑-ׇ]*/);return m?`<b class="hlr">${m[0]}</b>${w.slice(m[0].length)}`:w};
     const WIN=[32,41.5,51,60.6,70];
-    const pos=i=>{const a=Math.PI*(1.06+.88*i/Math.max(1,N-1));return [50+Math.cos(a)*42,44+Math.sin(a)*36]};
+    const pos=i=>{const a=Math.PI*(1.06+.88*i/Math.max(1,N-1));return [50+Math.cos(a)*36,44+Math.sin(a)*34]};
     shell(`<div class="card stage"><p class="muted">${end?'האווירון ממריא! ✈️🎉':'נוגעים בפריט, אומרים את המשפט, והוא עולה לאווירון ✈️'}</p>
-      <div class="pscene ${end?'fly':''}" id="pscene"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i><i class="runway"></i>
+      <div class="plscene ${end?'lift':''}" id="plscene"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i><i class="runway"></i>
         ${end?'':d.items.map((it,i)=>{const [x,y]=pos(i),done=d.done.includes(i);return `<button class="mbitem ${done?'in':''}" data-i="${i}" style="left:${x}%;top:${y}%;--d:${i*.12}s" ${done?'disabled':''}><img src="${R[it[1]]}" alt=""><span>${first(it[0])}</span></button>`}).join('')}
         <div class="plane" id="plane"><img class="pimg" src="${R.plane}" alt="אווירון">
           ${d.done.map((i,k)=>`<img class="pwin" src="${R[d.items[i][1]]}" style="left:${WIN[k%WIN.length]}%" alt="">`).join('')}</div>
