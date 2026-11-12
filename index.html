@@ -2058,7 +2058,7 @@ function renderAct(){
     const win=racing?`<div class="cback" id="slotimg"><span>?</span></div>`
       :`<div class="flipcard ${d.flip?'flipping':'shown'}"><div class="fc-back cback b0"><span>?</span></div><div class="fc-front">${IMG[c[0]]&&IMG[c[0]].length>5000?`<img src="${IMG[c[0]]}" alt="">`:IMG[c[0]]?`<div class="cload">🖼️ ${esc(c[1])}</div>`:`<div class="cload">טוען תמונה...</div>`}</div></div>`;
     d.flip=false;
-    const pile=`<div class="donepile" id="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>`<i style="--k:${k};--r:${((k*37)%9)-4}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
+    const pile=`<div class="donepile" id="donepile" aria-label="קלפים שסיימנו: ${d.ci}">${d.ci?Array.from({length:Math.min(d.ci,8)},(x,k)=>{const pc=d.cards[d.ci-Math.min(d.ci,8)+k],pi=pc&&IMG[pc[0]];return `<i style="--k:${k};--r:${((k*37)%9)-4}${pi&&pi.length>5000?`;background:#fff url(${pi}) center/cover`:''}" class="${d.justAdded&&k===Math.min(d.ci,8)-1?'newtop':''}"></i>`}).join(''):'<i class="empty"></i>'}<b>${d.ci} ✔</b></div>`;
     d.justAdded=false;
     shell(`<div class="card stage"><div class="progress">קלף ${Math.min(d.ci+1,d.cards.length)} מתוך ${d.cards.length}</div>
       <div class="abrow">${pile}<div class="slotm ${d.phase==='shuffle'?'running':''}"><div class="slotlights">${Array.from({length:9},(x,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
