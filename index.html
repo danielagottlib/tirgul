@@ -819,6 +819,9 @@ button.stars{cursor:pointer;color:var(--ink)}
 @keyframes takeoff{0%{transform:translate(-50%,-78%)}25%{transform:translate(-30%,-78%)}45%{transform:translate(-10%,-110%) rotate(-12deg)}100%{transform:translate(160%,-420%) rotate(-18deg) scale(.6)}}
 .plscene.lift .cloud{animation-duration:3s}
 .yaybub{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fff;border-radius:24px;padding:8px 22px;font-family:var(--display);font-size:min(10vw,44px);color:#E5484D;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .4s ease-out;white-space:nowrap}
+.hintbtn{font-size:14px;padding:2px 10px;margin-inline-start:8px;vertical-align:middle}
+.sitem.hinted{z-index:5;animation:hintglow .7s ease-in-out 5}
+@keyframes hintglow{0%,100%{box-shadow:0 0 0 0 rgba(255,196,61,0)}50%{box-shadow:0 0 0 10px rgba(255,196,61,.9),0 0 26px 12px rgba(255,220,120,.9)}}
 /* workshop house (long sentences) */
 .spic{display:inline-block;vertical-align:middle;font-size:1.15em;line-height:1}.spic img{width:1.7em;height:1.7em;object-fit:contain;vertical-align:middle}
 .fixhouse{position:relative;width:min(100%,440px,52vh);aspect-ratio:1/.92;margin:4px auto 10px}
@@ -1745,7 +1748,7 @@ const PHOTO_SCENES=[
    ['🐕','כלב',46,56,10],['⚽','כדור',54,67,8],['🌴','עץ דקל',6,25,10]]},
  {id:'picnic-k',name:'פיקניק בגינה',snd:'k',img:'@',
   q:['מי תלוי על העץ?','מה יש על השמיכה?','מי מטייל ליד הכדור?','מה יש על השולחן הקטן?'],
-  items:[['🐕','כלב',23,76,15],['⚽','כדור',42,84,9],['🐒','קוף',43,29,10],['👒','כובע',46,73,9],['🦔','קיפוד',57,89,9],['🌵','קקטוס',91,41,8],['🫖','קומקום',59,70,8],['🌈','קשת',62,24,9],['☕','כוס',55,78,6],['🍼','בקבוק',68,71,5],['🥐','קרואסון',68,81,7],['🪑','כיסא',71,48,10],
+  items:[['🐕','כלב',23,76,15],['⚽','כדור',42,84,9],['🐒','קוף',43,29,10],['👒','כובע',46,73,9],['🦔','קיפוד',57,89,9],['🌵','קקטוס',91,41,8],['🫖','קומקום',59,70,8],['🌈','קשת',62,24,9],['☕','כוס',55,78,7],['🍼','בקבוק',68,71,7],['🥐','קרואסון',68,81,8],['🪑','כיסא',71,48,10],
    ['🐦','ציפור',86,16,7],['🌸','פרחים',10,52,10],['🌳','עץ',7,18,10]]},
  {id:'garden-g',name:'מסיבה בגינה',snd:'g',img:'@',
   q:['מה יש על השולחן?','מי עומד ליד העץ?','מה תלוי על החבל?','מי שוחה בבריכה?'],
@@ -2151,7 +2154,7 @@ function renderAct(){
     const done=d.found.length>=targets.length;
     const head=ab?`<p class="drag-hint">מה מצחיק בתמונה? 🤪 מוצאים ${targets.length} דברים משונים!</p>`
                  :`<p class="drag-hint">מחפשים בתמונה דברים עם <span class="letterchip">${L.name}</span> ונוגעים בהם ✨</p>`;
-    shell(`<div class="card stage">${head}<div class="progress">${sc.name} · מצאת ${d.found.length} / ${targets.length}</div>
+    shell(`<div class="card stage">${head}<div class="progress">${sc.name} · מצאת ${d.found.length} / ${targets.length}${done?'':' <button class="ghost hintbtn" id="hint" type="button">💡 רמז</button>'}</div>
       <div class="scenebox ${sc.img?'photo':'bg-'+sc.bg} ${done?'all-found':''}" id="sbox">${sc.img?`<div class="photoin" style="background-image:url(${(window.SCENE_IMG||{})[sc.id]||''})">`:sceneDecor(sc)}
       ${all.map((it,ix)=>{const f=d.found.includes(it[1])&&(d.foundAt[it[1]]==null||d.foundAt[it[1]]===ix);
         const lab=f?`<span class="slabel ${ab?'ab':''}">${ab?it[1]:hl(it[1],L.hl)}</span>`:'';return sceneItemHtml(it,ix,f?'glow':'',lab)}).join('')}${sc.img?'<i class="glint"></i></div>':''}
@@ -2163,6 +2166,10 @@ function renderAct(){
         :`<div class="chips">${targets.map(t=>`<span class="chip">${t[0]} ${hl(t[1],L.hl)}</span>`).join('')}</div>
         <button class="btn leaf" id="tomove" style="margin-top:10px">🚜 לוקחים אותם לחווה!</button>`}</div>`:''}
     </div>`);
+    /* hint: one thing not found yet glows for a few seconds */
+    const hb=document.getElementById('hint');if(hb)hb.onclick=()=>{const left=targets.find(t=>!d.found.includes(t[1]));if(!left)return;
+      const ix=all.findIndex(x=>x===left||(x[1]===left[1]&&x[0]===left[0]));const el=app.querySelector(`.sitem[data-i="${ix}"]`);if(!el)return;
+      SFX.blip();el.classList.remove('hinted');void el.offsetWidth;el.classList.add('hinted');TIMERS.push(setTimeout(()=>el.classList.remove('hinted'),3500))};
     app.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{if(done)return;const it=all[+b.dataset.i];const isT=ab?it[7]==='a':targetsAll.includes(it);
       if(isT){if(d.found.includes(it[1]))return;d.found.push(it[1]);d.foundAt[it[1]]=+b.dataset.i;SFX.good();
         if(d.found.length===targets.length){addStar();SFX.fanfare()}render()}
