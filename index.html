@@ -819,6 +819,15 @@ button.stars{cursor:pointer;color:var(--ink)}
 @keyframes takeoff{0%{transform:translate(-50%,-78%)}25%{transform:translate(-30%,-78%)}45%{transform:translate(-10%,-110%) rotate(-12deg)}100%{transform:translate(160%,-420%) rotate(-18deg) scale(.6)}}
 .plscene.lift .cloud{animation-duration:3s}
 .yaybub{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fff;border-radius:24px;padding:8px 22px;font-family:var(--display);font-size:min(10vw,44px);color:#E5484D;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .4s ease-out;white-space:nowrap}
+/* coloring pages */
+.palette{display:flex;flex-wrap:wrap;gap:10px 8px;justify-content:center;margin:4px 0 12px}
+.pcol{width:54px;height:54px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:0;transition:transform .15s}
+.pcol span{font-size:11px;background:rgba(255,255,255,.92);color:#333;border-radius:8px;padding:0 5px;margin-bottom:-9px;font-weight:700;white-space:nowrap}
+.pcol.on{transform:scale(1.18);border-color:#333}
+.palette.nudge{animation:shake .5s}
+.cwrap{width:min(100%,58vh);margin:0 auto 10px;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15);background:#fff;border:4px solid transparent}
+.cwrap.armed{border-color:#FFC43D;cursor:pointer}
+.cwrap canvas{display:block;width:100%;height:auto;touch-action:manipulation}
 </style>
 </head>
 <body>
@@ -1510,7 +1519,9 @@ function stageItems(st,act){
   return [];
 }
 const GAMES={pscene:['🖼️','תמונות מספרות','מוצאים בתמונה ומספרים מה קורה'],fix:['🛠️','בית המלאכה','אומרים משפט ומתקנים דברים שבורים'],cook:['👩‍🍳','מבשלים ארוחה','כל משפט מוסיף מצרך'],silly:['🎰','מכונת המשפטים','מסובבים את המכונה ואומרים'],scene:['🔎','מחפשים בתמונה','מוצאים דברים עם ההגה ומספרים'],absurd:['🤪','מה מצחיק בתמונה?','מוצאים ומסבירים מה לא הגיוני'],eggs:['🥚','ביצים מפתיעות','מי בוקע מהביצה?'],monster:['😋','המפלצון הרעב','מאכילים אותו עוגיות הברה'],frog:['🐸','הצפרדע הרעבה','קופצים על אבנים ותופסים חרקים'],balloon:['🎈','בלונים','מפוצצים בלון ואומרים'],train:['🚂','רכבת','מעמיסים את הקרונות'],line:['✏️','מותחים קו','מחברים כל תמונה לצל שלה'],memory:['🃏','זיכרון','מוצאים זוגות'],wheel:['🎡','גלגל המזל','מסובבים ואומרים 3 פעמים']};
+GAMES.color=['🎨','דפי צביעה','בוחרים צבע ואומרים משפט'];
 function gamesFor(st){
+  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['pscene','scene','absurd'];
   if(st==='syl')return ['eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['silly','balloon','train','line','memory','wheel'];
@@ -1827,6 +1838,8 @@ function startAct(act,from){
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
+  if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
+    loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()})}
   if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
   if(['eggs','monster','frog'].includes(act))loadScriptOnce('chars.js?v=1',()=>{if(S.view==='act'&&['eggs','monster','frog'].includes(S.act))render()});
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
@@ -1846,7 +1859,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2383,6 +2396,32 @@ function renderAct(){
     const e=document.getElementById('eat');if(e)e.onclick=()=>{addStar();finish()};
     return;
   }
+  if(S.act==='color'){
+    /* coloring pages (long sentences, ש / צ): the child picks a color and says the sentence
+       (צ: "אני רוצה לצבוע בצבע ___", ש: "עכשיו בחרתי משהו בצבע ___"), then taps up to 3 areas to paint them */
+    const P=window.COLOR_PAGES;if(!P){shell('<div class="card stage"><p class="muted">טוען את דפי הצביעה... 🎨</p></div>');loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()});return}
+    const pages=P[d.sid]||P.sh,L=SOUNDS[S.sound],cur=d.ci>=0&&d.left?CCOLORS[d.ci]:null;
+    const frame=c=>(d.sid==='ts'?'אני רוצה לצבוע בצבע ':'עכשיו בחרתי משהו בצבע ')+c;
+    shell(`<div class="card stage"><p class="muted">${cur?`צובעים ב${cur[0]}: נוגעים בחלק בציור (עוד ${d.left})`:'בוחרים צבע ואומרים את המשפט 🎨'} · ⭐ ${d.n}</p>
+      <div class="palette">${CCOLORS.map((c,i)=>`<button class="pcol ${cur&&d.ci===i?'on':''}" data-c="${i}" style="background:${c[1]}" aria-label="${c[0]}"><span>${c[0]}</span></button>`).join('')}</div>
+      <div class="cwrap ${cur?'armed':''}"><canvas id="cv" width="900" height="900"></canvas></div>
+      <div class="row"><button class="btn" id="nextpg">📄 דף אחר</button><button class="btn sun" id="cdone">✔️ סיימתי לצבוע</button></div></div>`);
+    const cv=document.getElementById('cv'),cx=cv.getContext('2d');
+    const paint=()=>{const im=cx.createImageData(900,900);im.data.set(d.pix);cx.putImageData(im,0,0)};
+    if(d.pix&&d.pixPg===d.pg)paint();
+    else{const im=new Image();im.onload=()=>{const c=document.getElementById('cv');if(S.act!=='color'||!c)return;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,900,900);x.drawImage(im,0,0,900,900);
+      const id=x.getImageData(0,0,900,900);d.pix=new Uint8ClampedArray(id.data);d.lum=new Uint8Array(810000);
+      for(let i=0;i<810000;i++){const p=i*4;d.lum[i]=(id.data[p]*.3+id.data[p+1]*.59+id.data[p+2]*.11)|0}d.pixPg=d.pg};im.src=pages[d.pg%pages.length]}
+    app.querySelectorAll('.pcol').forEach(b=>b.onclick=()=>{if(S.overlay)return;const i=+b.dataset.c;SFX.blip();
+      recOverlay(hl(frame(CCOLORS[i][0]),L.hl),()=>{addStar();d.n++;d.ci=i;d.left=3;render()})});
+    cv.onclick=e=>{if(S.overlay||!d.pix)return;
+      if(!cur){const pl=app.querySelector('.palette');pl.classList.remove('nudge');void pl.offsetWidth;pl.classList.add('nudge');return}
+      const r=cv.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*900/r.width),y=Math.floor((e.clientY-r.top)*900/r.height);
+      if(colorFill(d,x,y,cur[1])){d.left--;SFX.good();if(!d.left)d.ci=-1;render()}};
+    document.getElementById('nextpg').onclick=()=>{SFX.blip();d.pg=(d.pg+1)%pages.length;d.pix=null;render()};
+    document.getElementById('cdone').onclick=()=>finish();
+    return;
+  }
   if(S.act==='silly'){
     const L=SOUNDS[S.sound],r=d.cur,two=S.stage==='phr';
     shell(`<div class="card stage"><p class="muted">${two?'מכונת הזוגות':'מכונת המשפטים'} 🎰 · ${d.n+1} / ${d.goal}</p>
@@ -2416,6 +2455,17 @@ function renderAct(){
     if(done){d.solved=true;addStar();document.getElementById('cheer').textContent=pick(CHEERS,1)[0];TIMERS.push(setTimeout(newRound,1300))}
   });
 }
+const CCOLORS=[['אדום','#F03E3E'],['כתום','#FD7E14'],['צהוב','#FFD43B'],['ירוק','#40C057'],['תכלת','#74C0FC'],['כחול','#1C7ED6'],['סגול','#9775FA'],['ורוד','#F783AC'],['חום','#A0522D'],['שחור','#3A3A3A']];
+/* paint the closed area around (x,y): connected light pixels of the original line art; color is multiplied by the
+   original brightness so soft line edges stay smooth. A tap right on a line snaps to the nearest open pixel. */
+function colorFill(d,x,y,hex){const W=900,H=900,lum=d.lum,pix=d.pix,T=150;if(x<0||y<0||x>=W||y>=H)return false;let s=y*W+x;
+  if(lum[s]<T){let f=-1;for(let r=1;r<10&&f<0;r++)for(let dy=-r;dy<=r&&f<0;dy++)for(let dx=-r;dx<=r;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<W&&yy<H&&lum[yy*W+xx]>=T){f=yy*W+xx;break}}if(f<0)return false;s=f}
+  const R=parseInt(hex.slice(1,3),16),G=parseInt(hex.slice(3,5),16),B=parseInt(hex.slice(5,7),16);
+  const seen=new Uint8Array(W*H),st=[s];seen[s]=1;
+  const push=a=>{if(!seen[a]&&lum[a]>=T){seen[a]=1;st.push(a)}};
+  while(st.length){const p=st.pop(),l=lum[p]/255,q=p*4;pix[q]=R*l;pix[q+1]=G*l;pix[q+2]=B*l;const px=p%W;
+    if(px>0)push(p-1);if(px<W-1)push(p+1);if(p>=W)push(p-W);if(p<W*H-W)push(p+W)}
+  return true}
 function bad(b){SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');const c=document.getElementById('cheer');if(c)c.textContent='נסו שוב 🙂'}
 function finish(){
   clearTimers();SFX.fanfare();TIMERS.push(setTimeout(()=>voice('done'),900));
@@ -2521,7 +2571,7 @@ function renderTherapist(){
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
-    const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרנו עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
       <textarea class="txt" id="msg" rows="14" readonly>${esc(msg)}</textarea>
