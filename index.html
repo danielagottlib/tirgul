@@ -1623,7 +1623,7 @@ const REC={state:(navigator.mediaDevices&&window.MediaRecorder&&window.isSecureC
       const buf=new Uint8Array(an.fftSize);
       const loop=()=>{an.getByteTimeDomainData(buf);let sum=0;for(const v of buf){const d=(v-128)/128;sum+=d*d}const rms=Math.sqrt(sum/buf.length);onLevel&&onLevel(Math.min(1,rms*6));
         const now=performance.now();
-        if(rms>.045){spoke=true;quietSince=0}else if(spoke){if(!quietSince)quietSince=now;else if(now-quietSince>1100&&now-t0>900){REC.stopNow&&REC.stopNow();return}}
+        if(rms>.045){spoke=true;quietSince=0}else if(spoke){if(!quietSince)quietSince=now;else if(now-quietSince>2800&&now-t0>3000){REC.stopNow&&REC.stopNow();return}}
         raf=requestAnimationFrame(loop)};loop()}catch(e){}
     mr.start();const t=setTimeout(()=>{if(mr.state!=='inactive')mr.stop()},maxMs);REC.stopNow=()=>{clearTimeout(t);REC.stopNow=null;if(mr.state!=='inactive')mr.stop()}}catch(e){rej(e)}})},
   /* phones (iPhone) send all sound to the quiet ear speaker while the microphone is open:
@@ -1631,7 +1631,7 @@ const REC={state:(navigator.mediaDevices&&window.MediaRecorder&&window.isSecureC
   release(){try{this.stream&&this.stream.getTracks().forEach(t=>t.stop())}catch(e){}this.stream=null;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}try{SFX.wake()}catch(e){}},
   /* plays the recording through the page's sound engine (works on phones too), louder than normal */
   play(blob){return new Promise(res=>{let fin=false;const end=()=>{if(fin)return;fin=true;res()};
-    const viaEl=()=>{const url=URL.createObjectURL(blob);const au=new Audio(url);au.onended=()=>{URL.revokeObjectURL(url);end()};au.onerror=end;au.play().catch(end);setTimeout(end,15000)};
+    const viaEl=()=>{const url=URL.createObjectURL(blob);const au=new Audio(url);au.onended=()=>{URL.revokeObjectURL(url);end()};au.onerror=end;au.play().catch(end);setTimeout(end,35000)};
     const a=SFX.engine();if(!a||!blob.arrayBuffer){viaEl();return}
     blob.arrayBuffer().then(b=>a.decodeAudioData(b)).then(buf=>{const s=a.createBufferSource();s.buffer=buf;const g=a.createGain();g.gain.value=1.8;s.connect(g).connect(a.destination);s.onended=end;s.start();setTimeout(end,buf.duration*1000+600)}).catch(viaEl)})}
 };
@@ -1648,7 +1648,8 @@ function recStep(host,done,opts){
     host.querySelector('#recStop').onclick=()=>REC.stopNow&&REC.stopNow();
     await sleep(450);if(!alive())return;
     host.querySelector('#recMsg').textContent='🔴 עכשיו אומרים!';
-    const blob=await REC.record(opts.max||5000,v=>{const l=host.querySelector('#lvl');if(l)l.style.width=Math.round(v*100)+'%'});
+    /* children need time: a long pause is allowed and the parent can always press "סיימתי" */
+    const blob=await REC.record(Math.max(opts.max||0,30000),v=>{const l=host.querySelector('#lvl');if(l)l.style.width=Math.round(v*100)+'%'});
     REC.release();if(!alive())return;
     host.innerHTML=`<div class="recbox"><div class="recdot">🔊 שומעים את עצמנו...</div><div class="ears">👂</div></div>`;
     await sleep(250);if(!alive())return;
