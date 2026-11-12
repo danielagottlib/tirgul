@@ -793,7 +793,20 @@ button.stars{cursor:pointer;color:var(--ink)}
 .grid.many .tile{min-height:84px;padding:6px 4px;gap:2px;font-size:15px}
 .grid.many .tile .letter,.grid.many .tile .big{min-width:42px;height:42px;font-size:24px;padding:0 8px}
 .grid.many .tile .sub{display:none}
-</style>
+/* personal game: magic box */
+.mbox{position:relative;width:min(92vw,620px,calc((100vh - 250px)*1.3));aspect-ratio:1.3;border-radius:22px;background:radial-gradient(ellipse at 50% 85%,#FFF3C4 0,#F7E6FF 45%,#E4F0FF 100%);overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7)}
+.mbbox{position:absolute;left:50%;bottom:4%;width:34%;transform:translateX(-50%);filter:drop-shadow(0 10px 10px rgba(80,40,140,.3));z-index:2}
+.mbbox.gulp{animation:mbgulp .6s ease-out}
+@keyframes mbgulp{0%{transform:translateX(-50%) scale(1)}30%{transform:translateX(-50%) scale(1.12,.9)}60%{transform:translateX(-50%) scale(.95,1.08)}100%{transform:translateX(-50%) scale(1)}}
+.mbox.open .mbbox{width:42%;animation:popin .5s ease-out}
+.mbitem{position:absolute;transform:translate(-50%,-50%);width:17%;border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;animation:abob 1.4s var(--d) ease-in-out infinite alternate;z-index:3}
+.mbitem img{width:100%;height:auto;filter:drop-shadow(0 5px 5px rgba(0,0,0,.18))}
+.mbitem span{font-family:var(--display);font-size:min(4.5vw,20px);background:#fff;border-radius:999px;padding:0 10px;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.mbitem.in{visibility:hidden}
+.mbox.open .mbitem.out{visibility:visible;animation:mbout .8s var(--d) ease-out both}
+@keyframes mbout{from{left:50%;top:80%;transform:translate(-50%,-50%) scale(.2);opacity:0}to{opacity:1}}
+.mbbig{width:min(48vw,200px);height:auto;filter:drop-shadow(0 8px 8px rgba(0,0,0,.18))}
+.hlr{color:#E5484D}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -829,7 +842,7 @@ button.stars{cursor:pointer;color:var(--ink)}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=3"></script><script src="mygames.js?v=3"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=3"></script><script src="mygames.js?v=4"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1811,7 +1824,7 @@ function startAct(act,from){
     const pool=(S.sound!=null&&SOUNDS[S.sound]&&!['pair','vocab'].includes(S.stage))?soundWords():d.items.filter(x=>x[1]&&x[2]!=='syl');
     const prev=S.lastPuzzle;let pz=pick(pool.filter(x=>x[1]!==prev),1)[0]||pool[0];S.lastPuzzle=pz[1];d.puzzle=pz}
   if(act==='story'){d.round=0;d.trio=null;d.count=0}
-  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.phase='play';S.gkey='mine|'+d.game.id}
+  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.done=[];d.phase='play';S.gkey='mine|'+d.game.id}
   S.data=d;
   if(['phear','find','odd','quest','where','sort','two'].includes(act)){Object.assign(S,{view:'act',act});window.scrollTo(0,0);newRound()}
   else go('act',{act});
@@ -1840,6 +1853,32 @@ function newRound(){
 function renderAct(){
   const d=S.data;let body='';
   const shell=b=>{app.innerHTML=header(titleFor(),backTo())+b;bindCommon()};
+  if(S.act==='mine'&&d.game.kind==='mbox'){
+    /* personal game "קופסת הקסמים" (Gemini art): realistic items around a magic box. The child taps an item,
+       says the word (reps times), and the item flies into the box. When all are in, the box bursts open */
+    const R=window.RBOX_IMG;if(!R){shell('<div class="card stage"><p class="muted">טוען את קופסת הקסמים... ✨</p></div>');loadScriptOnce('rbox.js?v=1',()=>{if(S.act==='mine')render()});return}
+    const reps=d.game.reps||2,N=d.items.length,end=d.phase==='open';
+    const first=w=>{const m=w.match(/^.[֑-ׇ]*/);return m?`<b class="hlr">${m[0]}</b>${w.slice(m[0].length)}`:w};
+    const pos=i=>{const a=Math.PI*(1.08+.84*i/Math.max(1,N-1));return [50+Math.cos(a)*40,58+Math.sin(a)*46]};
+    shell(`<div class="card stage"><p class="muted">${end?'הקופסה נפתחה! 🎉':'נוגעים בפריט, אומרים את המילה, והוא קופץ לתוך קופסת הקסמים ✨'}</p>
+      <div class="mbox ${end?'open':''}" id="mbox">
+        ${d.items.map((it,i)=>{const [x,y]=pos(i),done=d.done.includes(i);return `<button class="mbitem ${done?'in':''} ${end?'out':''}" data-i="${i}" style="left:${x}%;top:${y}%;--d:${i*.12}s" ${done&&!end?'disabled':''}><img src="${R[it[1]]}" alt=""><span>${first(it[0])}</span></button>`}).join('')}
+        <img class="mbbox" id="mbbox" src="${end?R.boxopen:R.boxclosed}" alt="קופסת הקסמים">
+        ${end?Array.from({length:16},(x,k)=>`<i class="fconf" style="left:${6+k*5.8}%;--d:${(k%5)*.1}s;--h:${k*45}deg"></i>`).join(''):''}
+      </div>
+      <div class="progress">${d.done.length} / ${N} ✨</div></div>`);
+    if(end){SFX.fanfare();TIMERS.push(setTimeout(finish,4800));return}
+    app.querySelectorAll('.mbitem:not(.in)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const i=+b.dataset.i,it=d.items[i];SFX.blip();S.overlay=true;let n=0;
+      const ov=document.createElement('div');ov.className='overlay';document.body.appendChild(ov);
+      const step=()=>{ov.innerHTML=`<div class="card stage pop-in"><img class="mbbig" src="${R[it[1]]}" alt=""><div class="word">${first(it[0])}</div>
+        <div class="reps">${Array.from({length:reps},(x,k)=>`<i class="${k<n?'on':''}"></i>`).join('')}</div><p class="muted">${n?'עוד פעם! ':''}אומרים: ${it[0]} 🗣️</p><div id="rh"></div></div>`;
+        recStep(ov.querySelector('#rh'),()=>{addStar();n++;if(n<reps){step();return}
+          ov.remove();S.overlay=false;const box=document.getElementById('mbbox');
+          flyTo(b.querySelector('img'),box,()=>{d.done.push(i);SFX.chomp?SFX.chomp():SFX.blip();if(box){box.classList.remove('gulp');void box.offsetWidth;box.classList.add('gulp')}
+            TIMERS.push(setTimeout(()=>{if(d.done.length>=N){d.phase='open';SFX.splash?SFX.splash():null}render()},650))});b.classList.add('in')},{max:12000})};
+      step()});
+    return;
+  }
   if(S.act==='mine'&&d.game.kind==='farm'){
     /* personal game on a farm (Gemini art): all the animals stand in the meadow, the building materials lie in the corner.
        each time the child says the sentence, one more piece flies from the pile and builds the current animal's house.
