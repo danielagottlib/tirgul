@@ -8,5 +8,8 @@ window.MY_ASSIGN={
  ],
  "R4PQ-6Y5V": [
   "house-l"
+ ],
+ "EZQ8-YG7Y": [
+  "mbox-ri"
  ]
 };
