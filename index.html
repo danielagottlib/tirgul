@@ -1314,12 +1314,14 @@ async function applyCodes(out,addBlocked,addReplaced,doneMsg){out.innerHTML='<p 
 /* Daniela's own test code: opens every goal, every stage and every personal game */
 const TEST_CODE='DANI-TEST';
 const isTestCode=c=>normCode(c)===normCode(TEST_CODE);
-/* activity log: a row in Daniela's Google Sheet for each visit (at most once per 30 minutes per device) and each
-   finished game. Only the code is sent, never a name. LOG_URL = her Apps Script web-app address. */
-const LOG_URL='';
+/* activity log: a row in Daniela's Google Form "מעקב תרגול" (answers go to its sheet) for each visit (at most once per
+   30 minutes per device) and each finished game. Only the code is sent, never a name. */
+const LOG_URL='https://docs.google.com/forms/d/e/1FAIpQLScB6EU1kUEEHZ_t6ruTXCyU-vhTgtj9Vk0Mmslph_BYRaJ0fA/formResponse';
+const LOG_F={code:'entry.154754866',ev:'entry.1862084195',game:'entry.1482756983',target:'entry.2002188233',stars:'entry.1577762734'};
 function logEv(ev,game,stars){if(!LOG_URL||!S.code)return;try{const s=SOUNDS[S.sound];
   const target=game?[(s&&S.sound!=null&&!['pair','vocab'].includes(S.stage))?s.name:'',S.stage?stageTitle(S.stage):''].filter(Boolean).join(' · '):'';
-  fetch(LOG_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({code:S.code,ev,game:game||'',target,stars:stars==null?'':stars})}).catch(()=>{})}catch(e){}}
+  const v={code:S.code,ev,game:game||'',target,stars:stars==null?'':String(stars)};const b=new URLSearchParams();for(const k in LOG_F)b.append(LOG_F[k],v[k]);
+  fetch(LOG_URL,{method:'POST',mode:'no-cors',body:b}).catch(()=>{})}catch(e){}}
 function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
 function login(code){
   if(isTestCode(code)){S.bits=GOALMASK|0x601C00;S.code=TEST_CODE;S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();return true}
