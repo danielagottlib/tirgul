@@ -817,7 +817,9 @@ button.stars{cursor:pointer;color:var(--ink)}
 .plane .pwin{position:absolute;top:49.6%;width:7.5%;transform:translate(-50%,-50%);border-radius:50%;background:#E6F6FF;animation:popin .4s ease-out}
 .plscene.lift .plane{animation:takeoff 4.6s ease-in forwards}
 @keyframes takeoff{0%{transform:translate(-50%,-78%)}25%{transform:translate(-30%,-78%)}45%{transform:translate(-10%,-110%) rotate(-12deg)}100%{transform:translate(160%,-420%) rotate(-18deg) scale(.6)}}
-.plscene.lift .cloud{animation-duration:3s}</style>
+.plscene.lift .cloud{animation-duration:3s}
+.yaybub{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fff;border-radius:24px;padding:8px 22px;font-family:var(--display);font-size:min(10vw,44px);color:#E5484D;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .4s ease-out;white-space:nowrap}
+</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1868,7 +1870,7 @@ function renderAct(){
     /* personal game "טסים באווירון" (Gemini art): realistic items stand on the runway, a plane waits.
        The child taps an item and says the phrase ("רִיבִי בָּאֲוִירוֹן") reps times; the item flies into a window.
        When every window is full, the plane takes off and flies across the sky with everyone inside */
-    const R=window.RBOX_IMG;if(!R||!R.plane){shell('<div class="card stage"><p class="muted">טוען את האווירון... ✈️</p></div>');loadScriptOnce('rbox.js?v=2',()=>{if(S.act==='mine')render()});return}
+    const R=window.RBOX_IMG;if(!R||!R.plane){shell('<div class="card stage"><p class="muted">טוען את האווירון... ✈️</p></div>');loadScriptOnce('rbox.js?v=3',()=>{if(S.act==='mine')render()});return}
     const reps=d.game.reps||2,N=d.items.length,end=d.phase==='fly',tail=d.game.tail||'';
     const first=w=>{const m=w.match(/^.[֑-ׇ]*/);return m?`<b class="hlr">${m[0]}</b>${w.slice(m[0].length)}`:w};
     const WIN=[32,41.5,51,60.6,70];
@@ -1880,7 +1882,7 @@ function renderAct(){
           ${d.done.map((i,k)=>`<img class="pwin" src="${R[d.items[i][1]]}" style="left:${WIN[k%WIN.length]}%" alt="">`).join('')}</div>
       </div>
       <div class="progress">${d.done.length} / ${N} ✈️</div></div>`);
-    if(end){SFX.whoosh?SFX.whoosh():null;SFX.fanfare();TIMERS.push(setTimeout(finish,5600));return}
+    if(end){SFX.whoosh?SFX.whoosh():null;TIMERS.push(setTimeout(finish,5600));return}
     app.querySelectorAll('.mbitem:not(.in)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const i=+b.dataset.i,it=d.items[i];SFX.blip();S.overlay=true;let n=0;
       const ov=document.createElement('div');ov.className='overlay';document.body.appendChild(ov);
       const step=()=>{ov.innerHTML=`<div class="card stage pop-in"><img class="mbbig" src="${R[it[1]]}" alt=""><div class="word">${first(it[0])} ${tail}</div>
@@ -1888,7 +1890,10 @@ function renderAct(){
         recStep(ov.querySelector('#rh'),()=>{addStar();n++;if(n<reps){step();return}
           ov.remove();S.overlay=false;const pl=document.getElementById('plane');
           flyTo(b.querySelector('img'),pl,()=>{d.done.push(i);SFX.boing?SFX.boing():SFX.blip();
-            TIMERS.push(setTimeout(()=>{if(d.done.length>=N)d.phase='fly';render()},450))});b.classList.add('in')},{max:12000})};
+            TIMERS.push(setTimeout(()=>{render();if(d.done.length<N)return;
+              /* everyone is on board: a big cheer, then take off */
+              const sc=document.getElementById('plscene');if(sc)sc.insertAdjacentHTML('beforeend','<div class="yaybub">יֵשׁ!!! 🎉</div>');greet('יֵשׁ!!!');SFX.fanfare();
+              TIMERS.push(setTimeout(()=>{d.phase='fly';render()},1900))},450))});b.classList.add('in')},{max:12000})};
       step()});
     return;
   }
