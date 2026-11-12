@@ -2405,10 +2405,10 @@ function renderAct(){
   }
   if(S.act==='color'){
     /* coloring pages (long sentences, ש / צ): the child picks a color and says the sentence
-       (צ: "אני רוצה לצבוע בצבע ___", ש: "עכשיו בחרתי משהו בצבע ___"), then taps up to 3 areas to paint them */
+       (צ: "אני רוצה לצבוע בצבע ___", ש: "עכשיו יש משהו שהוא ___"), then taps up to 3 areas to paint them */
     const P=window.COLOR_PAGES;if(!P){shell('<div class="card stage"><p class="muted">טוען את דפי הצביעה... 🎨</p></div>');loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()});return}
     const pages=P[d.sid]||P.sh,L=SOUNDS[S.sound],cur=d.ci>=0&&d.left?CCOLORS[d.ci]:null;
-    const frame=c=>(d.sid==='ts'?'אני רוצה לצבוע בצבע ':'עכשיו בחרתי משהו בצבע ')+c;
+    const frame=c=>(d.sid==='ts'?'אני רוצה לצבוע בצבע ':'עכשיו יש משהו שהוא ')+c;
     shell(`<div class="card stage"><p class="muted">${cur?`צובעים ב${cur[0]}: נוגעים בחלק בציור (עוד ${d.left})`:'בוחרים צבע ואומרים את המשפט 🎨'} · ⭐ ${d.n}</p>
       <div class="palette">${CCOLORS.map((c,i)=>`<button class="pcol ${cur&&d.ci===i?'on':''}" data-c="${i}" style="background:${c[1]}" aria-label="${c[0]}"><span>${c[0]}</span></button>`).join('')}</div>
       <div class="cwrap ${cur?'armed':''}"><canvas id="cv" width="900" height="900"></canvas></div>
