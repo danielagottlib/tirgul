@@ -2438,10 +2438,10 @@ function renderTherapist(){
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
-    const msg=`שלום${nick?' '+nick:''}! זה אתר התרגול של ${CLINIC}: ${site}\nהקוד האישי שלך: ${code}\nנכנסים לאתר, מקלידים את הקוד ומתאמנים כמה דקות כל יום. בהצלחה!`;
+    const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרנו עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות אינן מיועדות לעבודה עצמאית של הילד, אלא בליווי של הורה: כדי להסביר את ההוראות וכדי לעקוב אחרי האמירה וההגייה של הילד.\n• במהלך התרגול הילד מקליט את עצמו ושומע את עצמו. כך הוא מקבל משוב נוסף שמשפר ומקדם את הרכישה, ולכן חשוב שתהיו נוכחים ותלוו אותו.\n• כל ילד מקבל בדיוק את הפעילויות שמתאימות לו לפי רמת התרגול שלו, ומדי פעם יקבל שדרוגים והתקדמות לפי הצורך.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה`;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
-      <textarea class="txt" id="msg" rows="4" readonly>${esc(msg)}</textarea>
+      <textarea class="txt" id="msg" rows="14" readonly>${esc(msg)}</textarea>
       <div class="row"><button class="btn sun" id="copy" type="button">העתקת ההודעה</button></div><p class="muted" id="copied"></p>
       <p class="muted" style="font-size:15px">הקוד נשמר בטבלה למטה רק במכשיר הזה. כדי לשנות מטרות, יוצרים קוד חדש ושולחים אותו.</p></div>`;
     document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(msg);document.getElementById('copied').textContent='ההודעה הועתקה. אפשר להדביק בוואטסאפ.'}catch(err){const t=document.getElementById('msg');t.select();document.getElementById('copied').textContent='סמנתי את ההודעה. העתיקי עם Ctrl+C.'}};
