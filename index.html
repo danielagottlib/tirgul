@@ -820,6 +820,7 @@ button.stars{cursor:pointer;color:var(--ink)}
 .plscene.lift .cloud{animation-duration:3s}
 .yaybub{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fff;border-radius:24px;padding:8px 22px;font-family:var(--display);font-size:min(10vw,44px);color:#E5484D;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .4s ease-out;white-space:nowrap}
 /* workshop house (long sentences) */
+.spic{display:inline-block;vertical-align:middle;font-size:1.15em;line-height:1}.spic img{width:1.7em;height:1.7em;object-fit:contain;vertical-align:middle}
 .fixhouse{position:relative;width:min(100%,440px,52vh);aspect-ratio:1/.92;margin:4px auto 10px}
 .fh-roof{position:absolute;left:2%;right:2%;top:0;height:30%;background:linear-gradient(#E5674E,#C94F38);clip-path:polygon(50% 0,100% 100%,0 100%)}
 .fh-chim{position:absolute;right:20%;top:6%;width:9%;height:16%;background:#9C5B3A;border-radius:3px 3px 0 0}
@@ -974,27 +975,31 @@ const FIXSHORT={
    end(x): the last sentence, after everything is fixed */
 const FIXHOUSE={
  r:{items:[['🗄️','ארון','🔨','m'],['🪞','מראה','🔨','f'],['📻','רדיו','🪛','m'],['💡','מנורה','🪛','f'],['🚰','ברז','🔧','m']],
-   first:n=>`הרובוט רוצה לתקן את ה${n}`,more:(x,n)=>`הרובוט כבר תיקן ${x.at}, ועכשיו הוא רוצה לתקן את ה${n}`,end:x=>`הרובוט תיקן ${x.at}, ועכשיו הבית מסודר ויפה!`},
+   first:n=>`הרובוט רוצה לתקן את ה${n}`,more:(x,n)=>`הרובוט כבר תיקן ${x.at}, ועכשיו הוא רוצה לתקן את ה${n}`,end:x=>`הרובוט תיקן הכל, ועכשיו הבית מסודר ויפה!`},
  l:{items:[['🪟','חלון','🔨','m'],['🚪','דלת','🔨','f'],['🔒','מנעול','🪛','m'],['🧺','סל','🪡','m'],['🎒','ילקוט','🪡','m']],
-   first:n=>`הולכים לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו הולכים לתקן גם את ה${n}`,end:x=>`כל הכבוד! תיקנו ${x.at}, והכל כמו חדש`},
+   first:n=>`הולכים לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו הולכים לתקן גם את ה${n}`,end:x=>`כל הכבוד! תיקנו הכל, והבית כמו חדש`},
  sh:{items:[['🕰️','שעון','🪛','m'],['🪑','שולחן','🔨','m'],['🧶','שטיח','🪡','m'],['🛏️','שמיכה','🪡','f'],['🗄️','שידה','🔨','f']],
-   first:n=>`יש פה משהו שבור. צריך לתקן את ה${n}`,more:(x,n)=>`עכשיו יש ${x.plain} ${x.adj}. צריך לתקן גם את ה${n}`,end:x=>`עכשיו יש ${x.plain} ${x.adj}!`},
+   first:n=>`יש פה משהו שבור. צריך לתקן את ה${n}`,more:(x,n)=>`עכשיו יש ${x.plain} ${x.adj}. צריך לתקן גם את ה${n}`,end:x=>`עכשיו יש לנו בית חדש ושמח!`},
  s:{items:[['🛋️','ספה','🪡','f'],['🪑','כיסא','🔨','m'],['🪜','סולם','🔨','m'],['📺','מסך','🪛','m'],['🧺','סל','🪡','m']],
-   first:n=>`סבא סמי צריך לסדר את ה${n}`,more:(x,n)=>`סבא סמי כבר סידר ${x.at}, ועכשיו הוא מסדר את ה${n}`,end:x=>`סבא סמי סיים לסדר ${x.at}!`},
+   first:n=>`סבא סמי צריך לסדר את ה${n}`,more:(x,n)=>`סבא סמי כבר סידר ${x.at}, ועכשיו הוא מסדר את ה${n}`,end:x=>`סבא סמי סיים לסדר את כל הבית!`},
  k:{items:[['🧱','קיר','🖌️','m'],['🪑','כיסא','🔨','m'],['🫖','קומקום','🪛','m'],['🧊','מקרר','🪛','m'],['🥣','קערה','🔨','f']],
-   first:n=>`כדאי לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו כדאי לתקן גם את ה${n}`,end:x=>`כל הכבוד! כבר תיקנו ${x.at}`},
+   first:n=>`כדאי לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו כדאי לתקן גם את ה${n}`,end:x=>`כל הכבוד! כבר תיקנו את כל הבית`},
  g:{items:[['🏠','גג','🔨','m'],['🧱','גדר','🖌️','f'],['🎸','גיטרה','🪛','f'],['❄️','מזגן','🪛','m'],['🗄️','מגירה','🔨','f']],
-   first:n=>`גדי גם רוצה לתקן את ה${n}`,more:(x,n)=>`גדי גמר לתקן ${x.at}, ועכשיו הוא מתקן גם את ה${n}`,end:x=>`גדי גמר לתקן ${x.at}!`},
+   first:n=>`גדי גם רוצה לתקן את ה${n}`,more:(x,n)=>`גדי גמר לתקן ${x.at}, ועכשיו הוא מתקן גם את ה${n}`,end:x=>`גדי גמר לתקן את כל הבית!`},
  z:{items:[['📦','ארגז','🔨','m'],['🧳','מזוודה','🪡','f'],['❄️','מזגן','🪛','m'],['🚰','ברז','🔧','m'],['⚖️','מאזניים','🪛','m']],
-   first:n=>`זה הזמן לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו זה הזמן לתקן את ה${n}`,end:x=>`זהו! תיקנו ${x.at}`},
+   first:n=>`זה הזמן לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו זה הזמן לתקן את ה${n}`,end:x=>`זהו! תיקנו הכל, וזה נראה מצוין`},
  ts:{items:[['🖼️','ציור','🖌️','m'],['🪴','עציץ','🔨','m'],['🫙','צנצנת','🔨','f'],['📷','מצלמה','🪛','f'],['🧸','צעצוע','🪡','m']],
-   first:n=>`צריך לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו צריך לתקן גם את ה${n}`,end:x=>`איזה יופי, הצלחנו לתקן ${x.at}!`}
+   first:n=>`צריך לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו צריך לתקן גם את ה${n}`,end:x=>`איזה יופי, הצלחנו לתקן את כל הבית!`}
 };
 function houseSentence(H,done,next){
   const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' ו'+a[a.length-1];
-  const its=done.map(i=>H.items[i]),fem=its.every(x=>x[3]==='f');
-  const x={at:join(its.map(x=>'את ה'+x[1])),plain:join(its.map(x=>x[1])),adj:its.length===1?(fem?'חדשה':'חדש'):(fem?'חדשות':'חדשים')};
-  if(next==null)return H.end(x);return done.length?H.more(x,H.items[next][1]):H.first(H.items[next][1])}
+  /* only the thing fixed last is repeated, so the sentence stays long but does not keep growing (easier to remember).
+     \u0001<index> after a name marks where its little picture goes (houseHtml) */
+  const nm=i=>H.items[i][1]+'\u0001'+i;
+  const last=done.slice(-1),its=last.map(i=>H.items[i]),fem=its.every(x=>x[3]==='f');
+  const x={at:join(last.map(i=>'את ה'+nm(i))),plain:join(last.map(nm)),adj:its.length===1?(fem?'חדשה':'חדש'):(fem?'חדשות':'חדשים')};
+  if(next==null)return H.end(x);return done.length?H.more(x,nm(next)):H.first(nm(next))}
+function houseHtml(H,done,next,L){return hl(houseSentence(H,done,next),L.hl).replace(/\u0001(\d)/g,(m,i)=>` <span class="spic">${H.items[+i][0]}</span>`)}
 /* cooking game per target sound: every ingredient and the container carry the sound, so the sentence fits the activity */
 const COOK={
  r:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',in:'בסיר',to:'לסיר',ing:[['🥕','גזר'],['🌽','תירס'],['🍚','אורז'],['🥦','ברוקולי'],['🥬','כרוב'],['🍄','פטריות']]},
@@ -2387,16 +2392,16 @@ function renderAct(){
         ${H.items.map((it,i)=>{const ok=d.done.includes(i);return `<button class="fhitem ${ok?'ok':'broken'} ${cur===i?'sel':''}" data-i="${i}" style="left:${POS[i][0]}%;top:${POS[i][1]}%;--d:${(i*.27).toFixed(2)}s" ${ok||ph!=='pick'?'disabled':''} aria-label="${it[1]}">${it[0]}${ok?'<span class="fhspark">✨</span>':'<span class="crack">💥</span>'}</button>`}).join('')}
       </div></div>
       ${ph==='pick'?`<p class="drag-hint">בוחרים משהו שבור בבית 👆</p>`
-       :ph==='tool'?`<div class="sentence" style="font-size:20px">${hl(houseSentence(H,d.done,cur),L.hl)}</div><p class="drag-hint">באיזה כלי מתקנים את ה${H.items[cur][1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`
-       :ph==='end'?`<p class="muted">הכל מתוקן! עכשיו אומרים את המשפט הכי ארוך:</p><div class="sentence" style="font-size:20px">${hl(houseSentence(H,d.done,null),L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button>`:''}
+       :ph==='tool'?`<div class="sentence" style="font-size:20px">${houseHtml(H,d.done,cur,L)}</div><p class="drag-hint">באיזה כלי מתקנים את ה${H.items[cur][1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`
+       :ph==='end'?`<p class="muted">הכל מתוקן! עכשיו אומרים את המשפט הכי ארוך:</p><div class="sentence" style="font-size:20px">${houseHtml(H,d.done,null,L)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button>`:''}
       </div>`);
     app.querySelectorAll('.fhitem.broken').forEach(b=>b.onclick=()=>{if(S.overlay||d.phase!=='pick')return;const i=+b.dataset.i;d.cur=i;SFX.blip();render();
-      recOverlay(hl(houseSentence(H,d.done,i),L.hl),()=>{addStar();d.phase='tool';render()})});
+      recOverlay(houseHtml(H,d.done,i,L),()=>{addStar();d.phase='tool';render()})});
     app.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{if(d.phase!=='tool')return;const t=d.toolset[+b.dataset.t];
       if(t[0]!==H.items[cur][2]){SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');return}
       d.phase='fixing';const obj=app.querySelector(`.fhitem[data-i="${cur}"]`);flyTo(b,obj,()=>{SFX.hammer();obj.classList.add('working');
         TIMERS.push(setTimeout(()=>{d.done.push(cur);d.cur=null;SFX.good();d.phase=d.done.length>=N?'end':'pick';render()},900))})});
-    const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(hl(houseSentence(H,d.done,null),L.hl),()=>{addStar();finish()});
+    const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(houseHtml(H,d.done,null,L),()=>{addStar();finish()});
     return;
   }
   if(S.act==='fix'){
