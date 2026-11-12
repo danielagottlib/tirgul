@@ -1892,7 +1892,7 @@ function renderAct(){
           flyTo(b.querySelector('img'),pl,()=>{d.done.push(i);SFX.boing?SFX.boing():SFX.blip();
             TIMERS.push(setTimeout(()=>{render();if(d.done.length<N)return;
               /* everyone is on board: a big cheer, then take off */
-              const sc=document.getElementById('plscene');if(sc)sc.insertAdjacentHTML('beforeend','<div class="yaybub">יֵשׁ!!! 🎉</div>');greet('יֵשׁ!!!');SFX.fanfare();
+              const sc=document.getElementById('plscene');if(sc)sc.insertAdjacentHTML('beforeend','<div class="yaybub">מַמְרִיאִים!!! ✈️</div>');greet('מַמְרִיאִים! הָאֲוִירוֹן מַמְרִיא!');SFX.fanfare();
               TIMERS.push(setTimeout(()=>{d.phase='fly';render()},1900))},450))});b.classList.add('in')},{max:12000})};
       step()});
     return;
