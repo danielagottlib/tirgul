@@ -819,6 +819,23 @@ button.stars{cursor:pointer;color:var(--ink)}
 @keyframes takeoff{0%{transform:translate(-50%,-78%)}25%{transform:translate(-30%,-78%)}45%{transform:translate(-10%,-110%) rotate(-12deg)}100%{transform:translate(160%,-420%) rotate(-18deg) scale(.6)}}
 .plscene.lift .cloud{animation-duration:3s}
 .yaybub{position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fff;border-radius:24px;padding:8px 22px;font-family:var(--display);font-size:min(10vw,44px);color:#E5484D;box-shadow:0 6px 0 rgba(0,0,0,.08);z-index:6;animation:popin .4s ease-out;white-space:nowrap}
+/* workshop house (long sentences) */
+.fixhouse{position:relative;width:min(100%,440px,52vh);aspect-ratio:1/.92;margin:4px auto 10px}
+.fh-roof{position:absolute;left:2%;right:2%;top:0;height:30%;background:linear-gradient(#E5674E,#C94F38);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.fh-chim{position:absolute;right:20%;top:6%;width:9%;height:16%;background:#9C5B3A;border-radius:3px 3px 0 0}
+.fh-body{position:absolute;left:9%;right:9%;top:29%;bottom:0;border:4px solid #C98B4F;border-radius:0 0 14px 14px;background:linear-gradient(#FFF4DE 0 60%,#E9C9A0 60% 100%)}
+.fhitem{position:absolute;transform:translate(-50%,-50%);font-size:min(12vw,54px);line-height:1;background:none;border:0;padding:4px;cursor:pointer}
+.fhitem img{width:1.3em;height:1.3em;object-fit:contain}
+.fhitem.broken{filter:grayscale(.75) brightness(.95);animation:fhwob 1.5s ease-in-out infinite;animation-delay:var(--d)}
+.fhitem.broken[disabled]{animation:none;cursor:default}
+.fhitem .crack{position:absolute;right:-8px;top:-8px;font-size:.42em}
+.fhitem.sel{filter:none;animation:none;transform:translate(-50%,-50%) scale(1.3);z-index:2}
+.fhitem.sel::after{content:'';position:absolute;inset:-6px;border:4px dashed #FFC43D;border-radius:50%}
+.fhitem.ok{cursor:default}
+.fhitem .fhspark{position:absolute;left:-10px;top:-10px;font-size:.4em}
+.fhitem.working{animation:fhwork .3s linear 3}
+@keyframes fhwob{0%,100%{transform:translate(-50%,-50%) rotate(0)}25%{transform:translate(-50%,-50%) rotate(-9deg)}75%{transform:translate(-50%,-50%) rotate(9deg)}}
+@keyframes fhwork{0%,100%{transform:translate(-50%,-50%) scale(1.3)}50%{transform:translate(-46%,-54%) scale(1.3) rotate(6deg)}}
 /* coloring pages */
 .palette{display:flex;flex-wrap:wrap;gap:10px 8px;justify-content:center;margin:4px 0 12px}
 .pcol{width:54px;height:54px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:0;transition:transform .15s}
@@ -950,6 +967,34 @@ const FIXSHORT={
  g:[['🎸','הגיטרה','🪛'],['🏠','הגג','🔨'],['🧦','הגרב','🪡'],['🚲','הגלגל','🔧'],['🧱','הגדר','🖌️'],['👢','המגפיים','🪡']],
  z:[['🧳','המזוודה','🪡'],['📦','הארגז','🔨'],['🦓','הזברה מעץ','🖌️'],['🧸','הזנב של הדובי','🪡'],['🤖','הזרוע של הרובוט','🪛']]
 };
+/* workshop, long sentences: one house full of broken things (all with the target sound). The child picks a broken
+   thing, says the sentence, picks the right tool and fixes it. Every sentence repeats everything fixed so far, so the
+   sentences get longer and longer. items: [emoji, name (no ה), right tool, gender m/f (used by ש)].
+   first(n): the first sentence; more(x,n): x.at = "את הארון ואת הרדיו", x.plain = "ארון ורדיו", x.adj = חדש/חדשה/חדשים/חדשות;
+   end(x): the last sentence, after everything is fixed */
+const FIXHOUSE={
+ r:{items:[['🗄️','ארון','🔨','m'],['🪞','מראה','🔨','f'],['📻','רדיו','🪛','m'],['💡','מנורה','🪛','f'],['🚰','ברז','🔧','m']],
+   first:n=>`הרובוט רוצה לתקן את ה${n}`,more:(x,n)=>`הרובוט כבר תיקן ${x.at}, ועכשיו הוא רוצה לתקן את ה${n}`,end:x=>`הרובוט תיקן ${x.at}, ועכשיו הבית מסודר ויפה!`},
+ l:{items:[['🪟','חלון','🔨','m'],['🚪','דלת','🔨','f'],['🔒','מנעול','🪛','m'],['🧺','סל','🪡','m'],['🎒','ילקוט','🪡','m']],
+   first:n=>`הולכים לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו הולכים לתקן גם את ה${n}`,end:x=>`כל הכבוד! תיקנו ${x.at}, והכל כמו חדש`},
+ sh:{items:[['🕰️','שעון','🪛','m'],['🪑','שולחן','🔨','m'],['🧶','שטיח','🪡','m'],['🛏️','שמיכה','🪡','f'],['🗄️','שידה','🔨','f']],
+   first:n=>`יש פה משהו שבור. צריך לתקן את ה${n}`,more:(x,n)=>`עכשיו יש ${x.plain} ${x.adj}. צריך לתקן גם את ה${n}`,end:x=>`עכשיו יש ${x.plain} ${x.adj}!`},
+ s:{items:[['🛋️','ספה','🪡','f'],['🪑','כיסא','🔨','m'],['🪜','סולם','🔨','m'],['📺','מסך','🪛','m'],['🧺','סל','🪡','m']],
+   first:n=>`סבא סמי צריך לסדר את ה${n}`,more:(x,n)=>`סבא סמי כבר סידר ${x.at}, ועכשיו הוא מסדר את ה${n}`,end:x=>`סבא סמי סיים לסדר ${x.at}!`},
+ k:{items:[['🧱','קיר','🖌️','m'],['🪑','כיסא','🔨','m'],['🫖','קומקום','🪛','m'],['🧊','מקרר','🪛','m'],['🥣','קערה','🔨','f']],
+   first:n=>`כדאי לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו כדאי לתקן גם את ה${n}`,end:x=>`כל הכבוד! כבר תיקנו ${x.at}`},
+ g:{items:[['🏠','גג','🔨','m'],['🧱','גדר','🖌️','f'],['🎸','גיטרה','🪛','f'],['❄️','מזגן','🪛','m'],['🗄️','מגירה','🔨','f']],
+   first:n=>`גדי גם רוצה לתקן את ה${n}`,more:(x,n)=>`גדי גמר לתקן ${x.at}, ועכשיו הוא מתקן גם את ה${n}`,end:x=>`גדי גמר לתקן ${x.at}!`},
+ z:{items:[['📦','ארגז','🔨','m'],['🧳','מזוודה','🪡','f'],['❄️','מזגן','🪛','m'],['🚰','ברז','🔧','m'],['⚖️','מאזניים','🪛','m']],
+   first:n=>`זה הזמן לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו זה הזמן לתקן את ה${n}`,end:x=>`זהו! תיקנו ${x.at}`},
+ ts:{items:[['🖼️','ציור','🖌️','m'],['🪴','עציץ','🔨','m'],['🫙','צנצנת','🔨','f'],['📷','מצלמה','🪛','f'],['🧸','צעצוע','🪡','m']],
+   first:n=>`צריך לתקן את ה${n}`,more:(x,n)=>`כבר תיקנו ${x.at}, ועכשיו צריך לתקן גם את ה${n}`,end:x=>`איזה יופי, הצלחנו לתקן ${x.at}!`}
+};
+function houseSentence(H,done,next){
+  const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' ו'+a[a.length-1];
+  const its=done.map(i=>H.items[i]),fem=its.every(x=>x[3]==='f');
+  const x={at:join(its.map(x=>'את ה'+x[1])),plain:join(its.map(x=>x[1])),adj:its.length===1?(fem?'חדשה':'חדש'):(fem?'חדשות':'חדשים')};
+  if(next==null)return H.end(x);return done.length?H.more(x,H.items[next][1]):H.first(H.items[next][1])}
 /* cooking game per target sound: every ingredient and the container carry the sound, so the sentence fits the activity */
 const COOK={
  r:{name:'מרק',final:'המרק',rd:'מוכן',kind:'pot',in:'בסיר',to:'לסיר',ing:[['🥕','גזר'],['🌽','תירס'],['🍚','אורז'],['🥦','ברוקולי'],['🥬','כרוב'],['🍄','פטריות']]},
@@ -1685,7 +1730,8 @@ const PHOTO_SCENES=[
    ['🌸','פרחים',17,92,8],['🌳','עץ',89,9,10]]},
  {id:'road-sh',name:'בדרך לכפר',snd:'sh',img:'@',
   q:['מה נוסע בכביש?','מה יש בשמיים?','מי זוחל על העלה?','מה יש בצנצנת?'],
-  items:[['☀️','שמש',22,16,13],['🌈','קשת',51,12,12],['🚚','משאית',40,59,14],['🐑','כבשה',16,55,12],['🐌','שבלול',14,79,9],['🐍','נחש',65,67,10],['🕷️','עכביש',86,74,7],['🍯','דבש',33,79,7],['🕰️','שעון',65,30,8],['🛤️','שביל',51,85,11],['🌱','דשא',41,43,7],['🌤️','שמיים',34,7,7],
+  items:[['☀️','שמש',22,16,13],['🌈','קשת',51,12,12],['🚚','משאית',40,59,14],['🐑','כבשה',16,55,12],['🐌','שבלול',14,79,9],['🐍','נחש',65,67,10],['🕷️','עכביש',86,74,7],['🍯','דבש',33,79,7],['🕰️','שעון',65,30,8],['🛤️','שביל',51,85,11],['🌱','דשא',41,43,7],['🌱','דשא',8,42,9],['🌱','דשא',26,43,7],['🌱','דשא',66,45,6],['🌱','דשא',73,62,7],['🌱','דשא',95,88,6],['🌱','דשא',22,95,6],['🌱','דשא',4,66,6],
+   ['🌤️','שמיים',34,7,7],['🌤️','שמיים',7,7,8],['🌤️','שמיים',62,4,6],['🌤️','שמיים',97,9,5],['🌤️','שמיים',45,26,5],['🌤️','שמיים',58,25,5],['🌤️','שמיים',7,27,6],
    ['🐄','פרה',86,53,11],['🏠','בית',78,37,9],['🌳','עץ',91,25,12],['☁️','ענן',74,9,8]]},
  {id:'beach-s',name:'בעיר שליד הים',snd:'s',img:'@',
   q:['מה עף בשמיים?','מי הולך על החול?','מה יש בסל?','מה שט בים?'],
@@ -1830,15 +1876,16 @@ function startAct(act,from){
   if(act==='train'){d.ready=null;d.items=items();d.k=0;d.round=0;d.rounds=Math.min(3,Math.ceil(d.items.length/4));d.platform=[];d.loaded=[];fillPlatform(d)}
   if(act==='line'){d.items=items();d.k=0;d.round=0;d.rounds=3;newLineRound(d)}
   if(act==='pscene'){const sid=SOUNDS[S.sound].id;d.scenes=PHOTO_SCENES.filter(sc=>sc.snd===sid);
-    if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[]}
-  if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[]}
+    if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[];d.foundAt={}}
+  if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[];d.foundAt={}}
   if(act==='absurd'){let sid=SOUNDS[S.sound].id;if(!(CARDS[sid]||[]).length)sid='r';
     d.sid=sid;d.cards=shuffle(CARDS[sid]);d.ci=0;d.used=[];d.phase='deck';
     loadScriptOnce('cards-'+sid+'.js?v='+CARDS_V,()=>{if(S.act==='absurd')render()})}
   if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;
     /* short sentences: always "צריך לתקן/לצבוע את ה..." with an object that has the target sound */
     if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid].filter(j=>okText(j[1]))).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
-    else d.jobs=shuffle((FIXBY[sid]||FIXJOBS).filter(j=>okText(j[3]||j[1]))).slice(0,6);d.toolset=TOOLS}
+    else d.jobs=shuffle((FIXBY[sid]||FIXJOBS).filter(j=>okText(j[3]||j[1]))).slice(0,6);d.toolset=TOOLS;
+    if(S.stage==='long'&&FIXHOUSE[sid]){d.house=FIXHOUSE[sid];d.done=[];d.cur=null;d.phase='pick'}}
   if(act==='disc'){const sid=SOUNDS[S.sound].id,ex=excluded();
     const yes=pick(['s','m','e'].flatMap(p=>SOUNDS[S.sound].w[p]||[]).filter(w=>okText(w[0],ex)&&!w[0].includes(' ')),5);
     const no=pick(SOUNDS.filter(x=>x.id!==sid).flatMap(x=>['s','m','e'].flatMap(p=>x.w[p]||[])).filter(w=>!w[0].includes(' ')&&!sceneHas([0,w[0]],sid)),5);
@@ -1878,7 +1925,7 @@ function newRound(){
   if(S.act==='odd'){const [a,b]=pick(CATS,2);const three=pick(a.i,3),one=pick(b.i,1)[0];d.opts=shuffle([...three,one]);d.target=one;d.prompt='מה לא שייך?'}
   if(S.act==='quest'){const q=pick(QUESTIONS,1)[0];d.prompt=q[0];d.target=[q[1],q[1]];d.opts=shuffle([q[1],...q[2]]).map(e=>[e,e])}
   if(S.act==='where'){const t=pick(SPATIAL,1)[0];d.target=t;d.prompt=t[1];d.opts=shuffle(SPATIAL)}
-  if(S.act==='sort'){const [a,b]=pick(CATS,2);d.cat=a;d.opts=shuffle([...pick(a.i,3),...pick(b.i,3)]);d.found=[];d.prompt='גע בכל ה'+a.n}
+  if(S.act==='sort'){const [a,b]=pick(CATS,2);d.cat=a;d.opts=shuffle([...pick(a.i,3),...pick(b.i,3)]);d.found=[];d.foundAt={};d.prompt='גע בכל ה'+a.n}
   if(S.act==='two'){const items=pick(allVocab(),6);const [x,y]=pick(items,2);d.opts=items;d.seq=[x,y];d.step=0;d.prompt='גע ב'+x[0]+' ואחר כך ב'+y[0]}
   render();
 }
@@ -2046,7 +2093,7 @@ function renderAct(){
         else if(tap){g.remove();el.style.visibility='';m.sel=m.sel===el.dataset.w?null:el.dataset.w;render()}
         else{g.animate([{left:g.style.left,top:g.style.top},{left:r.left+'px',top:r.top+'px'}],{duration:250}).onfinish=()=>{g.remove();el.style.visibility=''}}};
       document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)}});
-    const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay('מספרים מה יש בחווה 🗣️',()=>{addStar();d.si++;d.found=[];d.move=null;if(d.si>=d.scenes.length)finish();else render()},{max:15000});
+    const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay('מספרים מה יש בחווה 🗣️',()=>{addStar();d.si++;d.found=[];d.foundAt={};d.move=null;if(d.si>=d.scenes.length)finish();else render()},{max:15000});
     return;
   }
   if(S.act==='absurd'){
@@ -2090,7 +2137,9 @@ function renderAct(){
   }
   if(S.act==='scene'||S.act==='pscene'){
     const sc=d.scenes[d.si],ab=S.act==='absurd',ps=S.act==='pscene';
-    const exw=excluded();const targets=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id)&&okText(it[1],exw));
+    const exw=excluded();const targetsAll=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id)&&okText(it[1],exw));
+    /* one word may have several tap spots (grass, sky): it counts once, and only the spot that was tapped gets the label */
+    const targets=targetsAll.filter((it,k)=>targetsAll.findIndex(x=>x[1]===it[1])===k);d.foundAt=d.foundAt||{};
     const all=ab?[...sc.items.map(x=>[...x,'n']),...sc.absurd.map(x=>[...x.slice(0,6),'','a'])]:sc.items;
     const L=SOUNDS[S.sound];
     const done=d.found.length>=targets.length;
@@ -2098,7 +2147,7 @@ function renderAct(){
                  :`<p class="drag-hint">מחפשים בתמונה דברים עם <span class="letterchip">${L.name}</span> ונוגעים בהם ✨</p>`;
     shell(`<div class="card stage">${head}<div class="progress">${sc.name} · מצאת ${d.found.length} / ${targets.length}</div>
       <div class="scenebox ${sc.img?'photo':'bg-'+sc.bg} ${done?'all-found':''}" id="sbox">${sc.img?`<div class="photoin" style="background-image:url(${(window.SCENE_IMG||{})[sc.id]||''})">`:sceneDecor(sc)}
-      ${all.map((it,ix)=>{const isT=ab?it[7]==='a':targets.includes(it);const f=d.found.includes(it[1]);
+      ${all.map((it,ix)=>{const f=d.found.includes(it[1])&&(d.foundAt[it[1]]==null||d.foundAt[it[1]]===ix);
         const lab=f?`<span class="slabel ${ab?'ab':''}">${ab?it[1]:hl(it[1],L.hl)}</span>`:'';return sceneItemHtml(it,ix,f?'glow':'',lab)}).join('')}${sc.img?'<i class="glint"></i></div>':''}
       ${done?'<div class="confetti">'+Array.from({length:24},(x,k)=>`<i style="--x:${(k*37)%100};--d:${(k%6)*.12}s;--c:${['#F6B21E','#12A397','#F06A4F','#8E6CEF'][k%4]}"></i>`).join('')+'</div>':''}
       </div>
@@ -2108,13 +2157,13 @@ function renderAct(){
         :`<div class="chips">${targets.map(t=>`<span class="chip">${t[0]} ${hl(t[1],L.hl)}</span>`).join('')}</div>
         <button class="btn leaf" id="tomove" style="margin-top:10px">🚜 לוקחים אותם לחווה!</button>`}</div>`:''}
     </div>`);
-    app.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{if(done)return;const it=all[+b.dataset.i];const isT=ab?it[7]==='a':targets.includes(it);
-      if(isT){if(d.found.includes(it[1]))return;d.found.push(it[1]);SFX.good();
+    app.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{if(done)return;const it=all[+b.dataset.i];const isT=ab?it[7]==='a':targetsAll.includes(it);
+      if(isT){if(d.found.includes(it[1]))return;d.found.push(it[1]);d.foundAt[it[1]]=+b.dataset.i;SFX.good();
         if(d.found.length===targets.length){addStar();SFX.fanfare()}render()}
       else if(!ab&&sceneHas(it,SOUNDS[S.sound].id)){if(!b.querySelector('.slabel')){const s=document.createElement('span');s.className='slabel grey';s.textContent=it[1];b.appendChild(s);TIMERS.push(setTimeout(()=>s.remove(),1400))}}
       else{SFX.bad();b.classList.remove('nope');void b.offsetWidth;b.classList.add('nope');
         if(!ab){const old=b.querySelector('.slabel');if(!old){const s=document.createElement('span');s.className='slabel grey';s.textContent=it[1];b.appendChild(s);TIMERS.push(setTimeout(()=>s.remove(),1400))}}}});
-    const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay(ab?'מסבירים מה מצחיק בתמונה 🗣️':'מספרים מה קורה בתמונה 🗣️',()=>{addStar();d.si++;d.found=[];if(d.si>=d.scenes.length)finish();else render()},{max:15000});
+    const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay(ab?'מסבירים מה מצחיק בתמונה 🗣️':'מספרים מה קורה בתמונה 🗣️',()=>{addStar();d.si++;d.found=[];d.foundAt={};if(d.si>=d.scenes.length)finish();else render()},{max:15000});
     const tm=document.getElementById('tomove');if(tm)tm.onclick=()=>{d.move={items:targets.slice(),placed:{},sel:null};SFX.zip&&SFX.zip();render()};
     return;
   }
@@ -2326,6 +2375,27 @@ function renderAct(){
       [0,.07,.14,.22,.31,.41,.52,.65,.8,.97,1.16,1.38,1.62,1.9,2.15].forEach(t=>TIMERS.push(setTimeout(()=>SFX.tick(),t*1000)));
       TIMERS.push(setTimeout(()=>{d.spinning=false;d.curIx=k;d.cur=d.wheel[k];d.count=0;SFX.blip();
         const lab=app.querySelectorAll('.wlab')[k];if(lab)lab.classList.add('win');TIMERS.push(setTimeout(showSay,500))},2500))};
+    return;
+  }
+  if(S.act==='fix'&&d.house){
+    /* long sentences: the whole house; broken things wobble until the child picks one */
+    const H=d.house,L=SOUNDS[S.sound],N=H.items.length,POS=[[22,30],[50,24],[78,30],[30,72],[70,72]];
+    const cur=d.cur,ph=d.phase;
+    shell(`<div class="card stage"><p class="muted">בית המלאכה של ${esc(kidName()||'הילד')} 🛠️ · תיקנו ${d.done.length} / ${N}</p>
+      <div class="fixhouse"><i class="fh-roof"></i><i class="fh-chim"></i><div class="fh-body">
+        ${H.items.map((it,i)=>{const ok=d.done.includes(i);return `<button class="fhitem ${ok?'ok':'broken'} ${cur===i?'sel':''}" data-i="${i}" style="left:${POS[i][0]}%;top:${POS[i][1]}%;--d:${(i*.27).toFixed(2)}s" ${ok||ph!=='pick'?'disabled':''} aria-label="${it[1]}">${it[0]}${ok?'<span class="fhspark">✨</span>':'<span class="crack">💥</span>'}</button>`}).join('')}
+      </div></div>
+      ${ph==='pick'?`<p class="drag-hint">בוחרים משהו שבור בבית 👆</p>`
+       :ph==='tool'?`<div class="sentence" style="font-size:20px">${hl(houseSentence(H,d.done,cur),L.hl)}</div><p class="drag-hint">באיזה כלי מתקנים את ה${H.items[cur][1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`
+       :ph==='end'?`<p class="muted">הכל מתוקן! עכשיו אומרים את המשפט הכי ארוך:</p><div class="sentence" style="font-size:20px">${hl(houseSentence(H,d.done,null),L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button>`:''}
+      </div>`);
+    app.querySelectorAll('.fhitem.broken').forEach(b=>b.onclick=()=>{if(S.overlay||d.phase!=='pick')return;const i=+b.dataset.i;d.cur=i;SFX.blip();render();
+      recOverlay(hl(houseSentence(H,d.done,i),L.hl),()=>{addStar();d.phase='tool';render()})});
+    app.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{if(d.phase!=='tool')return;const t=d.toolset[+b.dataset.t];
+      if(t[0]!==H.items[cur][2]){SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');return}
+      d.phase='fixing';const obj=app.querySelector(`.fhitem[data-i="${cur}"]`);flyTo(b,obj,()=>{SFX.hammer();obj.classList.add('working');
+        TIMERS.push(setTimeout(()=>{d.done.push(cur);d.cur=null;SFX.good();d.phase=d.done.length>=N?'end':'pick';render()},900))})});
+    const sb=document.getElementById('said');if(sb)sb.onclick=()=>recOverlay(hl(houseSentence(H,d.done,null),L.hl),()=>{addStar();finish()});
     return;
   }
   if(S.act==='fix'){
