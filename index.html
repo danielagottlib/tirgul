@@ -1317,11 +1317,15 @@ const isTestCode=c=>normCode(c)===normCode(TEST_CODE);
 /* activity log: a row in Daniela's Google Form "מעקב תרגול" (answers go to its sheet) for each visit (at most once per
    30 minutes per device) and each finished game. Only the code is sent, never a name. */
 const LOG_URL='https://docs.google.com/forms/d/e/1FAIpQLScB6EU1kUEEHZ_t6ruTXCyU-vhTgtj9Vk0Mmslph_BYRaJ0fA/formResponse';
-const LOG_F={code:'entry.154754866',ev:'entry.1862084195',game:'entry.1482756983',target:'entry.2002188233',stars:'entry.1577762734'};
+const LOG_F={code:'entry.154754866',ev:'entry.1862084195',game:'entry.1482756983',target:'entry.2002188233',stars:'entry.1577762734',name:'entry.867067413'};
+function logSend(v){try{const b=new URLSearchParams();for(const k in LOG_F)b.append(LOG_F[k],v[k]==null?'':String(v[k]));
+  fetch(LOG_URL,{method:'POST',mode:'no-cors',body:b}).catch(()=>{})}catch(e){}}
 function logEv(ev,game,stars){if(!LOG_URL||!S.code)return;try{const s=SOUNDS[S.sound];
   const target=game?[(s&&S.sound!=null&&!['pair','vocab'].includes(S.stage))?s.name:'',S.stage?stageTitle(S.stage):''].filter(Boolean).join(' · '):'';
-  const v={code:S.code,ev,game:game||'',target,stars:stars==null?'':String(stars)};const b=new URLSearchParams();for(const k in LOG_F)b.append(LOG_F[k],v[k]);
-  fetch(LOG_URL,{method:'POST',mode:'no-cors',body:b}).catch(()=>{})}catch(e){}}
+  logSend({code:fmtCode(S.code),ev,game:game||'',target,stars:stars==null?'':stars})}catch(e){}}
+/* the therapist screen sends "קוד חדש" with the patient's name (from Daniela's own device) when she creates a code;
+   in her sheet a formula shows that name on every row with the same code. Children's devices never send a name. */
+function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code),ev:'קוד חדש',name:name||''})}
 function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
 function login(code){
   if(isTestCode(code)){S.bits=GOALMASK|0x601C00;S.code=TEST_CODE;S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();return true}
@@ -2663,7 +2667,7 @@ function renderTherapist(){
     const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);let code=encode(bits),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=encode(bits);
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
-    l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));
+    l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));logName(code,nick);
     const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
