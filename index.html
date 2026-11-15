@@ -1280,6 +1280,10 @@ const PHREC={};
 function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);return}
   let done=false;const fb=()=>{if(done)return;done=true;PHREC[ph]=false;SFX.phone(ph)};
   try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.onerror=fb;a.play().then(()=>{done=true;PHREC[ph]=true}).catch(fb)}catch(e){fb()}}
+/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
+function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;sayWord(t)};
+  try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
+    a.onerror=fb;a.play().then(()=>{done=true}).catch(fb)}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done2.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
@@ -2568,8 +2572,8 @@ function renderAct(){
       if(toA===!!it[2]){d.lock=true;SFX.good();addStar();(toA?d.inA:d.inB).push(it[1]);document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
         flyTo(card,z,()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()})}
       else{SFX.bad();[card,z].forEach(e=>{e.classList.remove('no');void e.offsetWidth;e.classList.add('no')});
-        document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>sayWord(it[3]),600))}};
-    card.onclick=()=>sayWord(it[3]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
+        document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>saySyl(it[3]),600))}};
+    card.onclick=()=>saySyl(it[3]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
     card.onpointerdown=e=>{const r=card.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
       const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>8){g=card.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(g);card.style.visibility='hidden'}
         if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
@@ -2577,7 +2581,7 @@ function renderAct(){
         const inZ=z=>{const b=z.getBoundingClientRect();return ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom};
         if(inZ(zA))choose(true);else if(inZ(zB))choose(false)};
       document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
-    d.lock=false;TIMERS.push(setTimeout(()=>sayWord(it[3]),450));
+    d.lock=false;TIMERS.push(setTimeout(()=>saySyl(it[3]),450));
     return;
   }
   if(S.act==='disc'){
