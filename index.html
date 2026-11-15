@@ -1166,10 +1166,11 @@ const SFX=(()=>{
     o.connect(l).connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
   const BURST={p:[400,4000],b:[300,3000],t:[2500,9000],d:[2500,8000],k:[1200,3500],g:[1100,3200]};
   function phone(ph){
-    if(ph==='s'){hiss(1.1,{hp:4000,lp:11000,vol:.3});return}
-    if(ph==='z'){hiss(1.1,{hp:4000,lp:11000,vol:.13});hum(1.1,{vol:.32,lp:700});return}
-    if(ph==='f'){hiss(1.1,{hp:1000,lp:7000,vol:.14});return}
-    if(ph==='v'){hiss(1.1,{hp:1000,lp:7000,vol:.06});hum(1.1,{vol:.32,lp:600});return}
+    /* fricatives are held long (2 s) so the child hears ssss / zzzz, ffff / vvvv */
+    if(ph==='s'){hiss(2,{hp:4500,lp:11000,vol:.35});return}
+    if(ph==='z'){hiss(2,{hp:4500,lp:11000,vol:.16});hum(2,{vol:.34,lp:700});return}
+    if(ph==='f'){hiss(2,{hp:1500,lp:8000,vol:.3});return}
+    if(ph==='v'){hiss(2,{hp:1500,lp:8000,vol:.1});hum(2,{vol:.36,lp:600});return}
     const [hp,lp]=BURST[ph]||BURST.p,voiced='bdg'.includes(ph);
     [0,.5,1].forEach(at=>{if(voiced){hum(.16,{at,vol:.34,lp:400});noise(.03,{at:at+.13,vol:.22,hp,lp})}
       else{noise(.025,{at,vol:.4,hp,lp});hiss(.09,{at:at+.02,vol:.08,hp:1000,lp:7000})}})}
