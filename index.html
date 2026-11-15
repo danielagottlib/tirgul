@@ -1157,6 +1157,22 @@ const SFX=(()=>{
   function tone(f,dur,{type='sine',vol=.25,at=0,to=null,attack=.005}={}){const a=c();if(!a)return;const t=a.currentTime+at;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
   function noise(dur,{at=0,vol=.4,hp=800,lp=12000}={}){const a=c();if(!a)return;const t=a.currentTime+at;const n=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,n,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource();s.buffer=buf;const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;const l=a.createBiquadFilter();l.type='lowpass';l.frequency.value=lp;const g=a.createGain();g.gain.value=vol;s.connect(h).connect(l).connect(g).connect(a.destination);s.start(t)}
   const knock1=at=>{tone(140,.12,{vol:.6,at,to:70});noise(.05,{at,vol:.5,hp:200,lp:1500})};
+  /* isolated speech sounds (used when Daniela has not recorded her own): a steady hiss (s, f) and a throat hum (voicing) */
+  function hiss(dur,{at=0,vol=.2,hp=2000,lp=9000}={}){const a=c();if(!a)return;const t=a.currentTime+at;const n=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,n,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+    const s=a.createBufferSource();s.buffer=buf;const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;const l=a.createBiquadFilter();l.type='lowpass';l.frequency.value=lp;const g=a.createGain();
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.05,dur/3));g.gain.setValueAtTime(vol,t+dur*.8);g.gain.linearRampToValueAtTime(0,t+dur);s.connect(h).connect(l).connect(g).connect(a.destination);s.start(t)}
+  function hum(dur,{at=0,vol=.25,f=120,lp=800}={}){const a=c();if(!a)return;const t=a.currentTime+at;const o=a.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(f,t);o.frequency.linearRampToValueAtTime(f*.94,t+dur);
+    const l=a.createBiquadFilter();l.type='lowpass';l.frequency.value=lp;const g=a.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.04,dur/3));g.gain.setValueAtTime(vol,t+dur*.85);g.gain.linearRampToValueAtTime(0,t+dur);
+    o.connect(l).connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
+  const BURST={p:[400,4000],b:[300,3000],t:[2500,9000],d:[2500,8000],k:[1200,3500],g:[1100,3200]};
+  function phone(ph){
+    if(ph==='s'){hiss(1.1,{hp:4000,lp:11000,vol:.3});return}
+    if(ph==='z'){hiss(1.1,{hp:4000,lp:11000,vol:.13});hum(1.1,{vol:.32,lp:700});return}
+    if(ph==='f'){hiss(1.1,{hp:1000,lp:7000,vol:.14});return}
+    if(ph==='v'){hiss(1.1,{hp:1000,lp:7000,vol:.06});hum(1.1,{vol:.32,lp:600});return}
+    const [hp,lp]=BURST[ph]||BURST.p,voiced='bdg'.includes(ph);
+    [0,.5,1].forEach(at=>{if(voiced){hum(.16,{at,vol:.34,lp:400});noise(.03,{at:at+.13,vol:.22,hp,lp})}
+      else{noise(.025,{at,vol:.4,hp,lp});hiss(.09,{at:at+.02,vol:.08,hp:1000,lp:7000})}})}
   function engine(){try{if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')safeResume(ctx);return ctx}catch(e){return null}}
   return{
     unlock(){engine()},
@@ -1184,6 +1200,7 @@ const SFX=(()=>{
     voiced(kind){if(kind==='fric')noise(.75,{vol:.2,hp:2500,lp:9000});else noise(.05,{vol:.3,hp:300,lp:3000});
       tone(118,.8,{type:'sawtooth',vol:.24,attack:.03});tone(236,.8,{type:'square',vol:.05,attack:.03})},
     voiceless(kind){if(kind==='fric')noise(.6,{vol:.13,hp:2500,lp:10000});else noise(.09,{vol:.12,hp:1500,lp:8000})},
+    phone,
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
     chomp(){[0,.15,.3].forEach(t=>{noise(.07,{at:t,vol:.5,hp:300,lp:2500});tone(180,.07,{at:t,vol:.2,to:120})})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
@@ -1250,7 +1267,19 @@ const niq=t=>String(t).replace(/[א-ת]+/g,w=>NIQ[w]||w);
 function sayWord(w){if(SFX.muted)return;try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(niq(w));u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
-const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!']];
+const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!'],
+ /* isolated sounds for the voicing pairs (stops: the consonant alone, three times; fricatives: one long sound) */
+ ['ph-b','הגה ב בבידוד (קולי)','בּ בּ בּ — רק העיצור, בלי תנועה'],['ph-p','הגה פ בבידוד (בלתי קולי)','פּ פּ פּ — רק העיצור, בלי תנועה'],
+ ['ph-d','הגה ד בבידוד (קולי)','ד ד ד — רק העיצור, בלי תנועה'],['ph-t','הגה ת בבידוד (בלתי קולי)','ת ת ת — רק העיצור, בלי תנועה'],
+ ['ph-g','הגה ג בבידוד (קולי)','ג ג ג — רק העיצור, בלי תנועה'],['ph-k','הגה ק בבידוד (בלתי קולי)','ק ק ק — רק העיצור, בלי תנועה'],
+ ['ph-z','הגה ז בבידוד (קולי)','זזזזזזז — צליל ארוך'],['ph-s','הגה ס בבידוד (בלתי קולי)','סססססס — צליל ארוך'],
+ ['ph-v','הגה V בבידוד (קולי)','ווווווו (V) — צליל ארוך'],['ph-f','הגה F בבידוד (בלתי קולי)','פפפפפפ (F) — צליל ארוך']];
+/* plays an isolated sound: Daniela's recording audio/ph-<x>.webm when it exists, otherwise the synthesized one */
+const PHREC={};
+function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);return}
+  let done=false;const fb=()=>{if(done)return;done=true;PHREC[ph]=false;SFX.phone(ph)};
+  try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.onerror=fb;a.play().then(()=>{done=true;PHREC[ph]=true}).catch(fb)}catch(e){fb()}}
+const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done2.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
 let VA=null;const VT=Math.floor(Date.now()/600000);
@@ -1557,6 +1586,13 @@ function renderMine(){const gs=myAssigned(S.code),p=prog();
   bindCommon();app.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{S.mg=b.dataset.mg;startAct('mine','mine')})}
 /* voicing pairs: a = voiced (ב ד ג ז V), b = voiceless (פ ת ק ס F) */
 const vLab=x=>x==='V'?'ו / ב רפה':x==='F'?'פ רפה':x;
+/* word sorting says only the first syllable (consonant + first vowel), so the child listens to the start of the word */
+const VSYL={'בננה':'בָּא','בטטה':'בָּא','בית':'בָּא','בובה':'בּוּ','ברווז':'בָּא','פיל':'פִּי','פרה':'פָּא','פרח':'פֶּה','פיצה':'פִּי','פינגווין':'פִּי',
+  'דג':'דָּא','דף':'דָּא','דבש':'דָּא','דלת':'דֶּה','דובי':'דּוּ','תג':'תָּא','תף':'תּוֹ','תות':'תּוּ','תפוח':'תָּא','תרנגול':'תָּא',
+  'גמל':'גָּא','גזר':'גֶּה','גלידה':'גִּי','גיטרה':'גִּי','גרב':'גֶּה','קוף':'קוֹ','קיפוד':'קִי','קשת':'קֶה','קקטוס':'קָא','קומקום':'קוּ',
+  'זית':'זִי','זחל':'זָא','זהב':'זָא','זקן':'זָא','סוס':'סוּ','סבון':'סָא','סירה':'סִי','סנאי':'סָא','סל':'סָא'};
+/* V / F: the speaking words have the sound in the middle, so the sorting game uses words that start with it */
+const VSORT={4:{a:[['ורד','🌹','וֶה'],['וופל','🧇','וָא'],['ויטמין','💊','וִי'],['וניל','🍨','וָא']],b:[['פלאפל','🧆','פָא'],['פלמינגו','🦩','פָא'],['פוטבול','🏈','פוּ'],['פילם','🎞️','פִי']]}};
 const vKind=v=>['ז','V'].includes(v.a[0])?'fric':'stop';
 function renderPair(){
   const v=VOICING[S.pair];
@@ -1944,7 +1980,9 @@ function startAct(act,from){
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
-  if(act==='vsort'){const v=VOICING[S.pair];d.list=shuffle([...v.a[1].map(w=>[w[0],w[1],1]),...v.b[1].map(w=>[w[0],w[1],0])]);d.k=0;d.inA=[];d.inB=[]}
+  if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
+    const A=V?V.a:v.a[1].map(sy),B=V?V.b:v.b[1].map(sy);
+    d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
     loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()})}
   if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
@@ -2476,7 +2514,8 @@ function renderAct(){
     const v=VOICING[S.pair],kind=vKind(v),A=vLab(v.a[0]),B=vLab(v.b[0]);
     const side=(loud,inner,extra)=>`<button class="vside ${loud?'loud':'quiet'}" ${extra||''} type="button">${inner}</button>`;
     const fx=loud=>`<span class="vmeter"><i></i></span><span class="vfx">${loud?'<i></i><i></i><i></i>':'💨'}</span>`;
-    const anim=(el,loud)=>{if(!el)return;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');loud?SFX.voiced(kind):SFX.voiceless(kind)};
+    const pA=vPh(v.a[0]),pB=vPh(v.b[0]);
+    const anim=(el,loud,silent)=>{if(!el)return;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');if(!silent)playPh(loud?pA:pB)};
     if(S.act==='vbuzz'){
       /* explore: touch each letter, hear and see the difference — the voiced one buzzes loudly in the throat, the voiceless one is only quiet air */
       const h=d.heard,ok=h.a>=2&&h.b>=2;
@@ -2502,10 +2541,10 @@ function renderAct(){
           ${side(false,`<span class="vbig">🤫</span><span class="vtag">שקט — כמו ${B}</span>`,'data-a="0"')}
           ${side(true,`<span class="vbig">🐝</span><span class="vtag">רועש — כמו ${A}</span>`,'data-a="1"')}
         </div><div class="cheer" id="cheer"></div></div>`);
-      const play=()=>{loud?SFX.voiced(kind):SFX.voiceless(kind)};
+      const play=()=>playPh(loud?pA:pB);
       document.getElementById('vplay').onclick=play;
       app.querySelectorAll('.vside').forEach(b=>b.onclick=()=>{if(d.lock)return;const ans=b.dataset.a==='1';
-        if(ans===loud){d.lock=true;anim(b,loud);addStar();document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
+        if(ans===loud){d.lock=true;anim(b,loud,true);addStar();document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
           TIMERS.push(setTimeout(()=>{d.lock=false;d.n++;if(d.n>=d.goal)finish();else render()},1300))}
         else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(play,700))}});
       TIMERS.push(setTimeout(play,450));
@@ -2513,22 +2552,23 @@ function renderAct(){
     }
     /* vsort: a picture; touching it says the word; the child drags it to the voiceless side or the voiced side */
     const it=d.list[d.k],voiceOk=!!anyHebVoice();
-    shell(`<div class="card stage"><p class="drag-hint">נוגעים בתמונה ושומעים 👂 ואז גוררים: ${B} או ${A}?</p>
+    shell(`<div class="card stage"><p class="drag-hint">${kidG()==='g'?'הקשיבי':'הקשב'} לתחילת המילה: האם זה צליל חלש או צליל חזק? 👂</p>
+      <p class="muted" style="font-size:15px;margin-top:-4px">נוגעים בתמונה כדי לשמוע שוב, וגוררים אותה לצד הנכון</p>
       <div class="progress">${d.k+1} / ${d.list.length}</div>
       <div class="discbox">
-        <button class="dzone vq" id="dzB" type="button"><span class="vlz">${B}</span><span class="dzl">🤫 שקט</span><span class="dzin">${d.inB.join('')}</span></button>
-        <button class="dcard" id="dcard" type="button" aria-label="שומעים את המילה"><span class="dpic">${it[1]}</span><span class="dear">🔊 לשמוע</span></button>
-        <button class="dzone vlo" id="dzA" type="button"><span class="vlz">${A}</span><span class="dzl">🐝 רועש</span><span class="dzin">${d.inA.join('')}</span></button>
+        <button class="dzone vq" id="dzB" type="button"><span class="vlz">${B}</span><span class="dzl">🤫 חלש</span><span class="dzin">${d.inB.join('')}</span></button>
+        <button class="dcard" id="dcard" type="button" aria-label="שומעים את תחילת המילה"><span class="dpic">${it[1]}</span><span class="dear">🔊 לשמוע</span></button>
+        <button class="dzone vlo" id="dzA" type="button"><span class="vlz">${A}</span><span class="dzl">💥 חזק</span><span class="dzin">${d.inA.join('')}</span></button>
       </div>
-      <p class="note" ${voiceOk?'hidden':''}>להורה: במכשיר הזה אין קול בעברית. אמרו בקול את המילה: <b>${esc(it[0])}</b></p>
+      <p class="note" ${voiceOk?'hidden':''}>להורה: במכשיר הזה אין קול בעברית. אמרו בקול רק את תחילת המילה: <b>${esc(it[3])}</b> (מתוך "${esc(it[0])}")</p>
       <div class="cheer" id="cheer"></div></div>`);
     const card=document.getElementById('dcard'),zA=document.getElementById('dzA'),zB=document.getElementById('dzB');
     const choose=toA=>{if(d.lock)return;const z=toA?zA:zB;
       if(toA===!!it[2]){d.lock=true;SFX.good();addStar();(toA?d.inA:d.inB).push(it[1]);document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
         flyTo(card,z,()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()})}
       else{SFX.bad();[card,z].forEach(e=>{e.classList.remove('no');void e.offsetWidth;e.classList.add('no')});
-        document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>sayWord(it[0]),600))}};
-    card.onclick=()=>sayWord(it[0]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
+        document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>sayWord(it[3]),600))}};
+    card.onclick=()=>sayWord(it[3]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
     card.onpointerdown=e=>{const r=card.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
       const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>8){g=card.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(g);card.style.visibility='hidden'}
         if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
@@ -2536,7 +2576,7 @@ function renderAct(){
         const inZ=z=>{const b=z.getBoundingClientRect();return ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom};
         if(inZ(zA))choose(true);else if(inZ(zB))choose(false)};
       document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
-    d.lock=false;TIMERS.push(setTimeout(()=>sayWord(it[0]),450));
+    d.lock=false;TIMERS.push(setTimeout(()=>sayWord(it[3]),450));
     return;
   }
   if(S.act==='disc'){
