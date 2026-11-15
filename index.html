@@ -412,7 +412,34 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;verti
 .dzic{font-size:64px;line-height:1}.dzin{display:flex;flex-wrap:wrap;justify-content:center;font-size:24px;gap:2px}
 .dcard{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:3px solid var(--sun);border-radius:22px;padding:12px 14px;box-shadow:0 6px 0 #c98c0e;touch-action:none;cursor:grab}
 .dcard .dpic{font-size:72px;line-height:1}.dcard .dear{font-family:var(--display);font-size:15px;color:var(--muted)}
-.dcard.no{animation:shake .35s}
+.dcard.no,.dzone.no{animation:shake .35s}
+.dzone.no{background:#FDECEC}
+/* voicing pairs */
+.dzone.vq{border-color:#B9C6D2;background:#F4F7FA}.dzone.vlo{border-color:#F6B21E;background:#FFF7E3}
+.vlz{font-family:var(--display);font-size:52px;line-height:1.1;color:var(--ink)}
+.vpair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.vside{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;border-radius:24px;padding:14px 8px;border:3px solid;background:#fff;cursor:pointer;font-family:var(--display);overflow:hidden}
+.vside.quiet{border-color:#B9C6D2;background:#F4F7FA}.vside.loud{border-color:#F6B21E;background:#FFF7E3}
+.vside .vl{font-size:min(20vw,84px);line-height:1;color:var(--ink)}
+.vside .vbig{font-size:min(18vw,72px);line-height:1}
+.vside .vtag{font-size:16px;color:var(--ink)}
+.vmeter{width:80%;height:14px;border-radius:8px;background:#E3E8EE;overflow:hidden}
+.vmeter i{display:block;height:100%;width:0;border-radius:8px}
+.vside.quiet .vmeter i{background:#9FB3C8}.vside.loud .vmeter i{background:linear-gradient(90deg,#FFC43D,#F06A4F)}
+.vfx{position:relative;height:34px;width:100%;display:flex;justify-content:center;align-items:center;font-size:28px;opacity:0}
+.vside.loud .vfx i{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border:3px solid #F6B21E;border-radius:50%}
+.vside.on .vfx{opacity:1}
+.vside.quiet.on .vmeter i{animation:vq .9s ease-out forwards}
+.vside.loud.on .vmeter i{animation:vlm .9s ease-out forwards}
+.vside.loud.on .vl,.vside.loud.on .vbig{animation:vbuzz .06s linear 13}
+.vside.loud.on .vfx i{animation:vring .8s ease-out forwards}.vside.loud.on .vfx i:nth-child(2){animation-delay:.15s}.vside.loud.on .vfx i:nth-child(3){animation-delay:.3s}
+.vside.quiet.on .vfx{animation:vpuff 1s ease-out forwards}
+.vside.no{animation:shake .35s}
+@keyframes vq{0%{width:0}30%{width:16%}100%{width:0}}
+@keyframes vlm{0%{width:0}15%{width:95%}30%{width:80%}45%{width:100%}60%{width:85%}75%{width:98%}100%{width:0}}
+@keyframes vbuzz{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-2px,-1px)}}
+@keyframes vring{0%{transform:scale(.3);opacity:1}100%{transform:scale(4);opacity:0}}
+@keyframes vpuff{0%{opacity:.9;transform:translateY(6px)}100%{opacity:0;transform:translateY(-16px) translateX(14px)}}
 @media (max-width:420px){.dzic{font-size:44px}.dcard .dpic{font-size:54px}.dzone{min-height:150px;font-size:15px}}
 /* therapy table on the parents' entry screen */
 .toytable{position:relative;width:min(86vw,400px);aspect-ratio:468/324;animation:ttfloat 5s ease-in-out infinite}
@@ -1038,7 +1065,7 @@ const VOICING=[
  {bit:14,name:'ד / ת',a:['ד',[['דג','🐟'],['דף','📄'],['דבש','🍯'],['דלת','🚪'],['דובי','🧸']]],b:['ת',[['תג','🏷️'],['תף','🥁'],['תות','🍓'],['תפוח','🍎'],['תרנגול','🐓']]],pairs:[[0,0],[1,1]]},
  {bit:15,name:'ג / ק',a:['ג',[['גמל','🐫'],['גזר','🥕'],['גלידה','🍦'],['גיטרה','🎸'],['גרב','🧦']]],b:['ק',[['קוף','🐒'],['קיפוד','🦔'],['קשת','🌈'],['קקטוס','🌵'],['קומקום','🫖']]]},
  {bit:16,name:'ז / ס',a:['ז',[['זית','🫒'],['זחל','🐛'],['זהב','🪙'],['זקן','🧔']]],b:['ס',[['סוס','🐴'],['סבון','🧼'],['סירה','⛵'],['סנאי','🐿️'],['סל','🧺']]]},
- {bit:17,name:'V / F (ו / פ רפה)',a:['V',[['ורד','🌹'],['ופל','🧇'],['כובע','🎩'],['צב','🐢'],['גרב','🧦']]],b:['F',[['כף','🥄'],['קוף','🐒'],['עוף','🐔'],['טלפון','📞'],['סופגנייה','🍩']]]}
+ {bit:17,name:'V / F (ו / פ רפה)',a:['V',[['ורד','🌹'],['וופל','🧇'],['כובע','🎩'],['צב','🐢'],['גרב','🧦']]],b:['F',[['כף','🥄'],['קוף','🐒'],['עוף','🐔'],['טלפון','📞'],['סופגנייה','🍩']]]}
 ];
 const GOAL_LANG=[{bit:8,id:'vocab',name:'אוצר מילים וקטגוריות',icon:'🧺'},{bit:9,id:'instr',name:'הוראות ומשפטים',icon:'👂'}];
 
@@ -1153,6 +1180,10 @@ const SFX=(()=>{
     roll(){for(let i=0;i<6;i++)noise(.04,{at:i*.08,vol:.3,hp:1500})},
     fanfare(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,{vol:.18,at:i*.13,type:'triangle'}));tone(1047,.7,{vol:.18,at:.55,type:'triangle'});tone(1319,.7,{vol:.12,at:.55,type:'triangle'})},
     whoosh(){noise(.6,{vol:.25,hp:400,lp:3000})},
+    /* voicing pairs: a voiced sound = a loud buzz from the throat (+ a burst or hiss), a voiceless one = only a soft puff of air or hiss */
+    voiced(kind){if(kind==='fric')noise(.75,{vol:.2,hp:2500,lp:9000});else noise(.05,{vol:.3,hp:300,lp:3000});
+      tone(118,.8,{type:'sawtooth',vol:.24,attack:.03});tone(236,.8,{type:'square',vol:.05,attack:.03})},
+    voiceless(kind){if(kind==='fric')noise(.6,{vol:.13,hp:2500,lp:10000});else noise(.09,{vol:.12,hp:1500,lp:8000})},
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
     chomp(){[0,.15,.3].forEach(t=>{noise(.07,{at:t,vol:.5,hp:300,lp:2500});tone(180,.07,{at:t,vol:.2,to:120})})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
@@ -1524,12 +1555,16 @@ function renderHome(){
 function renderMine(){const gs=myAssigned(S.code),p=prog();
   app.innerHTML=header('המשחקים שלי','home')+(gs.length?`<div class="grid">${gs.map(g=>{const n=(p.games['mine|'+g.id]||{}).s||0;return `<button class="tile" data-mg="${esc(g.id)}" style="--tc:#F08A24;--tl:#FFF0DC;--td:#C0660E">${n?`<span class="tbadge">⭐ ${n}</span>`:''}<span class="big">${g.icon}</span>${esc(g.name)}${g.sub?`<span class="sub">${esc(g.sub)}</span>`:''}</button>`}).join('')}</div>`:'<div class="card stage"><p class="muted">עוד אין כאן משחקים.</p></div>');
   bindCommon();app.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{S.mg=b.dataset.mg;startAct('mine','mine')})}
+/* voicing pairs: a = voiced (ב ד ג ז V), b = voiceless (פ ת ק ס F) */
+const vLab=x=>x==='V'?'ו / ב רפה':x==='F'?'פ רפה':x;
+const vKind=v=>['ז','V'].includes(v.a[0])?'fric':'stop';
 function renderPair(){
   const v=VOICING[S.pair];
-  const acts=[['phear','👂','מקשיבים ובוחרים','ההורה אומר מילה, הילד מראה'],['games','🎮','משחקי אמירה','מילים עם '+v.a[0]+' ועם '+v.b[0]]];
+  const A=vLab(v.a[0]),B=vLab(v.b[0]);
+  const acts=[['vbuzz','🐝','הגרון המזמזם','שומעים ומרגישים: רועש או שקט'],['vquiz','👂','רועש או שקט?','מקשיבים לצליל ובוחרים'],['vsort','🧺','ממיינים מילים','גוררים כל תמונה ל'+B+' או ל'+A],['games','🎮','משחקי אמירה','מילים עם '+A+' ועם '+B]];
   app.innerHTML=header(v.name,'home')+`<div class="grid">${acts.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
   bindCommon();
-  app.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(b.dataset.act==='games')go('games',{stage:'pair',gback:'pair'});else startAct('phear','pair')});
+  app.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(b.dataset.act==='games')go('games',{stage:'pair',gback:'pair'});else startAct(b.dataset.act,'pair')});
 }
 const STAGES=[
  ['syl','1','הברות','רָ, רוֹ, רִי...'],
@@ -1907,6 +1942,9 @@ function startAct(act,from){
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
+  if(act==='vbuzz'){d.heard={a:0,b:0}}
+  if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
+  if(act==='vsort'){const v=VOICING[S.pair];d.list=shuffle([...v.a[1].map(w=>[w[0],w[1],1]),...v.b[1].map(w=>[w[0],w[1],0])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
     loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()})}
   if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
@@ -1928,7 +1966,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2432,6 +2470,73 @@ function renderAct(){
       const obj=document.getElementById('obj');flyTo(b,obj,()=>{SFX.hammer();obj.classList.add('working');
         TIMERS.push(setTimeout(()=>{d.fixed=true;SFX.fanfare();render();
           TIMERS.push(setTimeout(()=>{d.j++;d.said=false;d.fixed=false;if(d.j>=d.jobs.length)finish();else render()},1800))},900))})});
+    return;
+  }
+  if(S.act==='vbuzz'||S.act==='vquiz'||S.act==='vsort'){
+    const v=VOICING[S.pair],kind=vKind(v),A=vLab(v.a[0]),B=vLab(v.b[0]);
+    const side=(loud,inner,extra)=>`<button class="vside ${loud?'loud':'quiet'}" ${extra||''} type="button">${inner}</button>`;
+    const fx=loud=>`<span class="vmeter"><i></i></span><span class="vfx">${loud?'<i></i><i></i><i></i>':'💨'}</span>`;
+    const anim=(el,loud)=>{if(!el)return;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');loud?SFX.voiced(kind):SFX.voiceless(kind)};
+    if(S.act==='vbuzz'){
+      /* explore: touch each letter, hear and see the difference — the voiced one buzzes loudly in the throat, the voiceless one is only quiet air */
+      const h=d.heard,ok=h.a>=2&&h.b>=2;
+      shell(`<div class="card stage"><p class="drag-hint">נוגעים בכל אות ושומעים: מי רועש ומי שקט? 👂</p>
+        <div class="vpair">
+          ${side(false,`<span class="vl">${B}</span>${fx(false)}<span class="vtag">🤫 שקט — רק אוויר</span>`,'id="vB"')}
+          ${side(true,`<span class="vl">${A}</span>${fx(true)}<span class="vtag">🐝 רועש — הגרון מזמזם</span>`,'id="vA"')}
+        </div>
+        <p class="note">להורה: הילד שם יד על הגרון ואומר <b>${A}</b> — מרגיש רטט, כמו זמזום של דבורה? עכשיו <b>${B}</b> — הגרון שקט ויוצא רק אוויר. נסו כמה פעמים, גם אתם.</p>
+        ${ok?'<button class="btn leaf" id="vdone">⭐ הרגשתי את ההבדל!</button>':`<p class="muted">נוגעים בכל אות לפחות פעמיים · ${Math.min(h.a,2)+Math.min(h.b,2)} / 4</p>`}</div>`);
+      const tap=k=>{const el=document.getElementById(k==='a'?'vA':'vB');anim(el,k==='a');const was=h.a>=2&&h.b>=2;h[k]++;
+        if(!was&&h.a>=2&&h.b>=2)TIMERS.push(setTimeout(render,1000));else{const m=app.querySelector('.card .muted:last-child');if(m&&!(h.a>=2&&h.b>=2))m.textContent=`נוגעים בכל אות לפחות פעמיים · ${Math.min(h.a,2)+Math.min(h.b,2)} / 4`}};
+      document.getElementById('vA').onclick=()=>tap('a');document.getElementById('vB').onclick=()=>tap('b');
+      const dn=document.getElementById('vdone');if(dn)dn.onclick=()=>{addStar();finish()};
+      return;
+    }
+    if(S.act==='vquiz'){
+      /* listen: a sound plays — loud buzzing (voiced) or quiet air (voiceless); the child picks the bee or the finger-on-lips */
+      const loud=!!d.seq[d.n];
+      shell(`<div class="card stage"><p class="drag-hint">מקשיבים לצליל: רועש 🐝 או שקט 🤫?</p><div class="progress">${d.n+1} / ${d.goal}</div>
+        <button class="btn sun" id="vplay" type="button">🔊 שומעים שוב</button>
+        <div class="vpair">
+          ${side(false,`<span class="vbig">🤫</span><span class="vtag">שקט — כמו ${B}</span>`,'data-a="0"')}
+          ${side(true,`<span class="vbig">🐝</span><span class="vtag">רועש — כמו ${A}</span>`,'data-a="1"')}
+        </div><div class="cheer" id="cheer"></div></div>`);
+      const play=()=>{loud?SFX.voiced(kind):SFX.voiceless(kind)};
+      document.getElementById('vplay').onclick=play;
+      app.querySelectorAll('.vside').forEach(b=>b.onclick=()=>{if(d.lock)return;const ans=b.dataset.a==='1';
+        if(ans===loud){d.lock=true;anim(b,loud);addStar();document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
+          TIMERS.push(setTimeout(()=>{d.lock=false;d.n++;if(d.n>=d.goal)finish();else render()},1300))}
+        else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(play,700))}});
+      TIMERS.push(setTimeout(play,450));
+      return;
+    }
+    /* vsort: a picture; touching it says the word; the child drags it to the voiceless side or the voiced side */
+    const it=d.list[d.k],voiceOk=!!anyHebVoice();
+    shell(`<div class="card stage"><p class="drag-hint">נוגעים בתמונה ושומעים 👂 ואז גוררים: ${B} או ${A}?</p>
+      <div class="progress">${d.k+1} / ${d.list.length}</div>
+      <div class="discbox">
+        <button class="dzone vq" id="dzB" type="button"><span class="vlz">${B}</span><span class="dzl">🤫 שקט</span><span class="dzin">${d.inB.join('')}</span></button>
+        <button class="dcard" id="dcard" type="button" aria-label="שומעים את המילה"><span class="dpic">${it[1]}</span><span class="dear">🔊 לשמוע</span></button>
+        <button class="dzone vlo" id="dzA" type="button"><span class="vlz">${A}</span><span class="dzl">🐝 רועש</span><span class="dzin">${d.inA.join('')}</span></button>
+      </div>
+      <p class="note" ${voiceOk?'hidden':''}>להורה: במכשיר הזה אין קול בעברית. אמרו בקול את המילה: <b>${esc(it[0])}</b></p>
+      <div class="cheer" id="cheer"></div></div>`);
+    const card=document.getElementById('dcard'),zA=document.getElementById('dzA'),zB=document.getElementById('dzB');
+    const choose=toA=>{if(d.lock)return;const z=toA?zA:zB;
+      if(toA===!!it[2]){d.lock=true;SFX.good();addStar();(toA?d.inA:d.inB).push(it[1]);document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
+        flyTo(card,z,()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()})}
+      else{SFX.bad();[card,z].forEach(e=>{e.classList.remove('no');void e.offsetWidth;e.classList.add('no')});
+        document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>sayWord(it[0]),600))}};
+    card.onclick=()=>sayWord(it[0]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
+    card.onpointerdown=e=>{const r=card.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
+      const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>8){g=card.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(g);card.style.visibility='hidden'}
+        if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
+      const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);if(!g)return;g.remove();card.style.visibility='';
+        const inZ=z=>{const b=z.getBoundingClientRect();return ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom};
+        if(inZ(zA))choose(true);else if(inZ(zB))choose(false)};
+      document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
+    d.lock=false;TIMERS.push(setTimeout(()=>sayWord(it[0]),450));
     return;
   }
   if(S.act==='disc'){
