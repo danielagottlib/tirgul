@@ -1023,6 +1023,20 @@ body{background:#5E8F55}
 .bcell.no{animation:shake .35s}
 .bwin{font-size:min(12vw,56px);font-weight:800;color:#E39A2D;text-shadow:0 3px 0 #fff;animation:popin .5s ease-out}
 /* kite, treasure, castle */
+.kitesky2{position:relative;width:100%;height:min(52vh,340px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#4FA8E8,#A8DBFF 72%,#CDEBB0 72%,#8DBF62)}
+.kcloud{position:absolute;transform:translate(-50%,-50%);border:0;background:none;padding:0;cursor:pointer;animation:kfloat 5s ease-in-out infinite;animation-delay:var(--dl)}
+.kcloud .kcl{font-size:min(20vw,92px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,60,110,.25))}
+.kcloud .kpic{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);font-size:30px;line-height:1}
+.kcloud .kpic img{width:min(10vw,44px);height:auto}
+.kcloud.got{cursor:default;animation:none}
+.kcloud .kstar{font-size:min(9vw,40px);animation:popin .6s ease-out;display:inline-block;filter:drop-shadow(0 0 10px #FFE27A)}
+@keyframes kfloat{50%{transform:translate(-50%,calc(-50% - 8px))}}
+.kite2{position:absolute;transform:translate(-50%,-50%);transition:left 1.4s cubic-bezier(.3,1,.4,1),top 1.4s cubic-bezier(.3,1,.4,1);z-index:3;display:flex;flex-direction:column;align-items:center}
+.kite2 .kbody{font-size:min(13vw,56px);animation:ksway 2.4s ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(0,0,0,.2))}
+.kite2 .ktail{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:-4px}
+.kite2 .ktail i{width:16px;height:9px;border-radius:5px;transform:rotate(-20deg)}.kite2 .ktail i:nth-child(2n){transform:rotate(20deg)}
+.kitesky2 .kid{position:absolute;bottom:1%;left:50%;transform:translateX(-50%);font-size:min(11vw,46px);z-index:2}
+.kitesky2 .kcastle{position:absolute;right:6%;top:4%;font-size:min(14vw,62px);animation:popin .8s ease-out}
 .kitesky{position:relative;width:100%;height:min(48vh,320px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#5FB7F0,#BFE6FF 70%,#DDF2C8 70%,#9CCB6E)}
 .kc{position:absolute;font-style:normal;font-size:48px;opacity:.95;animation:kcl 18s linear infinite}
 .kc.c1{top:6%;left:-20%}.kc.c2{top:20%;left:-20%;animation-delay:-7s;font-size:36px}.kc.c3{top:2%;left:-20%;animation-delay:-12s;font-size:30px}
@@ -1390,6 +1404,8 @@ const SFX=(()=>{
       tone(118,.8,{type:'sawtooth',vol:.24,attack:.03});tone(236,.8,{type:'square',vol:.05,attack:.03})},
     voiceless(kind){if(kind==='fric')noise(.6,{vol:.13,hp:2500,lp:10000});else noise(.09,{vol:.12,hp:1500,lp:8000})},
     phone,
+    /* a soft gust of wind (kite game) */
+    wind(){hiss(1.4,{hp:120,lp:700,vol:.16})},
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
     chomp(){[0,.15,.3].forEach(t=>{noise(.07,{at:t,vol:.5,hp:300,lp:2500});tone(180,.07,{at:t,vol:.2,to:120})})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
@@ -1814,6 +1830,13 @@ const PHRASES={
  z:[['זחל זז','🐛'],['זבוב זז','🪰'],['זברה זזה','🦓'],['תפוז זהוב','🍊'],['זית זהוב','🫒'],['מזלג זהוב','🍴'],['אגוז זהוב','🥜'],['ברווז זז','🦆']],
  ts:[['צב צהוב','🐢'],['ציפור צהובה','🐦'],['עציץ צהוב','🪴'],['צלחת צהובה','🍽️'],['מיץ צהוב','🧃'],['ביצה צהובה','🥚'],['פיצה צהובה','🍕'],['עץ צהוב','🌳']]
 };
+/* phrases with a color ("בלון כחול"): the picture is tinted to that color, so the child sees what the phrase says */
+const TINT={'כחול':'grayscale(1) sepia(1) saturate(6) hue-rotate(175deg) brightness(.95)','סגול':'grayscale(1) sepia(1) saturate(5) hue-rotate(225deg) brightness(.95)',
+  'צהוב':'grayscale(1) sepia(1) saturate(7) hue-rotate(8deg) brightness(1.2)','אדום':'grayscale(1) sepia(1) saturate(8) hue-rotate(-38deg) brightness(.95)',
+  'ירוק':'grayscale(1) sepia(1) saturate(5) hue-rotate(55deg) brightness(.95)','ורוד':'grayscale(1) sepia(1) saturate(4) hue-rotate(285deg) brightness(1.15)',
+  'לבן':'grayscale(1) brightness(1.55) contrast(.85)','שחור':'grayscale(1) brightness(.4) contrast(1.3)','זהוב':'sepia(1) saturate(3.5) hue-rotate(8deg) brightness(1.1)'};
+function tintPic(text,emo){const w=String(text).split(' ').map(x=>x.replace(/ה$/,'').replace(/ות$|ים$/,''));
+  const k=Object.keys(TINT).find(c=>w.includes(c));return k?`<span class="tinted" style="filter:${TINT[k]}">${emo}</span>`:emo}
 const MEMV={r:'ראיתי',ts:'מצאתי',l:'לקחתי',k:'לקחתי',sh:'יש',s:'תפסתי',g:'גיליתי',z:'זכרתי'};
 /* simple long sentences for kindergarten: the old short sentences, "אני רוצה X ו-Y", and for כ/ק also sentences with "כי" */
 const KI=[['צריך כובע כי קר','🎩'],['הקוף קופץ כי הוא שמח','🐒'],['הכלב נובח כי הוא רוצה כדור','🐕'],['אני שותה כוס מים כי חם','🥛'],['הקיפוד קטן כי הוא תינוק','🦔'],['אני רוצה כדור כי אני רוצה לשחק','⚽']];
@@ -1838,7 +1861,7 @@ function stageItems(st,act){
   if(st==='words')return shuffle(soundWords());
   /* memory game in the phrases stage: "ראיתי גזר, ראיתי גזר" — the carrier word also has the target sound */
   if(st==='phr'&&act==='memory'){const C=MEMV[s.id]||'מצאתי';return shuffle(soundWords().filter(x=>!x[0].includes(' '))).map(w=>[`${C} ${w[0]}, ${C} ${w[0]}`,w[1]])}
-  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex));return shuffle(p.length>=4?p:soundWords())}
+  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex)).map(x=>[x[0],tintPic(x[0],x[1])]);return shuffle(p.length>=4?p:soundWords())}
   /* in the train game the sentences are about the train itself */
   if(act==='train'&&st==='short')return shuffle(soundWords()).map(w=>[w[0]+' עולה לרכבת',w[1]]);
   if(act==='train'&&st==='long'){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length;i+=2)out.push([w[i][0]+' ו'+w[i+1][0]+' עולים לרכבת',w[i][1]+w[i+1][1]]);return out}
@@ -2196,7 +2219,7 @@ function startAct(act,from){
   if(act==='shop'){/* only things a child could buy in a shop */
     let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<4)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));
     d.items=w.slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
-  if(act==='kite'){d.items=items().slice(0,6);d.n=0}
+  if(act==='kite'){d.items=items().slice(0,6);d.done=[];d.kpos=null}
   if(act==='treasure'){const w=items();d.items=Array.from({length:8},(x,i)=>w[i%w.length]);d.dug=[];d.opened=false;d.prize=''}
   if(act==='castle'){d.items=items().slice(0,6);d.n=0}
   if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
@@ -2553,16 +2576,21 @@ function renderAct(){
     return;
   }
   if(S.act==='kite'){
-    /* phrases: a kite on a string; every phrase said lifts it higher, until it flies above the clouds */
-    const N=d.items.length,h=d.n/N;
-    shell(`<div class="card stage"><p class="muted">${d.n>=N?'העפיפון בשמיים! 🎉':'נוגעים בקלף, אומרים, והעפיפון עולה למעלה 🪁'}</p><div class="progress">${d.n} / ${N}</div>
-      <div class="kitesky"><i class="kc c1">☁️</i><i class="kc c2">☁️</i><i class="kc c3">☁️</i>
-        <div class="kite" style="bottom:${(8+h*72).toFixed(1)}%;left:${(46+Math.sin(d.n*1.3)*12).toFixed(1)}%"><span class="kbody">🪁</span></div>
-        <svg class="kstring" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,100 Q${(40+h*20).toFixed(0)},${(70-h*30).toFixed(0)} ${(48+Math.sin(d.n*1.3)*12).toFixed(1)},${(92-(8+h*72)).toFixed(1)}" fill="none" stroke="#fff" stroke-width=".6"/></svg>
-        <span class="kid">${kidG()==='g'?'👧':'👦'}</span></div>
-      ${d.n<N?`<div class="kcards">${d.items.map((it,ix)=>ix<d.n?'':`<button class="sitem2 kcard ${ix===d.n?'next':''}" data-ix="${ix}" type="button" ${ix===d.n?'':'disabled'}><span class="spic2">${it[1]}</span></button>`).join('')}</div>`:''}</div>`);
-    const nb=app.querySelector('.kcard.next');if(nb)nb.onclick=()=>{if(S.overlay)return;SFX.blip();
-      sayIt(d.items[d.n],()=>{d.n++;SFX.whoosh();render();if(d.n>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2000))}})};
+    /* phrases: clouds with pictures float in the sky. The child picks a cloud, says the phrase, a soft gust of wind carries the kite
+       to it, the cloud turns into a star and a new ribbon is tied to the kite's tail. With all the stars, the kite flies to the castle */
+    const N=d.items.length,SP=[[18,18],[50,10],[82,18],[26,44],[74,42],[50,30]],home=d.done.length>=N;
+    const kp=home?[84,6]:(d.kpos||[50,72]),RB=['#E5484D','#F4C04A','#14A381','#3C8DC4','#8E5BF0','#FF8A3D'];
+    shell(`<div class="card stage"><p class="muted">${home?'העפיפון הגיע לטירה! 🎉':'בוחרים ענן, אומרים את הצירוף, והרוח מעיפה את העפיפון אליו 🪁'}</p>
+      <div class="progress">⭐ ${d.done.length} / ${N}</div>
+      <div class="kitesky2">${home?'<span class="kcastle">🏰</span>':''}
+        ${d.items.map((it,ix)=>{const [x,y]=SP[ix%SP.length],dn=d.done.includes(ix);return `<button class="kcloud ${dn?'got':''}" data-ix="${ix}" type="button" style="left:${x}%;top:${y}%;--dl:-${ix*1.3}s" ${dn||home?'disabled':''}>${dn?'<span class="kstar">⭐</span>':`<span class="kcl">☁️</span><span class="kpic">${it[1]}</span>`}</button>`}).join('')}
+        <svg class="kstring" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,98 Q${((50+kp[0])/2+8).toFixed(1)},${((98+kp[1])/2+10).toFixed(1)} ${kp[0]},${kp[1]+6}" fill="none" stroke="rgba(255,255,255,.95)" stroke-width=".5"/></svg>
+        <div class="kite2" style="left:${kp[0]}%;top:${kp[1]}%"><span class="kbody">🪁</span><span class="ktail">${d.done.map(i=>`<i style="background:${RB[i%RB.length]}"></i>`).join('')}</span></div>
+        <span class="kid">${kidG()==='g'?'👧':'👦'}</span></div></div>`);
+    if(home)return;
+    app.querySelectorAll('.kcloud:not(.got)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
+      sayIt(d.items[ix],()=>{SFX.wind();d.done.push(ix);d.kpos=SP[ix%SP.length];render();TIMERS.push(setTimeout(()=>SFX.star(),900));
+        if(d.done.length>=N)TIMERS.push(setTimeout(()=>{SFX.wind();render();SFX.fanfare();TIMERS.push(setTimeout(finish,2600))},1600))})});
     return;
   }
   if(S.act==='treasure'){
