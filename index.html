@@ -980,8 +980,9 @@ body{background:#5E8F55}
 @keyframes swimL{from{left:105%}to{left:-25%}}
 .bucket{position:relative;line-height:1}
 .dragonbox{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
-.dstage{height:min(62vw,270px);display:flex;align-items:flex-end;justify-content:center;width:100%}
-.dragon{position:relative;font-size:min(17vw,76px);line-height:1;transform:scale(var(--s));transform-origin:50% 100%;transition:transform .7s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 10px 10px rgba(0,0,0,.2))}
+.dstage{height:min(92vw,400px);overflow:visible;display:flex;align-items:flex-end;justify-content:center;width:100%}
+.dragon{position:relative;font-size:min(16vw,72px);line-height:1;transform:scale(var(--s));transform-origin:50% 100%;transition:transform .7s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 10px 10px rgba(0,0,0,.2))}
+.dragon.grow{transition:transform 2.2s cubic-bezier(.45,.05,.35,1),filter 2.2s;filter:drop-shadow(0 10px 10px rgba(0,0,0,.2)) drop-shadow(0 0 22px rgba(255,214,90,.75))}
 .dragon.full .dg{display:inline-block;animation:ddance .5s ease-in-out infinite alternate}
 @keyframes ddance{0%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(0) translateY(-10px)}100%{transform:rotate(12deg) translateY(0)}}
 .dragon .notes{position:absolute;right:-30%;top:-10%;font-size:.4em;animation:dnote 1.2s ease-out infinite}.dragon .notes.n2{right:auto;left:-30%;animation-delay:.6s}
@@ -1124,7 +1125,7 @@ body{background:#5E8F55}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
 /* סיפור בהמשכים */
-.q4row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.q4row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px auto;width:min(100%,620px)}
 .q4slot{position:relative;aspect-ratio:1;border-radius:14px;border:3px dashed #C9B48A;background:#FFF8E8;display:grid;place-items:center;overflow:hidden;transition:transform .2s}
 .q4slot.full{border-style:solid;border-color:#E39A2D}.q4slot.over{background:#FFE7B0;transform:scale(1.05)}.q4slot.now{box-shadow:0 0 0 4px #14A381;transform:scale(1.06)}
 .q4slot img{width:100%;height:100%;object-fit:cover}.q4n{position:absolute;top:4px;right:6px;z-index:2;background:#E39A2D;color:#fff;font-weight:900;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-size:15px}
@@ -1135,7 +1136,7 @@ body{background:#5E8F55}
 .q4card img,.flying.q4card img{width:100%;height:100%;object-fit:cover;pointer-events:none}.q4card.sel{box-shadow:0 0 0 4px #14A381}
 .q4big{width:min(70vw,300px);aspect-ratio:1;margin:6px auto;border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.2);animation:pop .4s}.q4big img{width:100%;height:100%;object-fit:cover}
 /* מציירים במילים */
-.ptboard{position:relative;width:100%;aspect-ratio:4/3;max-width:calc((100vh - 330px)*4/3);margin:8px auto;border-radius:18px;overflow:hidden;background:linear-gradient(#8FD3FF 0 52%,#7CC66A 52%);box-shadow:inset 0 0 0 3px rgba(0,0,0,.06);container-type:inline-size}
+.ptboard{position:relative;width:min(100%,640px);aspect-ratio:4/3;max-width:calc((100vh - 330px)*4/3);margin:8px auto;border-radius:18px;overflow:hidden;background:linear-gradient(#8FD3FF 0 52%,#7CC66A 52%);box-shadow:inset 0 0 0 3px rgba(0,0,0,.06);container-type:inline-size}
 .ptboard .pthill{position:absolute;left:-10%;right:-10%;top:44%;height:30%;background:radial-gradient(ellipse at 30% 100%,#5DB356 0 55%,transparent 56%),radial-gradient(ellipse at 75% 100%,#69BD5C 0 50%,transparent 51%)}
 .ptobj{position:absolute;transform:translate(-50%,-50%) scale(var(--s));font-size:11cqw;line-height:1;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
 .ptobj img{width:13cqw;height:13cqw;object-fit:contain}.ptobj.new{animation:ptin .7s cubic-bezier(.3,1.6,.5,1)}
@@ -1482,7 +1483,8 @@ const SFX=(()=>{
     /* cash register: drawer rattle + two bells */
     kaching(){noise(.12,{vol:.25,hp:1800,lp:9000});tone(2093,.3,{type:'triangle',vol:.2,at:.06});tone(2637,.6,{type:'triangle',vol:.2,at:.14});tone(3136,.5,{type:'sine',vol:.08,at:.14})},
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
-    chomp(){[0,.15,.3].forEach(t=>{noise(.07,{at:t,vol:.5,hp:300,lp:2500});tone(180,.07,{at:t,vol:.2,to:120})})},
+    /* eating: soft crunchy chewing, then a gulp (not hard hits) */
+    chomp(){[0,.28,.52,.8,1.02,1.3].forEach((t,k)=>{const j=Math.random()*.05;hiss(.075+Math.random()*.04,{at:t+j,vol:.13+Math.random()*.06,hp:700+k*60,lp:3200});tone(95+Math.random()*20,.11,{at:t+j+.02,vol:.07,to:70})});tone(360,.17,{at:1.62,vol:.16,to:130});tone(240,.22,{at:1.8,type:'triangle',vol:.06,to:200})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
@@ -2004,8 +2006,9 @@ const SEQ4={
  ts:{name:'הצמח בעציץ',cap:['הילד שם זרע בעציץ','הילד משקה את העציץ במים','יוצא צמח קטן וירוק','צמח פרח גדול בעציץ']}};
 /* "מציירים במילים": words the computer can draw, from all the word lists of the site */
 const PT_SKY=new Set(['שמש','ירח','ענן','קשת','ציפור','מטוס','מטוס קטן','מסוק','עפיפון','בלון','כוכב','נשר','דבורה','פרפר','זבוב','דרקון','רקטה','גשם','שלג','ינשוף']);
+const PT_SKYPOS=[[18,14],[45,10],[72,16],[88,8],[30,30],[60,32],[8,30],[82,32]],PT_GROUNDPOS=[[22,66],[50,70],[78,66],[35,86],[65,86],[10,80],[90,82],[50,56],[8,60],[92,58],[22,92],[78,92]];
 let PT_DICT=null;
-function ptDict(){if(PT_DICT)return PT_DICT;const m=new Map(),bad=new Set([...(typeof COLOR_WORDS!=='undefined'?COLOR_WORDS:[]),'שתיים','שלושה','שמונה','רעיון','ריבוע','רואה','קורא']);
+function ptDict(){if(PT_DICT)return PT_DICT;const m=new Map(),bad=new Set([...(typeof COLOR_WORDS!=='undefined'?COLOR_WORDS:[]),'שתיים','שלושה','שמונה','רעיון','ריבוע','רואה','קורא','שמיים','שמים','דשא','שביל','בניינים']);
   const addW=(w,e)=>{w=String(w||'').trim();if(!w||!e||bad.has(w)||/[?!]/.test(w)||w.split(' ').length>2||m.has(w))return;m.set(w,e)};
   SOUNDS.forEach(s=>{if(s.w)Object.values(s.w).forEach(a=>(a||[]).forEach(x=>addW(x[0],x[1])))});
   [...SCENES,...PHOTO_SCENES].forEach(sc=>sc.items.forEach(it=>addW(it[1],it[0])));
@@ -2790,8 +2793,11 @@ function renderAct(){
       <button class="btn leaf" id="ptadd" type="button" ${d.pick.length?'':'disabled'}>✔ מוסיפים לציור</button>`;
     shell(`<div class="card stage"><p class="drag-hint">מציירים במילים: כל משפט מוסיף משהו לציור 🖌️</p>${board}<div class="ptctl">${ctl}</div>${lines}
       ${SR?'<p class="muted" style="font-size:12px">להורים: את המשפט כותב שירות הדיבור של הדפדפן (Google).</p>':''}</div>`);
-    const add=(found,text)=>{found.forEach(([w,e])=>{const sky=PT_SKY.has(w);const n=d.objs.length;
-        d.objs.push({w,e,t:text,x:Math.round(10+((n*37)%80)),y:sky?Math.round(8+((n*23)%22)):Math.round(52+((n*29)%34)),s:sky?1:1.15})});
+    const add=(found,text)=>{const toks=String(text).split(/\s+/);found.forEach(([w,e])=>{const sky=PT_SKY.has(w);
+        /* a color colors only the thing right before it: הארנב הלבן -> white rabbit, the carrot stays orange */
+        const ix=toks.findIndex(t=>t.replace(/^(וה|ה|ו|ב|ל)/,'').replace(/(ים|ות)$/,'')===w.split(' ')[0]||t.endsWith(w.split(' ')[0]));const nx=ix>=0?(toks[ix+w.split(' ').length]||''):'';
+        const free=(sky?PT_SKYPOS:PT_GROUNDPOS).find(p=>!d.objs.some(o=>o.x===p[0]&&o.y===p[1]))||[10+Math.random()*80|0,sky?12:60+Math.random()*25|0];
+        d.objs.push({w,e,t:w+' '+nx,x:free[0],y:free[1],s:sky?1:1.15})});
       d.lines.push(text);d.fresh=true;d.phase='idle';d.text='';d.pick=[];SFX.good();addStar();render()};
     const go=document.getElementById('ptgo');if(go)go.onclick=()=>{SFX.unlock&&SFX.unlock();
       if(!SR){d.phase='rec';render();recStep(document.getElementById('rh'),()=>{d.text='';d.pick=[];d.choices=ptChoices(L.id);d.phase='choose';render()},{max:20000});return}
@@ -2937,8 +2943,9 @@ function renderAct(){
     /* short sentences: a hungry dragon; "הדרקון אוכל ..." and the food flies into it; it grows, and when full it puffs happy fire */
     const N=d.items.length,full=d.fed.length>=N;
     shell(`<div class="card stage"><p class="muted">${full?'הדרקון שבע ושמח! 🔥':'הדרקון רעב! נוגעים באוכל, אומרים את המשפט, ומאכילים אותו 🐉'}</p><div class="progress">${d.fed.length} / ${N}</div>
-      <div class="dragonbox"><div class="dstage"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(1+d.fed.length*.3).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span><span class="notes">🎵</span><span class="notes n2">🎶</span>':''}</div></div>
+      <div class="dragonbox"><div class="dstage"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(d.prevS||1).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span><span class="notes">🎵</span><span class="notes n2">🎶</span>':''}</div></div>
       <div class="foods">${d.items.map((it,ix)=>d.fed.includes(ix)?'':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div></div></div>`);
+    {const ns=d.fed.length>=N?4.8:1+d.fed.length/N*3,dg=document.getElementById('dragon');if(dg&&Math.abs((d.prevS||1)-ns)>.01){requestAnimationFrame(()=>requestAnimationFrame(()=>{dg.classList.add('grow');dg.style.setProperty('--s',ns.toFixed(2))}))}d.prevS=ns}
     app.querySelectorAll('.foods .sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{const g=document.getElementById('dragon');flyTo(b,g,()=>{SFX.chomp();g.classList.add('munch');d.fed.push(ix);
         TIMERS.push(setTimeout(()=>{render();if(d.fed.length>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),1200));TIMERS.push(setTimeout(finish,6500))}},450))})})});
