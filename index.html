@@ -1028,6 +1028,18 @@ body{background:#5E8F55}
 .bcell.no{animation:shake .35s}
 .bwin{font-size:min(12vw,56px);font-weight:800;color:#E39A2D;text-shadow:0 3px 0 #fff;animation:popin .5s ease-out}
 /* kite, treasure, castle */
+.jboard2{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,auto);gap:6px;width:min(100%,520px);padding:8px;border-radius:20px;background:linear-gradient(180deg,#CFE9D6,#A9D3B4)}
+.jcell{position:relative;aspect-ratio:1;border-radius:14px;background:#FFFBF2;border:2px solid #E2D6BC;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.jcell:nth-child(2n){background:#FFF3DC}
+.jcell .jnum{position:absolute;top:3px;right:6px;font-size:12px;font-weight:700;color:#9A8B6E}
+.jcell .jsp{font-size:min(6vw,26px);opacity:.9}.jcell .jto{position:absolute;bottom:2px;left:4px;font-size:11px;font-weight:700}
+.jcell.lad{background:#E3F6E8;border-color:#7CC48F}.jcell.lad .jto{color:#1E8A4C}
+.jcell.snk{background:#FDE8E4;border-color:#E39A8A}.jcell.snk .jto{color:#C0392B}
+.jcell.goal{background:#FFF0B8;border-color:var(--sun)}.jcell .jgoal{font-size:min(8vw,34px)}
+.jcell.hl{box-shadow:0 0 0 4px var(--sun);z-index:2}
+.jcell .jpawn{position:absolute;inset:auto auto 50% 50%;transform:translate(-50%,50%);z-index:4;width:78%;aspect-ratio:1;border-radius:50%;background:#fff;border:4px solid #E39A2D;box-shadow:0 6px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:min(7vw,30px);animation:jbob 1s ease-in-out infinite}
+@keyframes jbob{50%{transform:translate(-50%,calc(50% - 6px))}}
+.jcell .jcount{position:absolute;top:-8px;left:-6px;z-index:5;width:24px;height:24px;border-radius:50%;background:var(--sky);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;animation:popin .3s ease-out}
 .shopc{display:flex;align-items:flex-end;justify-content:center;gap:22px;flex-wrap:wrap;width:100%}
 .register{position:relative;width:min(40vw,170px);height:min(30vw,128px);border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#61717F,#3B4752);box-shadow:0 12px 20px -12px rgba(0,0,0,.6);cursor:pointer}
 .register .rscreen{position:absolute;top:10px;left:14px;right:14px;height:30px;border-radius:7px;background:#A8EBC0;color:#0E4D30;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;direction:ltr;box-shadow:inset 0 2px 4px rgba(0,0,0,.25)}
@@ -2264,7 +2276,7 @@ function startAct(act,from){
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
   if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
-  if(act==='journey'){const it=items();d.items=it.length?it:[['',''] ];d.k=0;d.pos=0;d.rolling=false;d.die=''}
+  if(act==='journey'){const it=items();d.items=it.length?it:[['','']];d.k=0;d.pos=0;d.roll=null;d.phase='roll';d.note='';d.cnt=null;d.hl=null}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
   if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
@@ -2733,18 +2745,31 @@ function renderAct(){
     return;
   }
   if(S.act==='journey'){
-    /* long sentences: a board path through the kingdom to the castle; roll the die (1-3), walk, and say the sentence of the square */
-    const B=13,pawn=kidG()==='g'?'👸':'🤴',pos=d.pos,cellRC=i=>{const r=Math.floor(i/5),c=r%2?4-(i%5):i%5;return [r+1,c+1]};
-    const marks=['🌳','🌼','🍄','🌉','🐑','🌻','🪨','🦋','⛲','🌲','🌷'];
-    shell(`<div class="card stage"><p class="muted">מטילים קובייה, מתקדמים במסלול, ואומרים את המשפט של המשבצת 🗺️</p>
-      <div class="jboard">${Array.from({length:B},(x,i)=>{const [r,c]=cellRC(i);return `<div class="cell ${i===0?'start':''} ${i===B-1?'goal':''} ${i<pos?'past':''}" style="grid-row:${r};grid-column:${c}">
-        <span class="cmark">${i===0?'🚩':i===B-1?'🏰':marks[(i-1)%marks.length]}</span>${i===pos?`<span class="pawn">${pawn}</span>`:''}</div>`}).join('')}</div>
-      <div class="row"><button class="btn sun" id="roll" type="button" ${d.rolling||pos>=B-1?'disabled':''}>🎲 מטילים קובייה</button><span class="die" id="die">${d.die||''}</span></div></div>`);
-    const rb=document.getElementById('roll');if(rb)rb.onclick=()=>{if(d.rolling||S.overlay)return;d.rolling=true;rb.disabled=true;const F=['⚀','⚁','⚂'];let k=0;
-      const t=setInterval(()=>{SFX.tick();document.getElementById('die').textContent=F[k++%3];if(k>8){clearInterval(t);const n=1+Math.floor(Math.random()*3);d.die=F[n-1];
-        const target=Math.min(d.pos+n,B-1);const step=()=>{if(d.pos<target){d.pos++;SFX.blip();render();TIMERS.push(setTimeout(step,330))}
-          else if(d.pos>=B-1){SFX.fanfare();d.rolling=false;TIMERS.push(setTimeout(finish,1600))}
-          else{const it=d.items[d.k%d.items.length];d.k++;TIMERS.push(setTimeout(()=>sayIt(it,()=>{d.rolling=false;render()}),350))}};step()}},90);TIMERS.push(t)};
+    /* long sentences: a board game through the kingdom (20 squares, ladders and snakes). The child rolls the die (1-4), then
+       counts and taps the square to walk to. A wrong count is corrected: the computer counts the steps with the child.
+       On every landing the child says a sentence; a ladder climbs up, a snake slides down; the last square is the castle */
+    const B=20,LAD={2:8,9:14},SNK={12:5,17:10},pawn=kidG()==='g'?'👸':'🤴',pos=d.pos,F=['⚀','⚁','⚂','⚃'];
+    const RC=i=>{const r=Math.floor(i/5),c=r%2?4-(i%5):i%5;return [4-r,c+1]};
+    const target=d.roll?Math.min(pos+d.roll,B-1):null;
+    const msg=pos>=B-1?'הגענו לטירה! 🏰🎉':d.phase==='move'?`בקובייה יצא ${d.roll}! סופרים ${d.roll} צעדים ונוגעים במשבצת 👆`:d.phase==='count'?'סופרים יחד... 🔢':d.note||'מטילים קובייה ומתקדמים אל הטירה 🎲';
+    shell(`<div class="card stage"><p class="muted">${msg}</p>
+      <div class="jboard2">${Array.from({length:B},(x,i)=>{const [r,c]=RC(i),lad=LAD[i]!=null,snk=SNK[i]!=null;
+        return `<button class="jcell ${i===B-1?'goal':''} ${i===0?'start':''} ${lad?'lad':''} ${snk?'snk':''} ${d.hl===i?'hl':''}" data-i="${i}" type="button" style="grid-row:${r};grid-column:${c}">
+          <span class="jnum">${i===0?'':i}</span>${i===B-1?'<span class="jgoal">🏰</span>':i===0?'<span class="jgoal">🚩</span>':lad?`<span class="jsp">🪜</span><span class="jto">⬆ ${LAD[i]}</span>`:snk?`<span class="jsp">🐍</span><span class="jto">⬇ ${SNK[i]}</span>`:''}
+          ${i===pos?`<span class="jpawn">${pawn}</span>`:''}${d.cnt&&d.cnt[i]?`<span class="jcount">${d.cnt[i]}</span>`:''}</button>`}).join('')}</div>
+      <div class="row"><button class="btn sun" id="roll" type="button" ${d.phase!=='roll'||pos>=B-1?'disabled':''}>🎲 מטילים קובייה</button><span class="die">${d.roll?F[d.roll-1]:''}</span></div></div>`);
+    if(pos>=B-1)return;
+    const special=()=>{const p=d.pos;if(LAD[p]!=null){d.note='עלינו בסולם! 🪜';SFX.zip();d.pos=LAD[p];render()}else if(SNK[p]!=null){d.note='אוי, נחש! מחליקים למטה 🐍';SFX.bad();d.pos=SNK[p];render()}else d.note=''};
+    const land=()=>{d.roll=null;d.cnt=null;d.hl=null;d.phase='say';render();
+      if(d.pos>=B-1){SFX.fanfare();TIMERS.push(setTimeout(finish,2000));return}
+      const it=d.items[d.k%d.items.length];d.k++;
+      TIMERS.push(setTimeout(()=>sayIt(it,()=>{d.phase='roll';special();render()}),400))};
+    const walk=(count)=>{let s=0;d.cnt={};const step=()=>{if(d.pos<target){d.pos++;s++;if(count){d.cnt[d.pos]=s}SFX.blip();render();TIMERS.push(setTimeout(step,count?650:280))}else TIMERS.push(setTimeout(land,count?600:200))};step()};
+    const rb=document.getElementById('roll');if(rb&&d.phase==='roll')rb.onclick=()=>{rb.disabled=true;let k=0;const t=setInterval(()=>{SFX.tick();app.querySelector('.die').textContent=F[k++%4];
+      if(k>9){clearInterval(t);d.roll=1+Math.floor(Math.random()*4);d.phase='move';render()}},90);TIMERS.push(t)};
+    if(d.phase==='move')app.querySelectorAll('.jcell').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i<=d.pos)return;
+      if(i===target){SFX.good();d.phase='walk';walk(false)}
+      else{SFX.bad();d.phase='count';d.hl=target;render();TIMERS.push(setTimeout(()=>walk(true),700))}});
     return;
   }
   if(S.act==='eggs'){
