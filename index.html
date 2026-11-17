@@ -1156,6 +1156,11 @@ body{background:#5E8F55}
 @keyframes bagd{0%{transform:rotate(-14deg) translateY(0) scale(1.05)}50%{transform:rotate(0) translateY(-18px) scale(1.15)}100%{transform:rotate(14deg) translateY(0) scale(1.05)}}
 .dmine{position:relative;width:min(100%,460px);aspect-ratio:1;margin:8px auto;border-radius:18px;overflow:hidden;background:linear-gradient(#8FD3FF 0 50%,#7CC66A 50%);container-type:inline-size;box-shadow:0 8px 20px rgba(0,0,0,.18)}.dmbg{position:absolute;inset:0;opacity:.35}.dmbg img{width:100%;height:100%;object-fit:cover}.dmcap{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,255,255,.92);border-radius:12px;padding:6px 10px;font-size:20px;font-weight:800}
 .dboth{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;align-items:flex-start}.dboth>div{display:flex;flex-direction:column;align-items:center;gap:4px;width:min(100%,300px)}.dboth .dmine{width:100%}.dboth .dreal{width:100%;aspect-ratio:1}
+.scard:hover{transform:none}.scard{touch-action:none}.scard.hinted{animation:hintglow 1s ease-in-out 3;box-shadow:0 0 0 5px #FFD54A}@keyframes hintglow{50%{transform:translateY(-10px) scale(1.06)}}.sslot.next{box-shadow:0 0 0 3px #14A381 inset}.sslot.over{transform:scale(1.06);background:#E6F7F1}
+.cinema{position:fixed;inset:0;z-index:200;background:#000;display:grid;place-items:center;opacity:0;transition:opacity .8s}.cinema.on{opacity:1}
+.cintitle{position:absolute;color:#FFE27A;font-size:clamp(28px,6vw,56px);font-weight:900;text-align:center;transition:opacity .6s;z-index:2;text-shadow:0 4px 18px rgba(0,0,0,.6)}.cintitle.gone{opacity:0}
+.cinimg{width:100vw;height:100vh;object-fit:contain;opacity:0;transform:scale(1);transition:opacity .45s}.cinimg.show{opacity:1;animation:kenb 9s ease-out forwards}@keyframes kenb{to{transform:scale(1.12)}}
+.cinx{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px;z-index:3;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2098,7 +2103,14 @@ const REC={state:(navigator.mediaDevices&&window.MediaRecorder&&window.isSecureC
 };
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 /* recording step shown inside an overlay card; calls done() when finished (or right away if no microphone) */
-function recStep(host,done,opts){
+/* cinema: a dark full screen; each picture fills the screen (slow zoom) while the child's recording of it plays */
+async function cinema(imgs,blobs,title,done){SFX.unlock&&SFX.unlock();const ov=document.createElement('div');ov.className='cinema';
+  ov.innerHTML=`<div class="cintitle">🎬 ${esc(title||'')}</div><img class="cinimg" alt=""><button class="cinx" type="button">✕</button>`;document.body.appendChild(ov);S.overlay=true;
+  let stop=false;const close=()=>{stop=true;ov.remove();S.overlay=false;done&&done()};ov.querySelector('.cinx').onclick=close;
+  requestAnimationFrame(()=>ov.classList.add('on'));await sleep(1600);ov.querySelector('.cintitle').classList.add('gone');const im=ov.querySelector('.cinimg');
+  for(let i=0;i<imgs.length&&!stop;i++){im.classList.remove('show');await sleep(450);if(stop)return;im.src=imgs[i];void im.offsetWidth;im.classList.add('show');await sleep(600);
+    if(blobs&&blobs[i]){try{await REC.play(blobs[i])}catch(e){}}else await sleep(2500);await sleep(700)}
+  if(stop)return;im.classList.remove('show');ov.querySelector('.cintitle').textContent='🎉 הסוף! 🎉';ov.querySelector('.cintitle').classList.remove('gone');SFX.fanfare();await sleep(2600);if(!stop)close()}function recStep(host,done,opts){
   opts=opts||{};
   if(REC.state==='no'){done();return}
   const gen=REC.gen;const alive=()=>gen===REC.gen&&document.body.contains(host);
@@ -2715,15 +2727,29 @@ function renderAct(){
        director: the first two pictures are shown, the child invents the ending, then the real ending is revealed */
     const IMG=window.STORY_IMG;if(!IMG){shell('<div class="card stage"><p class="muted">טוען את הסיפורים... 📚</p></div>');return}
     const st=STORIES[d.order[d.si]],pic=i=>`<img src="${IMG[st.k[i]]}" alt="">`,N=STORIES.length,SL=['קודם','אחר כך','ובסוף'];
-    if(S.act==='seq'){const done=d.placed.length>=3;
-      shell(`<div class="card stage"><p class="muted">${done?'יופי! עכשיו מספרים את כל הסיפור 🗣️':'נוגעים בתמונה שקורית קודם, אחר כך, ובסוף 📚'}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>
-        <div class="sslots">${[0,1,2].map(i=>`<div class="sslot ${d.placed[i]!=null?'full':''}"><span class="snum">${i+1}</span>${d.placed[i]!=null?pic(d.placed[i]):`<span class="slab">${SL[i]}</span>`}</div>`).join('')}</div>
-        ${done?`<button class="btn leaf" id="tell" type="button">🎙️ מספרים את הסיפור</button>`:`<div class="scards">${d.cards.filter(c=>!d.placed.includes(c)).map(c=>`<button class="scard" data-c="${c}" type="button">${pic(c)}</button>`).join('')}</div>`}</div>`);
-      app.querySelectorAll('.scard').forEach(b=>b.onclick=()=>{if(S.overlay)return;const c=+b.dataset.c;
-        if(c===d.placed.length){SFX.good();const slot=app.querySelectorAll('.sslot')[d.placed.length];flyTo(b,slot,()=>{d.placed.push(c);render()})}
-        else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}});
-      const tb=document.getElementById('tell');if(tb)tb.onclick=()=>recOverlay(`<div class="sstrip">${[0,1,2].map(pic).join('')}</div><div>קודם... אחר כך... ובסוף...</div>`,()=>{addStar();d.si++;d.placed=[];d.cards=shuffle([0,1,2]);if(d.si>=N)finish();else render()},{max:45000});
-    }else{
+    if(S.act==='seq'){
+      /* sequence cards: the child drags the picture that comes next into its place (no hint unless 💡 is pressed),
+         records what happens in that picture, and at the end the whole story is played like a film: every picture fills
+         the screen while the child's own recording of it plays */
+      const n=d.placed.length,done=n>=3;d.blobs=d.blobs||[];
+      shell(`<div class="card stage"><p class="muted">${done?'הסרט שלך מוכן! 🎬':'גוררים למקום '+(n+1)+' את התמונה שקורית '+SL[n]+' 📚'}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>
+        <div class="sslots">${[0,1,2].map(i=>`<div class="sslot ${d.placed[i]!=null?'full':''} ${i===n?'next':''}" data-s="${i}"><span class="snum">${i+1}</span>${d.placed[i]!=null?pic(d.placed[i]):`<span class="slab">${SL[i]}</span>`}${d.blobs[i]?'<span class="q4ok">🎙️</span>':''}</div>`).join('')}</div>
+        ${done?`<button class="btn sun" id="cine" type="button">🎬 צופים בסרט</button>`:`<div class="scards">${d.cards.filter(c=>!d.placed.includes(c)).map(c=>`<button class="scard" data-c="${c}" type="button">${pic(c)}</button>`).join('')}</div>
+        <button class="ghost hintbtn" id="shint" type="button">💡 רמז</button>`}</div>`);
+      const place=(b,c)=>{if(c===n){SFX.good();d.placed.push(c);render();
+          recOverlay(`<div class="sstrip">${pic(c)}</div><div>מה קורה בתמונה?</div>`,()=>{addStar();render()},{max:30000,onBlob:x=>{d.blobs[n]=x}})}
+        else{SFX.bad();b.style.visibility='';b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}};
+      const sh=document.getElementById('shint');if(sh)sh.onclick=()=>{const b=app.querySelector(`.scard[data-c="${n}"]`);if(!b)return;SFX.blip();b.classList.remove('hinted');void b.offsetWidth;b.classList.add('hinted');TIMERS.push(setTimeout(()=>b.classList.remove('hinted'),3000))};
+      app.querySelectorAll('.scard').forEach(el=>{el.onpointerdown=e=>{if(S.overlay)return;e.preventDefault();const r=el.getBoundingClientRect(),g=el.cloneNode(true);
+        Object.assign(g.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',zIndex:50,pointerEvents:'none',transform:'rotate(-3deg) scale(1.05)'});document.body.appendChild(g);el.style.visibility='hidden';
+        const ox=e.clientX-r.left,oy=e.clientY-r.top,sx=e.clientX,sy=e.clientY,slot=app.querySelector('.sslot.next');
+        const over=(x,y)=>{if(!slot)return false;const s=slot.getBoundingClientRect();return x>s.left&&x<s.right&&y>s.top&&y<s.bottom};
+        const mv=ev=>{g.style.left=(ev.clientX-ox)+'px';g.style.top=(ev.clientY-oy)+'px';if(slot)slot.classList.toggle('over',over(ev.clientX,ev.clientY))};
+        const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);g.remove();
+          const tap=Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)<8;
+          if(tap||over(ev.clientX,ev.clientY))place(el,+el.dataset.c);else el.style.visibility=''};
+        document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)}});
+      const cb=document.getElementById('cine');if(cb)cb.onclick=()=>cinema([0,1,2].map(i=>IMG[st.k[i]]),d.blobs,st.name,()=>{d.si++;d.placed=[];d.blobs=[];d.cards=shuffle([0,1,2]);if(d.si>=N)finish();else render()});    }else{
       /* director: the child invents the ending and says it; the computer writes what was said, the parent reads it and approves
          with ✔ (so speech errors are not misunderstood), and the ending appears as a picture made of what was said.
          Then the real ending of the story is revealed next to it */
@@ -2797,7 +2823,7 @@ function renderAct(){
     shell(`<div class="card stage"><p class="drag-hint">${d.k<0?'הסיפור שלך מוכן! שומעים אותו מההתחלה עד הסוף 🎬':'מקשיבים לסיפור... 👂'}</p><div class="progress">${st.name}</div>${slots}
       ${d.k>=0&&d.k<4?`<div class="q4big">${pic(d.k)}</div>`:''}
       <div class="row">${d.k<0?`<button class="btn sun" id="q4play" type="button">▶ שומעים את כל הסיפור</button>`:''}${d.k<0&&d.heard?`<button class="btn leaf" id="q4end" type="button">⭐ סיימנו!</button>`:''}</div></div>`);
-    const pb=document.getElementById('q4play');if(pb)pb.onclick=async()=>{SFX.unlock&&SFX.unlock();const me=S.data;
+    const pb=document.getElementById('q4play');if(pb)pb.onclick=()=>cinema([0,1,2,3].map(i=>IMG[d.sid+i]),d.blobs,st.name,()=>{d.heard=true;render()});if(0)pb.onclick=async()=>{const me=S.data;
       for(let i=0;i<4;i++){if(S.data!==me)return;d.k=i;render();if(d.blobs[i]){try{await REC.play(d.blobs[i])}catch(e){}}else await sleep(1500);await sleep(350)}
       if(S.data!==me)return;d.k=-1;d.heard=true;SFX.fanfare();render()};
     const eb=document.getElementById('q4end');if(eb)eb.onclick=()=>finish();
