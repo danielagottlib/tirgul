@@ -877,6 +877,38 @@ button.stars{cursor:pointer;color:var(--ink)}
 .cwrap{width:min(100%,58vh);margin:0 auto 10px;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15);background:#fff;border:4px solid transparent}
 .cwrap.armed{border-color:#FFC43D;cursor:pointer}
 .cwrap canvas{display:block;width:100%;height:auto;touch-action:manipulation}
+/* ===================== "ממלכת הטירה" look (Nov 2026) =====================
+   A cinematic Gemini background (kingdom-bg.jpg: a stream, trees, a castle, a rainbow) with a slow camera drift,
+   vivid colors, white cards with rounded corners, colored frames and soft shadows. Overrides the older styles above. */
+:root{--bg:#FBF5E6;--ink:#17282A;--muted:#46595A;--sky:#0B7A61;--leaf:#1E9A55;--sun:#F4C04A;--coral:#D2562B;--line:#E6DCC6;
+  --k1:#E39A2D;--k2:#14A381;--k3:#C9653A;--k4:#F4C04A;--k5:#3C8DC4}
+body{background:#5E8F55}
+#world{background:#5E8F55}
+#world>*:not(.w-bubbles){display:none}
+#world::before{content:"";position:absolute;inset:-4%;background:url(kingdom-bg.jpg?v=2) 55% 50%/cover no-repeat;animation:kbdrift 46s ease-in-out infinite alternate;will-change:transform}
+#world::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 55%,rgba(10,45,35,.16))}
+@keyframes kbdrift{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.07) translate(-1.5%,-1%)}}
+.card{background:rgba(255,255,255,.95);border-radius:26px;border:1px solid rgba(255,255,255,.95);box-shadow:0 22px 44px -24px rgba(8,40,36,.6),0 2px 0 rgba(255,255,255,.7) inset;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.top{background:rgba(255,255,255,.92);border-radius:22px;padding:7px 10px;box-shadow:0 12px 28px -16px rgba(8,40,36,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.top h1{color:var(--ink)}
+.brand{background:rgba(255,255,255,.92);border-radius:24px;box-shadow:0 12px 28px -16px rgba(8,40,36,.55)}
+.ghost{background:#fff;border:2px solid #DCE7E4;border-radius:999px;color:var(--ink);font-weight:600}
+.ghost:hover{border-color:var(--sky);color:var(--sky)}
+.stars{background:linear-gradient(180deg,#F7CD62,#E9A92C);border:none;color:#4A2D00;box-shadow:0 3px 0 #B07A12}
+.grid{gap:14px}
+.tile{--tb:var(--k2);background:#fff;border:3px solid var(--tb);border-bottom-width:7px;border-radius:24px;box-shadow:0 14px 26px -18px rgba(8,40,36,.55);color:var(--ink);transition:transform .18s ease,box-shadow .18s ease}
+.grid .tile:nth-child(5n+1){--tb:var(--k1)}.grid .tile:nth-child(5n+2){--tb:var(--k2)}.grid .tile:nth-child(5n+3){--tb:var(--k3)}.grid .tile:nth-child(5n+4){--tb:var(--k4)}.grid .tile:nth-child(5n+5){--tb:var(--k5)}
+.tile:hover{transform:translateY(-4px) rotate(-.6deg);border-color:var(--tb);box-shadow:0 20px 32px -18px rgba(8,40,36,.6)}
+.tile .big{filter:drop-shadow(0 6px 6px rgba(0,0,0,.18))}
+.tile .sub{color:var(--muted)}
+.btn{background:linear-gradient(180deg,#17A884,#0B7A61);box-shadow:0 4px 0 #075A47;border-radius:999px;padding:12px 24px}
+.btn:active{box-shadow:0 2px 0 #075A47}
+.btn.sun{background:linear-gradient(180deg,#F7CD62,#E9A92C);color:#4A2D00;box-shadow:0 4px 0 #B07A12}
+.btn.leaf{background:linear-gradient(180deg,#2DB066,#1E8A4C);box-shadow:0 4px 0 #136437}
+.btn.coral{background:linear-gradient(180deg,#DE7A45,#C9562B);box-shadow:0 4px 0 #94391A}
+.word .hl,.letter{color:var(--coral)}
+.choice,.dzone,.dcard{border-radius:24px}
+.note{background:#FFF3D1;border-radius:16px}
 </style>
 </head>
 <body>
