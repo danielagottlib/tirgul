@@ -1198,13 +1198,13 @@ body{background:#5E8F55}
 .kimwho .kpic{font-size:clamp(34px,6vw,52px);line-height:1}.kimwho .kpic img{width:1.2em;height:1.2em;object-fit:contain}.kimwho b{font-size:18px}
 .kimwho.sel{border-color:#E39A2D;transform:scale(1.15)}.kimgap{width:60px}
 @keyframes kimidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.kimbub{position:absolute;right:6%;top:8%;background:#fff;border:3px solid #E39A2D;border-radius:24px;padding:8px 18px;font-size:clamp(26px,5vw,42px);font-weight:900;animation:sgrow 1s cubic-bezier(.3,1.6,.5,1) both;box-shadow:0 8px 16px rgba(0,0,0,.15)}
+.kimbub{position:absolute;left:3%;top:3%;z-index:5;background:#fff;border:3px solid #E39A2D;border-radius:24px;padding:8px 18px;font-size:clamp(26px,5vw,42px);font-weight:900;animation:sgrow 1s cubic-bezier(.3,1.6,.5,1) both;box-shadow:0 8px 16px rgba(0,0,0,.15)}
 .kimkim{color:#C9653A}.kimm{color:#E5484D;letter-spacing:.06em;display:inline-block;animation:kimhum 1.2s ease-in-out infinite}@keyframes kimhum{50%{transform:scale(1.15)}}
 .kimscene.party .kimhouse{animation:froghappy .5s ease-in-out infinite alternate}.kimwho.dance{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.12s)}
 /* personal game: איפה זה? */
 .spscene{position:relative;width:min(100%,760px);aspect-ratio:16/9;margin:8px auto;border-radius:22px;overflow:hidden;background:linear-gradient(#FFF3DA 0 66%,#D9A86C 66%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
 .sptable{position:absolute;left:4%;bottom:6%;width:42%;z-index:2}.spbox{position:absolute;right:6%;bottom:6%;width:28%;z-index:2}
-.spobj{position:absolute;transform:translate(-50%,-50%);font-size:clamp(38px,8cqw,70px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3))}.spobj img{width:1.3em;height:1.3em;object-fit:contain;display:block}
+.spobj{position:absolute;transform:translate(-50%,-50%);font-size:clamp(48px,11cqw,100px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3))}.spobj img{width:1.3em;height:1.3em;object-fit:contain;display:block}
 .spobj.new{animation:popin .4s ease-out}.spscene{container-type:inline-size}
 .sptray{display:flex;align-items:center;justify-content:center;gap:14px}.spdrag{font-size:56px;line-height:1;background:#fff;border:3px dashed #E39A2D;border-radius:18px;padding:6px 12px;cursor:grab;touch-action:none}.spdrag img{width:1.3em;height:1.3em;object-fit:contain}.spdrag.no{animation:shake .5s}
 </style>
@@ -1268,7 +1268,7 @@ const MORE_WORDS={
  z:{s:[['זיקית','🦎'],['זמר','🎤'],['זאב','🐺']],m:[['מזגן','❄️'],['חזיר','🐷'],['מזרן','🛏️'],['תזמורת','🎻'],['מזרקה','⛲']],e:[['עז','🐐'],['אורז','🍚'],['בז','🦅'],['גז','⛽']]},
  ts:{s:[['ציור','🖼️'],['צמיד','📿'],['צבי','🦌'],['צופר','📯']],m:[['נוצה','🪶'],['מצלמה','📷'],['מצנח','🪂'],['פצע','🩹']],e:[['קיץ','☀️'],['קופץ','🦘'],['ארץ','🌍'],['חמוץ','🍋']]}};
 SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});/* personal game 'איפה זה?': where each place is in the room picture (percent of the picture), and what is said */
-const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:3},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:3},behind:{say:'מאחורי הקופסה',hit:[90,46],at:[90,50],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,60],z:1}};
+const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:3},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:3},behind:{say:'מאחורי הקופסה',hit:[90,46],at:[91,46],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,53],z:1}};
 const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
 const FIXJOBS=[['🪑','הכיסא','🔨'],['🚲','האופניים','🔧'],['🧸','הדובי','🪡'],['🕰️','השעון','🪛'],['🏠','הבית','🖌️'],['🛴','הקורקינט','🔧'],['🎒','התיק','🪡'],['🚪','הדלת','🔨'],['🤖','הרובוט','🪛'],['🐕','הכלב שנפצע ברגל','🩹'],['🛶','הסירה','🔨'],['🧱','הקיר','🖌️']];
 const FIXBY={
