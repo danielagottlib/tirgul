@@ -2057,7 +2057,10 @@ function startAct(act,from){
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='bubbles'){d.items=items().slice(0,8);d.popped=[]}
   if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];d.pic='kingdom-bg.jpg?v=2'}
-  if(act==='shop'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' '))).slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
+  if(act==='shop'){/* only things a child could buy in a shop */
+    const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
+    let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<4)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));
+    d.items=w.slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
   if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
@@ -2356,7 +2359,7 @@ function renderAct(){
     const N=d.items.length;
     shell(`<div class="card stage"><p class="muted">כל מילה פותחת חלק בתמונה. מה מסתתר מאחורי הקלפים? 🧩</p><div class="progress">${d.open.length} / ${N}</div>
       <div class="puz ${d.open.length>=N?'done':''}" style="--img:url(${d.pic})">${d.items.map((it,ix)=>{const o=d.open.includes(ix);
-        return `<button class="pz ${o?'open':''}" data-ix="${ix}" type="button" style="--px:${(ix%3)*50}%;--py:${Math.floor(ix/3)*50}%" ${o?'disabled':''}>${o?'':`<span class="pzpic">${it[1]}</span>`}</button>`}).join('')}</div></div>`);
+        return `<button class="pz ${o?'open':''}" data-ix="${ix}" type="button" style="--px:${(2-ix%3)*50}%;--py:${Math.floor(ix/3)*50}%" ${o?'disabled':''}>${o?'':`<span class="pzpic">${it[1]}</span>`}</button>`}).join('')}</div></div>`);
     app.querySelectorAll('.pz:not(.open)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{d.open.push(ix);SFX.good();render();if(d.open.length>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}})});
     return;
