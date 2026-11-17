@@ -1207,6 +1207,9 @@ body{background:#5E8F55}
 .spobj{position:absolute;transform:translate(-50%,-50%);font-size:clamp(48px,11cqw,100px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3))}.spobj img{width:1.3em;height:1.3em;object-fit:contain;display:block}
 .spobj.new{animation:popin .4s ease-out}.spscene{container-type:inline-size}
 .sptray{display:flex;align-items:center;justify-content:center;gap:14px}.spdrag{font-size:56px;line-height:1;background:#fff;border:3px dashed #E39A2D;border-radius:18px;padding:6px 12px;cursor:grab;touch-action:none}.spdrag img{width:1.3em;height:1.3em;object-fit:contain}.spdrag.no{animation:shake .5s}
+.spboxf{z-index:4!important;clip-path:inset(45% 0 0 0);pointer-events:none}
+.spobj.sp-in.new{animation:spdrop .6s cubic-bezier(.3,1.4,.5,1)}@keyframes spdrop{from{transform:translate(-50%,-140%)}}
+.spobj.sp-behind.new{animation:sppeek .7s ease-out}@keyframes sppeek{from{transform:translate(-50%,10%)}}
 </style>
 </head>
 <body>
@@ -1268,7 +1271,8 @@ const MORE_WORDS={
  z:{s:[['זיקית','🦎'],['זמר','🎤'],['זאב','🐺']],m:[['מזגן','❄️'],['חזיר','🐷'],['מזרן','🛏️'],['תזמורת','🎻'],['מזרקה','⛲']],e:[['עז','🐐'],['אורז','🍚'],['בז','🦅'],['גז','⛽']]},
  ts:{s:[['ציור','🖼️'],['צמיד','📿'],['צבי','🦌'],['צופר','📯']],m:[['נוצה','🪶'],['מצלמה','📷'],['מצנח','🪂'],['פצע','🩹']],e:[['קיץ','☀️'],['קופץ','🦘'],['ארץ','🌍'],['חמוץ','🍋']]}};
 SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});/* personal game 'איפה זה?': where each place is in the room picture (percent of the picture), and what is said */
-const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:3},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:3},behind:{say:'מאחורי הקופסה',hit:[90,46],at:[91,46],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,53],z:1}};
+/* the box is drawn twice: its back (z 2) and its front face (z 4, the part below the rim), so a toy 'בתוך' sits between them (z 3) and a toy 'מאחורי' is behind the whole box (z 1) */
+const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:5},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:5},behind:{say:'מאחורי הקופסה',hit:[86,52],at:[83,62],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,63],z:3}};
 const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
 const FIXJOBS=[['🪑','הכיסא','🔨'],['🚲','האופניים','🔧'],['🧸','הדובי','🪡'],['🕰️','השעון','🪛'],['🏠','הבית','🖌️'],['🛴','הקורקינט','🔧'],['🎒','התיק','🪡'],['🚪','הדלת','🔨'],['🤖','הרובוט','🪛'],['🐕','הכלב שנפצע ברגל','🩹'],['🛶','הסירה','🔨'],['🧱','הקיר','🖌️']];
 const FIXBY={
@@ -1425,15 +1429,21 @@ function encode(bits){
   return s.slice(0,4)+'-'+s.slice(4);
 }
 const GOALMASK=0x3E3FF;
+/* longer codes (10 characters): the usual 8 + two characters that keep a separate level for the voicing pairs.
+   The level is returned in bits 23-25 (1-5; 0 = everything open). Old 8-character codes work exactly as before */
+function vCheck(c8,v){let t=0;for(const ch of c8)t=(t*31+AL.indexOf(ch))>>>0;return mix(t+v*7919+333)&0x7F}
+function encodeLong(bits,v){const c8=normCode(encode(bits)),n=(v&7)*128+vCheck(c8,v&7);return c8.slice(0,4)+'-'+c8.slice(4)+'-'+AL[Math.floor(n/32)]+AL[n%32]}
 function decode(code){
-  const c=String(code||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
+  let c=String(code||'').toUpperCase().replace(/[^0-9A-Z]/g,'');let vlev=0;
+  if(c.length===10){const a=AL.indexOf(c[8]),b=AL.indexOf(c[9]);if(a<0||b<0)return null;const n=a*32+b,v=n>>7;if(vCheck(c.slice(0,8),v)!==(n&0x7F))return null;vlev=v;
+    const base=decode(c.slice(0,8)+'');if(base===null&&!((window.MY_ASSIGN||{})[fmtCode(c)]||[]).length)return null;return ((base||0)|(vlev<<23))>>>0}
   if(c.length!==8)return null;
   let t=0;for(const ch of c){const v=AL.indexOf(ch);if(v<0)return null;t=t*32+v}
   const cs=t%2048,comb=Math.floor(t/2048);
   if((mix(comb+77)&0x7FF)!==cs)return null;
   const r=Math.floor(comb/0x800000),bits=((comb%0x800000)^mix(r+1000))&0x7FFFFF;
   /* a code with no regular goals is valid only when it has personal games */
-  if(!(bits&GOALMASK)&&!((window.MY_ASSIGN||{})[c.slice(0,4)+'-'+c.slice(4)]||[]).length)return null;
+  if(!(bits&GOALMASK)&&!((window.MY_ASSIGN||{})[fmtCode(c)]||[]).length)return null;
   return bits;
 }
 const has=(bits,b)=>!!(bits&(1<<b));
@@ -1547,7 +1557,7 @@ const SFX=(()=>{
     voiceless(kind){if(kind==='fric')noise(.6,{vol:.13,hp:2500,lp:10000});else noise(.09,{vol:.12,hp:1500,lp:8000})},
     phone,
     /* a long nasal hum: the ם at the end of 'קים' */
-    mmm(){hum(1.5,{f:180,lp:450,vol:.34})},
+    mmm(){/* soft closed-lips hum: pure low tones with a gentle start and end */tone(150,1.5,{type:'sine',vol:.34,to:140,attack:.12});tone(300,1.5,{type:'sine',vol:.07,to:280,attack:.12});tone(450,1.5,{type:'sine',vol:.025,to:420,attack:.12})},
     /* a soft gust of wind (kite game) */
     wind(){hiss(1.4,{hp:120,lp:700,vol:.16})},
     /* cash register: drawer rattle + two bells */
@@ -1677,7 +1687,7 @@ function addStar(n=1){SFX.star();const before=Math.floor(S.stars/PER_STICKER);S.
 const normCode=c=>String(c||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
 function isBlocked(code){return (window.BLOCKED||[]).some(b=>normCode(b)===normCode(code))}
 /* a new code can replace an old one (window.REPLACED in blocked.js): the old code moves the child to the new code, keeping stars & stickers */
-const fmtCode=c=>{const x=normCode(c);return x.slice(0,4)+'-'+x.slice(4)};
+const fmtCode=c=>{const x=normCode(c);return x.length>8?x.slice(0,4)+'-'+x.slice(4,8)+'-'+x.slice(8):x.slice(0,4)+'-'+x.slice(4)};
 function replacedBy(code){const R=window.REPLACED||{};let c=fmtCode(code),n=0;while(R[c]&&n++<10)c=fmtCode(R[c]);return c===fmtCode(code)?null:c}
 function migrateCode(oldC,newC){const forms=[String(oldC).toUpperCase(),fmtCode(oldC),normCode(oldC)];['stars-','prog-','name-','g-'].forEach(k=>{if(store.get(k+newC)!=null)return;for(const f of forms){const v=store.get(k+f);if(v!=null){store.set(k+newC,v);break}}})}
 function blockFileText(addBlocked,addReplaced){const B=new Set((window.BLOCKED||[]).map(fmtCode));(addBlocked||[]).forEach(c=>B.add(fmtCode(c)));
@@ -1761,12 +1771,15 @@ function logEv(ev,game,stars){if(!LOG_URL||!S.code)return;try{const s=SOUNDS[S.s
    in her sheet a formula shows that name on every row with the same code. Children's devices never send a name. */
 function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code),ev:'קוד חדש',name:name||''})}
 function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
+/* when Daniela opens new levels or games (a new code replaced the old one), the family sees it on the next visit */
+function newLevelsNote(bits){try{const prev=store.get('kid-lastbits'),pg=store.get('kid-lastmg'),mg=String(myAssigned(S.code).map(g=>g.id).sort());store.set('kid-lastbits',String(bits));store.set('kid-lastmg',mg);
+  if(prev===null||(+prev===bits&&pg===mg))return;setTimeout(()=>{const ov=document.createElement('div');ov.className='overlay';ov.innerHTML='<div class="card stage pop-in"><div style="font-size:64px">🎁</div><h2>יש חדש באתר!</h2><p>דניאלה פתחה בשבילך שלבים ומשחקים חדשים לתרגול 🎉</p><button class="btn leaf" type="button">יופי, מתחילים!</button></div>';document.body.appendChild(ov);SFX.fanfare&&SFX.fanfare();ov.querySelector('button').onclick=()=>ov.remove()},900)}catch(e){}}
 function login(code){
   if(isTestCode(code)){S.bits=GOALMASK|0x601C00;S.code=TEST_CODE;S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();return true}
   const nb=replacedBy(code);if(nb){migrateCode(code,nb);code=nb}
   if(isBlocked(code))return false;
   const bits=decode(code);if(bits===null)return false;
-  S.bits=bits;S.code=code.toUpperCase();S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();return true;
+  S.bits=bits;S.code=code.toUpperCase();S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();newLevelsNote(bits);return true;
 }
 function go(view,extra){clearTimers();Object.assign(S,{view},extra||{});render();window.scrollTo(0,0)}
 
@@ -1948,7 +1961,7 @@ function renderLogin(){
     <p class="muted">הקוד פותח את התרגילים שלך.</p>
     <form id="lf" class="stage" style="width:100%">
       <label for="codeIn" class="muted">הקוד</label>
-      <input id="codeIn" class="code-in" autocomplete="off" maxlength="10" placeholder="ABCD-1234">
+      <input id="codeIn" class="code-in" autocomplete="off" maxlength="14" placeholder="ABCD-1234">
       <div class="err" id="err" role="alert"></div>
       <button class="btn leaf" type="submit">כניסה</button>
     </form>
@@ -1997,7 +2010,7 @@ function renderPair(){
   const v=VOICING[S.pair];
   const A=vLab(v.a[0]),B=vLab(v.b[0]);
   const acts=[['vbuzz','🐝','הגרון המזמזם','שומעים ומרגישים: רועש או שקט'],['vquiz','👂','רועש או שקט?','מקשיבים לצליל ובוחרים'],['vsortg','🧺','ממיינים מילים 1','המחשב משמיע את שתי האפשרויות'],['vsort','🧺','ממיינים מילים 2','שומעים את המילה ומחליטים לבד'],['vmin','🔀','זוגות מילים','אות אחת משנה את כל המילה'],['games','🎮','משחקי אמירה','מילים עם '+A+' ועם '+B]];
-  const ms=maxStage(S.bits),open=ms>=6?acts:acts.slice(0,ms);
+  const vv=(S.bits>>>23)&7,ms=vv&&vv<6?vv:maxStage(S.bits),open=ms>=6?acts:acts.slice(0,ms);
   app.innerHTML=header(v.name,'home')+`<div class="grid">${open.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
   bindCommon();
   app.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(b.dataset.act==='games')go('games',{stage:'pair',gback:'pair'});else startAct(b.dataset.act,'pair')});
@@ -2690,7 +2703,7 @@ function renderAct(){
     const zone=(r,obj,cls)=>{const p=R[r].at;return `<span class="spobj ${cls||''} sp-${r}" style="left:${p[0]}%;top:${p[1]}%;z-index:${R[r].z}">${obj}</span>`};
     shell(`<div class="card stage"><p class="drag-hint">${ph?'נכון! עכשיו אומרים את המשפט 🗣️':'מקשיבים ומשאירים את '+esc(q.o[0])+' במקום הנכון 👂'}</p><div class="progress">${d.k+1} / ${d.qs.length}</div>
       <div class="sentence">${esc(sent)}</div>
-      <div class="spscene" id="sps"><img class="sptable" src="${O.table}" alt=""><img class="spbox" src="${O.box}" alt="">${ph?zone(q.r,q.o[1],'new'):''}</div>
+      <div class="spscene" id="sps"><img class="sptable" src="${O.table}" alt=""><img class="spbox" src="${O.box}" alt=""><img class="spbox spboxf" src="${O.box}" alt="">${ph?zone(q.r,q.o[1],'new'):''}</div>
       ${ph?'<div id="rh"></div>':`<div class="sptray"><button class="spdrag" id="spd" type="button">${q.o[1]}</button><button class="ghost" id="spagain" type="button">🔊 שומעים שוב</button></div>`}</div>`);
     if(ph){recStep(document.getElementById('rh'),()=>{addStar();d.k++;d.placed=false;if(d.k>=d.qs.length){SFX.fanfare();finish()}else{render();TIMERS.push(setTimeout(()=>sayWord(d.qs[d.k].o[0]+' '+R[d.qs[d.k].r].say),500))}},{max:12000});return}
     const say=()=>sayWord(sent);document.getElementById('spagain').onclick=say;if(d.first!==d.k){d.first=d.k;TIMERS.push(setTimeout(say,500))}
@@ -3736,7 +3749,7 @@ function renderTherapist(){
     <fieldset class="sndonly" hidden><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select></fieldset>
     <fieldset><legend>קולי ובלתי קולי</legend><div class="checks">${VOICING.map(v=>`<label><input type="checkbox" id="v${v.bit}" data-bit="${v.bit}"> ${v.name}</label>`).join('')}</div></fieldset>
     <fieldset class="vonly" hidden><legend>עד איזה שלב פתוח (קולי ובלתי קולי)</legend><select class="txt" id="vstageSel">${['הגרון המזמזם','רועש או שקט?','ממיינים מילים 1','ממיינים מילים 2','זוגות מילים','משחקי אמירה (הכל פתוח)'].map((t,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${i+1}. ${t}</option>`).join('')}</select>
-      <p class="muted" style="font-size:14px;margin-top:4px">אם מסומנים גם הגאים, הקוד שומר שלב אחד משותף: הנמוך מבין השניים.</p></fieldset>
+      </fieldset>
     <fieldset><legend>שפה</legend><div class="checks">${GOAL_LANG.map(g=>`<label><input type="checkbox" id="l${g.bit}" data-bit="${g.bit}"> ${g.name}</label>`).join('')}</div></fieldset>
     <fieldset class="mgset"><legend>⭐ משחקים אישיים</legend><p class="muted" style="font-size:14px;margin:0 0 6px">בלי שלבים: המטופל יראה רק את המשחקים שסימנת.</p>${myGames().length?`<div class="checks">${myGames().map(g=>`<label><input type="checkbox" class="mgc" value="${esc(g.id)}"> ${g.icon} ${esc(g.name)}</label>`).join('')}</div>`:'<p class="muted">עדיין אין משחקים אישיים.</p>'}</fieldset>
     <div class="err" id="terr" role="alert"></div>
@@ -3797,7 +3810,7 @@ function renderTherapist(){
 
   document.getElementById('tf').onsubmit=e=>{
     e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const anyS=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked}),anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});
-    const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value,ms=anyS&&anyV?Math.min(ss,vs):anyS?ss:anyV?vs:6;if(ms<6)bits|=ms<<18;
+    const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value;if(anyS&&ss<6)bits|=ss<<18;const vLong=anyV&&vs<6;
     if(!document.getElementById('nick').value.trim()){document.getElementById('terr').textContent='כתבי את שם המטופל, או בחרי אותו מהרשימה.';return}
     const mg=[...app.querySelectorAll('#tf .mgc:checked')].map(c=>c.value);
     if(!(bits&GOALMASK)&&!mg.length){document.getElementById('terr').textContent='סמני לפחות מטרה אחת או משחק אישי.';return}
@@ -3806,7 +3819,7 @@ function renderTherapist(){
     if(!anySound)bits&=~(0x601C00|(7<<18));
     document.getElementById('terr').textContent='';
     /* a fresh code that no saved patient and no personal-games patient already has */
-    const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);let code=encode(bits),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=encode(bits);
+    const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);const mk=()=>vLong?encodeLong(bits,vs):encode(bits);let code=mk(),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=mk();
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));logName(code,nick);
