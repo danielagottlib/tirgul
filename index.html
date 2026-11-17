@@ -1588,16 +1588,16 @@ const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרי
  ['ph-v','הגה V בבידוד (קולי)','ווווווו (V) — צליל ארוך'],['ph-f','הגה F בבידוד (בלתי קולי)','פפפפפפ (F) — צליל ארוך']];
 /* plays an isolated sound: Daniela's recording audio/ph-<x>.webm when it exists, otherwise the synthesized one */
 const PHREC={};
-/* Daniela's recorded sounds are played through Web Audio and brought to the same loudness (the P recording is very quiet) */
-const PHBUF={};
+/* Daniela's recorded sounds: played with a normal audio element (works everywhere); the quiet recordings (P, F, G) are made
+   louder through Web Audio when it is running. If nothing starts within 1.5s, the synthesized sound plays instead */
+const PHGAIN={p:5,f:1.9,g:1.6,k:1.45,d:1.4};
 function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);return}
-  const plain=()=>{let done=false;const fb=()=>{if(done)return;done=true;PHREC[ph]=false;SFX.phone(ph)};
-    try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.onerror=fb;a.play().then(()=>{done=true;PHREC[ph]=true}).catch(fb)}catch(e){fb()}};
-  try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC){plain();return}const ac=window._phAC||(window._phAC=new AC());if(ac.state==='suspended')ac.resume();
-    const go=buf=>{const d=buf.getChannelData(0);let pk=0;for(let i=0;i<d.length;i++){const v=Math.abs(d[i]);if(v>pk)pk=v}
-      const g=ac.createGain();g.gain.value=pk>0?Math.min(14,.85/pk):1;const s=ac.createBufferSource();s.buffer=buf;s.connect(g);g.connect(ac.destination);s.start();PHREC[ph]=true};
-    if(PHBUF[ph]){go(PHBUF[ph]);return}
-    fetch('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000)).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>ac.decodeAudioData(b)).then(buf=>{PHBUF[ph]=buf;go(buf)}).catch(plain)}catch(e){plain()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
+  let started=false;const fb=()=>{if(started)return;started=true;PHREC[ph]=false;SFX.phone(ph)};
+  try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.crossOrigin='anonymous';
+    const G=PHGAIN[ph]||1,AC=window.AudioContext||window.webkitAudioContext;
+    if(G>1&&AC){try{const ac=window._phAC||(window._phAC=new AC());if(ac.state!=='running')ac.resume();
+      if(ac.state==='running'){const s=ac.createMediaElementSource(a),g=ac.createGain();g.gain.value=G;s.connect(g);g.connect(ac.destination)}}catch(e){}}
+    a.onplaying=()=>{started=true;PHREC[ph]=true};a.onerror=fb;a.play().catch(fb);setTimeout(()=>{if(!started&&(a.paused||a.currentTime===0))fb()},1500)}catch(e){fb()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
 function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
@@ -2044,11 +2044,11 @@ GAMES.bingo=['🎲','בינגו','מוצאים את התמונה ואומרים'
 /* three-step picture stories (story.js, Gemini): keys of STORY_IMG in order */
 /* minimal pairs for the voicing pairs: [vowelled word for the voice, word, picture]; the two words differ only in the voiced/voiceless sound */
 const VMIN=[
- [[['בֵּיצָה','ביצה','🥚'],['פִּיצָה','פיצה','🍕']],[['בַּת','בת','👧'],['פַּת','פת','🍞']],[['בּוּל','בול','📮'],['פּוּל','פול','🫘']]],
- [[['דַּף','דף','📄'],['טַף','טף','🧒']],[['דּוֹב','דוב','🐻'],['טוֹב','טוב','👍']],[['דָּג','דג','🐟'],['תָּג','תג','🏷️']]],
- [[['גִּיר','גיר','🖍️'],['קִיר','קיר','🧱']],[['גֶּשֶׁר','גשר','🌉'],['קֶשֶׁר','קשר','🪢']],[['גּוֹל','גול','⚽'],['קוֹל','קול','🔊']]],
- [[['מַזְרֵק','מזרק','💉'],['מַסְרֵק','מסרק','🪮']],[['זוֹרֵק','זורק','🤾'],['סוֹרֵק','סורק','🖨️']]],
- [[['אָב','אב','👨'],['אַף','אף','👃']],[['עָב','עב (ענן)','☁️'],['עָף','עף','🕊️']]]];/* "סיפור בהמשכים": a 4-picture story for every sound (pictures in seq4.js); cap = a sentence the parent can offer for each picture */
+ [[['בֵּיצָה','ביצה','🥚'],['פִּיצָה','פיצה','🍕']],[['בֶּנִי','בני','👦'],['פֶּנִי','פני','👧']],[['בָּנִים','בנים','👦'],['פָּנִים','פנים','🙂']]],
+ [[['דּוֹדָה','דודה','👩'],['תּוֹדָה','תודה','🙏']],[['דּוֹב','דוב','🐻'],['טוֹב','טוב','👍']],[['דָּלִי','דלי','🪣'],['טָלִי','טלי','👧']],[['דָּג','דג','🐟'],['תָּג','תג','🏷️']],[['דַּף','דף','📄'],['טַף','טף','🧒']]],
+ [[['גִּיר','גיר','🖍️'],['קִיר','קיר','🧱']],[['גּוּף','גוף','🧍'],['קוֹף','קוף','🐒']],[['גֶּשֶׁר','גשר','🌉'],['קֶשֶׁר','קשר','🪢']],[['גּוֹל','גול','⚽'],['קוֹל','קול','🔊']]],
+ [[['מַזְרֵק','מזרק','💉'],['מַסְרֵק','מסרק','🪮']]],
+ [[['וֶרֶד','ורד','🌹'],['פֶרֶד','פרד','🫏']],[['אָב','אבא','👨'],['אַף','אף','👃']]]];/* "סיפור בהמשכים": a 4-picture story for every sound (pictures in seq4.js); cap = a sentence the parent can offer for each picture */
 const SEQ4={
  r:{name:'הארנב והגזר',cap:['הארנב רואה גזר גדול בגינה','הארנב מושך ומושך את הגזר','הגזר יצא והארנב נפל על הגב','הארנב מתחלק בגזר עם החברים']},
  l:{name:'הליצן והבלון',cap:['הליצן מנפח בלון צהוב','הבלון גדל וגדל','הבלון עף למעלה, לשמיים','ילדה תופסת את הבלון ומחזירה לליצן']},
@@ -2432,7 +2432,7 @@ function startAct(act,from){
     loadScriptOnce('seq4.js?v=1',()=>{if(S.act==='seqrec')render()})}
   if(act==='paint'){const s=SOUNDS[S.sound];d.objs=[];d.lines=[];d.phase='idle';d.choices=[];d.pick=[];d.text='';
     const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length);d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
-  if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,6);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
+  if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps,...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,6);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle2.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
