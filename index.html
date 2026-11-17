@@ -1189,6 +1189,24 @@ body{background:#5E8F55}
 .bug .bugimg2{width:min(13vw,72px);height:auto;display:block;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
 .bug.active .bugimg2{animation:bugfly 1.6s ease-in-out infinite}@keyframes bugfly{0%,100%{transform:translate(0,0) rotate(-6deg)}50%{transform:translate(4px,-8px) rotate(6deg)}}
 .frog2.real{width:min(19vw,104px);height:min(19vw,104px)}
+/* personal game: קים (Yiddish "come") */
+.kimscene{position:relative;width:min(100%,760px);margin:8px auto;min-height:340px;border-radius:22px;background:linear-gradient(#BFE6FF 0 60%,#8FD16B 60%);overflow:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+.kimhouse{position:absolute;left:3%;top:4%;width:42%}.kimhouse img{width:100%;display:block;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
+.kimwin{position:absolute;left:18%;right:18%;bottom:8%;display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:clamp(18px,3.4vw,30px)}.kimwin img{width:1.3em;height:1.3em;object-fit:contain}
+.kimrow{position:absolute;right:2%;left:48%;bottom:6%;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.kimwho{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.85);border:3px solid #fff;border-radius:16px;padding:4px 8px;cursor:pointer;box-shadow:0 6px 10px rgba(0,0,0,.15);animation:kimidle 2.4s ease-in-out infinite;animation-delay:calc(var(--k)*-.3s)}
+.kimwho .kpic{font-size:clamp(34px,6vw,52px);line-height:1}.kimwho .kpic img{width:1.2em;height:1.2em;object-fit:contain}.kimwho b{font-size:18px}
+.kimwho.sel{border-color:#E39A2D;transform:scale(1.15)}.kimgap{width:60px}
+@keyframes kimidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.kimbub{position:absolute;right:6%;top:8%;background:#fff;border:3px solid #E39A2D;border-radius:24px;padding:8px 18px;font-size:clamp(26px,5vw,42px);font-weight:900;animation:sgrow 1s cubic-bezier(.3,1.6,.5,1) both;box-shadow:0 8px 16px rgba(0,0,0,.15)}
+.kimkim{color:#C9653A}.kimm{color:#E5484D;letter-spacing:.06em;display:inline-block;animation:kimhum 1.2s ease-in-out infinite}@keyframes kimhum{50%{transform:scale(1.15)}}
+.kimscene.party .kimhouse{animation:froghappy .5s ease-in-out infinite alternate}.kimwho.dance{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.12s)}
+/* personal game: איפה זה? */
+.spscene{position:relative;width:min(100%,760px);aspect-ratio:16/9;margin:8px auto;border-radius:22px;overflow:hidden;background:linear-gradient(#FFF3DA 0 66%,#D9A86C 66%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+.sptable{position:absolute;left:4%;bottom:6%;width:42%;z-index:2}.spbox{position:absolute;right:6%;bottom:6%;width:28%;z-index:2}
+.spobj{position:absolute;transform:translate(-50%,-50%);font-size:clamp(38px,8cqw,70px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3))}.spobj img{width:1.3em;height:1.3em;object-fit:contain;display:block}
+.spobj.new{animation:popin .4s ease-out}.spscene{container-type:inline-size}
+.sptray{display:flex;align-items:center;justify-content:center;gap:14px}.spdrag{font-size:56px;line-height:1;background:#fff;border:3px dashed #E39A2D;border-radius:18px;padding:6px 12px;cursor:grab;touch-action:none}.spdrag img{width:1.3em;height:1.3em;object-fit:contain}.spdrag.no{animation:shake .5s}
 </style>
 </head>
 <body>
@@ -1249,7 +1267,9 @@ const MORE_WORDS={
  g:{s:[['גן','🏫'],['גביע','🏆'],['גוזל','🐣'],['גיר','🖍️'],['גור','🐶']],m:[['חגורה','🥋'],['עגלה','🛒'],['דגל','🚩'],['אגוז','🥜'],['רגל','🦵']],e:[['חג','🎉'],['נהג','🚗'],['בורג','🔩']]},
  z:{s:[['זיקית','🦎'],['זמר','🎤'],['זאב','🐺']],m:[['מזגן','❄️'],['חזיר','🐷'],['מזרן','🛏️'],['תזמורת','🎻'],['מזרקה','⛲']],e:[['עז','🐐'],['אורז','🍚'],['בז','🦅'],['גז','⛽']]},
  ts:{s:[['ציור','🖼️'],['צמיד','📿'],['צבי','🦌'],['צופר','📯']],m:[['נוצה','🪶'],['מצלמה','📷'],['מצנח','🪂'],['פצע','🩹']],e:[['קיץ','☀️'],['קופץ','🦘'],['ארץ','🌍'],['חמוץ','🍋']]}};
-SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
+SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});/* personal game 'איפה זה?': where each place is in the room picture (percent of the picture), and what is said */
+const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:3},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:3},behind:{say:'מאחורי הקופסה',hit:[90,46],at:[90,50],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,60],z:1}};
+const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
 const FIXJOBS=[['🪑','הכיסא','🔨'],['🚲','האופניים','🔧'],['🧸','הדובי','🪡'],['🕰️','השעון','🪛'],['🏠','הבית','🖌️'],['🛴','הקורקינט','🔧'],['🎒','התיק','🪡'],['🚪','הדלת','🔨'],['🤖','הרובוט','🪛'],['🐕','הכלב שנפצע ברגל','🩹'],['🛶','הסירה','🔨'],['🧱','הקיר','🖌️']];
 const FIXBY={
  r:[['🚲','האופניים','🔧','צריך לתקן את האופניים עם מפתח ברגים'],['🪑','הכיסא','🔨','אני דופק מסמרים עם פטיש'],['🧸','הדובי','🪡','אני תופר את הדובי הקרוע'],['🤖','הרובוט','🪛','אני מבריג בורג ברובוט'],['🏠','הבית','🖌️','אני צובע את הקיר באדום'],['🚪','הדלת','🔨','צריך לסגור את הדלת עם מסמר'],['🛶','הסירה','🔨','אני מתקן חור בסירה']],
@@ -1526,6 +1546,8 @@ const SFX=(()=>{
       tone(118,.8,{type:'sawtooth',vol:.24,attack:.03});tone(236,.8,{type:'square',vol:.05,attack:.03})},
     voiceless(kind){if(kind==='fric')noise(.6,{vol:.13,hp:2500,lp:10000});else noise(.09,{vol:.12,hp:1500,lp:8000})},
     phone,
+    /* a long nasal hum: the ם at the end of 'קים' */
+    mmm(){hum(1.5,{f:180,lp:450,vol:.34})},
     /* a soft gust of wind (kite game) */
     wind(){hiss(1.4,{hp:120,lp:700,vol:.16})},
     /* cash register: drawer rattle + two bells */
@@ -1613,16 +1635,17 @@ const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרי
 const PHREC={};
 /* Daniela's recorded sounds: played with a normal audio element (works everywhere); the quiet recordings (P, F, G) are made
    louder through Web Audio when it is running. only if the file cannot be loaded at all, the synthesized sound plays instead */
-const PHGAIN={p:5,f:1.9,g:1.6,k:1.45,d:1.4};
+/* no Web Audio boosting: on some computers it made the sound silent (ד). Quiet recordings should be re-recorded louder */
+const PHGAIN={};
 function playPh(ph){if(SFX.muted)return;
   let started=false;const fb=()=>{if(started)return;started=true;PHREC[ph]=false;SFX.phone(ph)};
-  try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.crossOrigin='anonymous';
+  try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));
     const G=PHGAIN[ph]||1,AC=window.AudioContext||window.webkitAudioContext;
     if(G>1&&AC){try{const ac=window._phAC||(window._phAC=new AC());if(ac.state!=='running')ac.resume();
       if(ac.state==='running'){const s=ac.createMediaElementSource(a),g=ac.createGain();g.gain.value=G;s.connect(g);g.connect(ac.destination)}}catch(e){}}
     a.onplaying=()=>{started=true;PHREC[ph]=true};a.onerror=fb;a.play().catch(e=>{if(e&&e.name==='AbortError')return;fb()})}catch(e){fb()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
-function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
-  const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
+function saySeq(arr,onDone){if(SFX.muted){onDone&&onDone();return}const me=(window._seqId=(window._seqId||0)+1);let k=0;
+  const next=()=>{if(me!==window._seqId)return;if(k>=arr.length){onDone&&onDone();return}const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
       a.onended=go;const bad=()=>{if(me!==window._seqId)return;femaleSay(t);setTimeout(go,1200)};a.onerror=bad;a.play().catch(e=>{if(e&&e.name==='AbortError')return;bad()})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
 function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
@@ -2514,7 +2537,9 @@ function startAct(act,from){
     const pool=(S.sound!=null&&SOUNDS[S.sound]&&!['pair','vocab'].includes(S.stage))?soundWords():d.items.filter(x=>x[1]&&x[2]!=='syl');
     const prev=S.lastPuzzle;let pz=pick(pool.filter(x=>x[1]!==prev),1)[0]||pool[0];S.lastPuzzle=pz[1];d.puzzle=pz}
   if(act==='story'){d.round=0;d.trio=null;d.count=0}
-  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.done=[];d.phase='play';S.gkey='mine|'+d.game.id}
+  if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.done=[];d.phase='play';S.gkey='mine|'+d.game.id;
+    if(d.game.kind==='come'){d.items=d.game.items.slice();d.done=[];d.cur=null}
+    if(d.game.kind==='space'){const ks=Object.keys(SPACE_REL),objs=d.game.items;d.qs=shuffle([...ks,...ks].map((r,i)=>({r,o:objs[(i*3+Math.floor(Math.random()*objs.length))%objs.length]}))).slice(0,d.game.rounds||8);d.k=0;d.placed=false;d.first=-1}}
   S.data=d;
   if(['phear','find','odd','quest','where','sort','two'].includes(act)){Object.assign(S,{view:'act',act});window.scrollTo(0,0);newRound()}
   else go('act',{act});
@@ -2625,6 +2650,61 @@ function renderAct(){
     if(rh)recStep(rh,()=>{addStar();d.n++;d.fresh=true;
       if(d.n>=reps){render();SFX.fanfare();TIMERS.push(setTimeout(()=>{d.k++;d.n=0;if(d.k>=d.items.length)d.phase='end';render()},2400))}
       else render()},{max:12000});
+    return;
+  }
+  if(S.act==='mine'&&d.game.kind==='come'){
+    /* personal game in Yiddish "...קים" (come): the family and the animals stand in a row; the child calls each one
+       ("טאטי קים!") and it walks home into the house. The computer says the name and then a long, separated
+       "קִי — םםםם" so the child hears that the ם at the end has to be said. At the end everyone dances at home */
+    const O=window.SPACE_IMG||{},all=d.items,home=d.done,cur=d.cur;
+    if(!O.house){shell('<div class="card stage"><p class="muted">טוען את הבית... 🏠</p></div>');loadScriptOnce('space.js?v=1',()=>{if(S.act==='mine')render()});return}
+    const fin=home.length>=all.length;
+    shell(`<div class="card stage"><p class="drag-hint">${fin?'כולם בבית! 🎉':cur!=null?'קוראים לו: '+esc(all[cur][0])+' קִים!':'נוגעים במי שרוצים לקרוא לו הביתה 🏠'}</p>
+      <div class="progress">${home.length} / ${all.length}</div>
+      <div class="kimscene ${fin?'party':''}" id="kims">
+        <div class="kimhouse"><img src="${O.house}" alt=""><div class="kimwin">${home.map(i=>`<span>${all[i][1]}</span>`).join('')}</div></div>
+        <div class="kimrow">${all.map((it,i)=>home.includes(i)&&!fin?'<span class="kimgap"></span>':`<button class="kimwho ${cur===i?'sel':''} ${fin?'dance':''}" data-i="${i}" type="button" style="--k:${i}"><span class="kpic">${it[1]}</span><b>${esc(it[0])}</b></button>`).join('')}</div>
+        ${cur!=null&&!fin?`<div class="kimbub"><b>${esc(all[cur][0])}</b> <span class="kimkim">קִי<span class="kimm">־םםם</span></span>!</div>`:''}
+      </div><div id="rh"></div>${cur!=null&&!fin?'<button class="ghost" id="kimagain" type="button">🔊 שומעים שוב</button>':''}</div>`);
+    if(fin)return;
+    /* say: the name, then "קִי" and a long humming ם */
+    const call=i=>{const it=all[i];saySyl(it[2]||it[0]);TIMERS.push(setTimeout(()=>saySyl('קִי'),1100));TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),1650))};
+    app.querySelectorAll('.kimwho').forEach(b=>b.onclick=()=>{if(S.overlay||d.cur!=null)return;const i=+b.dataset.i;d.cur=i;SFX.blip();render();call(i);
+      TIMERS.push(setTimeout(()=>{const rh=document.getElementById('rh');if(!rh||d.cur!==i)return;
+        recStep(rh,()=>{addStar();const el=app.querySelector(`.kimwho[data-i="${i}"]`),hs=app.querySelector('.kimhouse');
+          const go=()=>{d.done.push(i);d.cur=null;SFX.good();render();if(d.done.length>=all.length){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),900));TIMERS.push(setTimeout(finish,7500))}};
+          if(el&&hs){el.classList.add('walk');flyTo(el,hs,go)}else go()},{max:12000})},3200))});
+    const ag=document.getElementById('kimagain');if(ag)ag.onclick=()=>call(d.cur);
+    return;
+  }
+  if(S.act==='mine'&&d.game.kind==='space'){
+    /* personal game "איפה זה?": spatial concepts. The computer says "הכלב מתחת לשולחן"; the child drags the animal
+       to the right place (on / under the table, between the table and the box, behind / inside the box);
+       then the child says the sentence. */
+    const O=window.SPACE_IMG||{};
+    if(!O.table){shell('<div class="card stage"><p class="muted">טוען את החדר... 📦</p></div>');loadScriptOnce('space.js?v=1',()=>{if(S.act==='mine')render()});return}
+    const R=SPACE_REL,q=d.qs[d.k];if(!q){finish();return}
+    const rel=R[q.r],sent=q.o[0]+' '+rel.say,ph=d.placed;
+    const zone=(r,obj,cls)=>{const p=R[r].at;return `<span class="spobj ${cls||''} sp-${r}" style="left:${p[0]}%;top:${p[1]}%;z-index:${R[r].z}">${obj}</span>`};
+    shell(`<div class="card stage"><p class="drag-hint">${ph?'נכון! עכשיו אומרים את המשפט 🗣️':'מקשיבים ומשאירים את '+esc(q.o[0])+' במקום הנכון 👂'}</p><div class="progress">${d.k+1} / ${d.qs.length}</div>
+      <div class="sentence">${esc(sent)}</div>
+      <div class="spscene" id="sps"><img class="sptable" src="${O.table}" alt=""><img class="spbox" src="${O.box}" alt="">${ph?zone(q.r,q.o[1],'new'):''}</div>
+      ${ph?'<div id="rh"></div>':`<div class="sptray"><button class="spdrag" id="spd" type="button">${q.o[1]}</button><button class="ghost" id="spagain" type="button">🔊 שומעים שוב</button></div>`}</div>`);
+    if(ph){recStep(document.getElementById('rh'),()=>{addStar();d.k++;d.placed=false;if(d.k>=d.qs.length){SFX.fanfare();finish()}else{render();TIMERS.push(setTimeout(()=>sayWord(d.qs[d.k].o[0]+' '+R[d.qs[d.k].r].say),500))}},{max:12000});return}
+    const say=()=>sayWord(sent);document.getElementById('spagain').onclick=say;if(d.first!==d.k){d.first=d.k;TIMERS.push(setTimeout(say,500))}
+    const sc=document.getElementById('sps'),src=document.getElementById('spd');
+    src.onpointerdown=e=>{if(S.overlay)return;e.preventDefault();const r=src.getBoundingClientRect(),g=src.cloneNode(true);
+      Object.assign(g.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',zIndex:90,pointerEvents:'none',transform:'scale(1.15)'});document.body.appendChild(g);src.style.visibility='hidden';
+      const ox=e.clientX-r.left,oy=e.clientY-r.top;
+      const mv=ev=>{g.style.left=(ev.clientX-ox)+'px';g.style.top=(ev.clientY-oy)+'px'};
+      const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);
+        const s=sc.getBoundingClientRect(),x=(ev.clientX-s.left)/s.width*100,y=(ev.clientY-s.top)/s.height*100;
+        let best=null,bd=1e9;Object.keys(R).forEach(k=>{const c=R[k].hit,dd=(c[0]-x)**2+(c[1]-y)**2;if(dd<bd){bd=dd;best=k}});
+        g.remove();src.style.visibility='';
+        if(x<0||x>100||y<0||y>100||bd>26*26){return}
+        if(best===q.r){SFX.good();d.placed=true;render()}
+        else{SFX.bad();src.classList.remove('no');void src.offsetWidth;src.classList.add('no');TIMERS.push(setTimeout(say,500))}};
+      document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)};
     return;
   }
   if(S.act==='mine'&&d.game.kind==='house'){
@@ -3483,12 +3563,12 @@ function renderAct(){
     const slide=z=>{card.style.transition='transform .7s ease-in-out';if(!z){card.style.transform='none';return}
       const c=card.getBoundingClientRect(),t=z.getBoundingClientRect(),cur=new DOMMatrix(getComputedStyle(card).transform).m41||0;
       card.style.transform=`translateX(${(t.left+t.width/2)-(c.left+c.width/2-cur)}px) scale(.85)`};
-    /* each possibility: first the sound alone, long and clear (Daniela's recording: ססס / זזז), then the word said slowly: ססס... סנאי? או זזז... זנאי? */
-    const slow=t=>{try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&ttsspeed=0.4&q='+encodeURIComponent(t));window._sylA=a;a.play().catch(e=>{if(e&&e.name!=='AbortError')femaleSay(t)})}catch(e){}};
-    const demo=(t0)=>[[t0,()=>{slide(zB);playPh(pB)}],[t0+1900,()=>slow(voiceless+'?')],[t0+3700,()=>slow('אוֹ')],[t0+4400,()=>{slide(zA);playPh(pA)}],[t0+6300,()=>slow(voiced+'?')],[t0+8100,()=>{slide(null)}],[t0+8800,()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'}]]
-      .forEach(([t,f])=>TIMERS.push(setTimeout(()=>{if(S.data===d)f()},t)));
-    d.lock=true;demo(700);
-    card.onclick=()=>{if(d.lock)return;d.lock=true;demo(0)};document.getElementById('cheer').textContent='מקשיבים לשתי האפשרויות... 👂';
+    /* each possibility: the whole first syllable three times and then the word, slowly: "פָּ פָּ פָּ פַּרְוָז? או בָּ בָּ בָּ בַּרְוָז?"
+       while the picture slides to that side */
+    const sy=String(it[3]||''),syRest=sy.slice(1).replace(/^ּ/,''),sylV=it[2]?sy:lv+dg(lv)+syRest,sylB=it[2]?lb+dg(lb)+syRest:sy;
+    const demo=()=>{const me=S.data;slide(zB);saySeq([sylB,sylB,sylB,voiceless+'?'],()=>{if(S.data!==me)return;saySeq(['אוֹ'],()=>{if(S.data!==me)return;slide(zA);
+      saySeq([sylV,sylV,sylV,voiced+'?'],()=>{if(S.data!==me)return;slide(null);TIMERS.push(setTimeout(()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'},600))})})})};    d.lock=true;TIMERS.push(setTimeout(demo,700));
+    card.onclick=()=>{if(d.lock)return;d.lock=true;demo()};document.getElementById('cheer').textContent='מקשיבים לשתי האפשרויות... 👂';
     return;
   }
   if(S.act==='disc'){
@@ -3651,9 +3731,10 @@ function renderTherapist(){
       <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
     <fieldset><legend>היגוי</legend><div class="checks">${SOUNDS.map((s,i)=>`<label><input type="checkbox" id="g${i}" data-bit="${i}"> הגה ${s.name}</label>`).join('')}</div></fieldset>
     <fieldset class="sndonly" hidden><legend>מיקום ההגה במילה (חל על הברות, מילים וצירופים)</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א)':''}</label>`).join('')}</div></fieldset>
-    <fieldset class="stgonly" hidden><legend>עד איזה שלב פתוח לתרגול</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]} · קולי/בלתי קולי: ${['הגרון המזמזם','עד רועש או שקט','עד ממיינים מילים 1','עד ממיינים מילים 2','עד זוגות מילים','הכל'][i]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select>
-      <p class="muted" style="font-size:14px;margin-top:4px">אותו שלב חל גם על ההגאים וגם על הקולי ובלתי קולי (בקוד אין מקום לשני שלבים נפרדים). בקולי ובלתי קולי נפתחים רק המשחקים עד השלב שבחרת.</p></fieldset>
+    <fieldset class="sndonly" hidden><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select></fieldset>
     <fieldset><legend>קולי ובלתי קולי</legend><div class="checks">${VOICING.map(v=>`<label><input type="checkbox" id="v${v.bit}" data-bit="${v.bit}"> ${v.name}</label>`).join('')}</div></fieldset>
+    <fieldset class="vonly" hidden><legend>עד איזה שלב פתוח (קולי ובלתי קולי)</legend><select class="txt" id="vstageSel">${['הגרון המזמזם','רועש או שקט?','ממיינים מילים 1','ממיינים מילים 2','זוגות מילים','משחקי אמירה (הכל פתוח)'].map((t,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${i+1}. ${t}</option>`).join('')}</select>
+      <p class="muted" style="font-size:14px;margin-top:4px">אם מסומנים גם הגאים, הקוד שומר שלב אחד משותף: הנמוך מבין השניים.</p></fieldset>
     <fieldset><legend>שפה</legend><div class="checks">${GOAL_LANG.map(g=>`<label><input type="checkbox" id="l${g.bit}" data-bit="${g.bit}"> ${g.name}</label>`).join('')}</div></fieldset>
     <fieldset class="mgset"><legend>⭐ משחקים אישיים</legend><p class="muted" style="font-size:14px;margin:0 0 6px">בלי שלבים: המטופל יראה רק את המשחקים שסימנת.</p>${myGames().length?`<div class="checks">${myGames().map(g=>`<label><input type="checkbox" class="mgc" value="${esc(g.id)}"> ${g.icon} ${esc(g.name)}</label>`).join('')}</div>`:'<p class="muted">עדיין אין משחקים אישיים.</p>'}</fieldset>
     <div class="err" id="terr" role="alert"></div>
@@ -3713,7 +3794,8 @@ function renderTherapist(){
     <p class="muted" style="font-size:14px">"איפוס במכשיר" מוחק את הכוכבים, ההתקדמות והשם שנשמרו במכשיר הזה עבור הקוד (למשל אחרי שהתאמנת בעצמך). אצל המטופל בבית זה לא משנה דבר. "הסרה מהרשימה" מוחקת רק את השורה מהטבלה, והקוד עצמו ממשיך לעבוד.</p>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}<div id="endOut"></div></div>`;
 
   document.getElementById('tf').onsubmit=e=>{
-    e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const ms=+document.getElementById('stageSel').value;if(ms<6)bits|=ms<<18;
+    e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const anyS=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked}),anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});
+    const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value,ms=anyS&&anyV?Math.min(ss,vs):anyS?ss:anyV?vs:6;if(ms<6)bits|=ms<<18;
     if(!document.getElementById('nick').value.trim()){document.getElementById('terr').textContent='כתבי את שם המטופל, או בחרי אותו מהרשימה.';return}
     const mg=[...app.querySelectorAll('#tf .mgc:checked')].map(c=>c.value);
     if(!(bits&GOALMASK)&&!mg.length){document.getElementById('terr').textContent='סמני לפחות מטרה אחת או משחק אישי.';return}
@@ -3747,7 +3829,7 @@ function renderTherapist(){
   const ghIn=document.getElementById('ghTok');document.getElementById('ghSave').onclick=async()=>{const v=ghIn.value.trim();const st=document.getElementById('ghStat');if(!v){store.del('gh-token');st.textContent='המפתח נמחק מהמכשיר.';return}
     store.set('gh-token',v);ghIn.value='';st.textContent='בודק...';try{const r=await fetch(GH_FILE+'?ref=main',{headers:{'Authorization':'Bearer '+v,'Accept':'application/vnd.github+json'}});st.textContent=r.ok?'✓ מחובר. מעכשיו חסימות והחלפות נשמרות לבד.':'המפתח לא עובד ('+r.status+'). בדקי שנתת הרשאת Contents: Read and write למאגר tirgul.'}catch(e){st.textContent='אין חיבור ל-GitHub מהמכשיר הזה.'}};
   /* position and stage only matter for sounds: show them once a sound is ticked */
-  const sndUpd=()=>{const any=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked});app.querySelectorAll('#tf .sndonly').forEach(f=>f.hidden=!any);const anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});app.querySelectorAll('#tf .stgonly').forEach(f=>f.hidden=!(any||anyV))};
+  const sndUpd=()=>{const any=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked});app.querySelectorAll('#tf .sndonly').forEach(f=>f.hidden=!any);const anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});app.querySelectorAll('#tf .vonly').forEach(f=>f.hidden=!anyV)};
   SOUNDS.forEach((s,i)=>{const c=document.getElementById('g'+i);if(c)c.addEventListener('change',sndUpd)});VOICING.forEach(v=>{const c=document.getElementById('v'+v.bit);if(c)c.addEventListener('change',sndUpd)});sndUpd();
   setupVrec();
   const mp=document.getElementById('mgPat');
