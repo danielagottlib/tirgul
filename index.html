@@ -1368,7 +1368,7 @@ const VOICING=[
  {bit:14,name:'ד / ת',a:['ד',[['דג','🐟'],['דף','📄'],['דבש','🍯'],['דלת','🚪'],['דובי','🧸']]],b:['ת',[['תג','🏷️'],['תף','🥁'],['תות','🍓'],['תפוח','🍎'],['תרנגול','🐓']]],pairs:[[0,0],[1,1]]},
  {bit:15,name:'ג / ק',a:['ג',[['גמל','🐫'],['גזר','🥕'],['גלידה','🍦'],['גיטרה','🎸'],['גרב','🧦']]],b:['ק',[['קוף','🐒'],['קיפוד','🦔'],['קשת','🌈'],['קקטוס','🌵'],['קומקום','🫖']]]},
  {bit:16,name:'ז / ס',a:['ז',[['זית','🫒'],['זחל','🐛'],['זהב','🪙'],['זקן','🧔']]],b:['ס',[['סוס','🐴'],['סבון','🧼'],['סירה','⛵'],['סנאי','🐿️'],['סל','🧺']]]},
- {bit:17,name:'V / F (ו / פ רפה)',a:['V',[['ורד','🌹'],['וופל','🧇'],['כובע','🎩'],['צב','🐢'],['גרב','🧦']]],b:['F',[['כף','🥄'],['קוף','🐒'],['עוף','🐔'],['טלפון','📞'],['סופגנייה','🍩']]]}
+ {bit:17,name:'ו/ב / פ',a:['V',[['ורד','🌹'],['וופל','🧇'],['כובע','🎩'],['צב','🐢'],['גרב','🧦']]],b:['F',[['כף','🥄'],['קוף','🐒'],['עוף','🐔'],['טלפון','📞'],['סופגנייה','🍩']]]}
 ];
 const GOAL_LANG=[{bit:8,id:'vocab',name:'אוצר מילים וקטגוריות',icon:'🧺'},{bit:9,id:'instr',name:'הוראות ומשפטים',icon:'👂'}];
 
@@ -1591,15 +1591,15 @@ const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרי
 /* plays an isolated sound: Daniela's recording audio/ph-<x>.webm when it exists, otherwise the synthesized one */
 const PHREC={};
 /* Daniela's recorded sounds: played with a normal audio element (works everywhere); the quiet recordings (P, F, G) are made
-   louder through Web Audio when it is running. If nothing starts within 1.5s, the synthesized sound plays instead */
+   louder through Web Audio when it is running. only if the file cannot be loaded at all, the synthesized sound plays instead */
 const PHGAIN={p:5,f:1.9,g:1.6,k:1.45,d:1.4};
-function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);return}
+function playPh(ph){if(SFX.muted)return;
   let started=false;const fb=()=>{if(started)return;started=true;PHREC[ph]=false;SFX.phone(ph)};
   try{const a=new Audio('audio/ph-'+ph+'.webm?v='+Math.floor(Date.now()/600000));a.crossOrigin='anonymous';
     const G=PHGAIN[ph]||1,AC=window.AudioContext||window.webkitAudioContext;
     if(G>1&&AC){try{const ac=window._phAC||(window._phAC=new AC());if(ac.state!=='running')ac.resume();
       if(ac.state==='running'){const s=ac.createMediaElementSource(a),g=ac.createGain();g.gain.value=G;s.connect(g);g.connect(ac.destination)}}catch(e){}}
-    a.onplaying=()=>{started=true;PHREC[ph]=true};a.onerror=fb;a.play().catch(fb);setTimeout(()=>{if(!started&&(a.paused||a.currentTime===0))fb()},1500)}catch(e){fb()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
+    a.onplaying=()=>{started=true;PHREC[ph]=true};a.onerror=fb;a.play().catch(e=>{if(e&&e.name==='AbortError')return;fb()})}catch(e){fb()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
 function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
@@ -1938,7 +1938,7 @@ function renderMine(){const gs=myAssigned(S.code),p=prog();
   app.innerHTML=header('המשחקים שלי','home')+(gs.length?`<div class="grid">${gs.map(g=>{const n=(p.games['mine|'+g.id]||{}).s||0;return `<button class="tile" data-mg="${esc(g.id)}" style="--tc:#F08A24;--tl:#FFF0DC;--td:#C0660E">${n?`<span class="tbadge">⭐ ${n}</span>`:''}<span class="big">${g.icon}</span>${esc(g.name)}${g.sub?`<span class="sub">${esc(g.sub)}</span>`:''}</button>`}).join('')}</div>`:'<div class="card stage"><p class="muted">עוד אין כאן משחקים.</p></div>');
   bindCommon();app.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{S.mg=b.dataset.mg;startAct('mine','mine')})}
 /* voicing pairs: a = voiced (ב ד ג ז V), b = voiceless (פ ת ק ס F) */
-const vLab=x=>x==='V'?'ו / ב רפה':x==='F'?'פ רפה':x==='ב'?'בּ':x==='פ'?'פּ':x;
+const vLab=x=>x==='V'?'ו/ב':x==='F'?'פ':x==='ב'?'בּ':x==='פ'?'פּ':x;
 /* word sorting says only the first syllable (consonant + first vowel), so the child listens to the start of the word */
 const VSYL={'בננה':'בָּא','בטטה':'בָּא','בית':'בָּא','בובה':'בּוּ','ברווז':'בָּא','פיל':'פִּי','פרה':'פָּא','פרח':'פֶּה','פיצה':'פִּי','פינגווין':'פִּי',
   'דג':'דָּא','דף':'דָּא','דבש':'דָּא','דלת':'דֶּה','דובי':'דּוּ','תג':'תָּא','תף':'תּוֹ','תות':'תּוּ','תפוח':'תָּא','תרנגול':'תָּא',
