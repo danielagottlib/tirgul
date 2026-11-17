@@ -1179,6 +1179,16 @@ body{background:#5E8F55}
 @keyframes sbob{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -6px;rotate:3deg}}
 .stray{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;padding:10px;border-radius:16px;background:rgba(255,248,232,.9);border:2px dashed #E39A2D;min-height:70px}
 .sbt{font-size:40px;line-height:1;cursor:grab;touch-action:none;padding:4px;border-radius:12px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12)}.sdrag{font-size:48px;line-height:1}
+/* frog game, illustrated (Nov 2026): a painted pond, lily pads for stones, 9 different 3D bugs */
+.bog{width:min(94vw,720px,calc(100vh - 220px));border-radius:28px;background:#5FB7C7 url(scn/pond.jpg) center/cover;box-shadow:0 14px 30px rgba(0,0,0,.25),inset 0 0 0 4px rgba(255,255,255,.35)}
+.bog .bigpad{display:none}
+.stone{width:12%;height:12%;background:radial-gradient(circle at 42% 38%,#B4F07E 0,#6CC046 45%,#2F8A35 100%);border-radius:50%;box-shadow:0 6px 8px rgba(0,40,30,.35),inset 0 -4px 0 rgba(0,0,0,.12);-webkit-mask:conic-gradient(from 200deg,#0000 0 26deg,#000 26deg);mask:conic-gradient(from 200deg,#0000 0 26deg,#000 26deg)}
+.stone span{color:#fff;font-size:min(4.4vw,22px);text-shadow:0 2px 0 #1F6B2A,0 0 6px rgba(0,0,0,.35)}
+.stone.next{outline:none;-webkit-mask:none;mask:none;box-shadow:0 0 0 4px #FFE27A,0 0 22px 6px rgba(255,226,122,.9),0 6px 8px rgba(0,40,30,.35)}
+.stone.later{opacity:.55}.stone.gone{opacity:.2}
+.bug .bugimg2{width:min(13vw,72px);height:auto;display:block;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.bug.active .bugimg2{animation:bugfly 1.6s ease-in-out infinite}@keyframes bugfly{0%,100%{transform:translate(0,0) rotate(-6deg)}50%{transform:translate(4px,-8px) rotate(6deg)}}
+.frog2.real{width:min(19vw,104px);height:min(19vw,104px)}
 </style>
 </head>
 <body>
@@ -2498,7 +2508,7 @@ function startAct(act,from){
   if(['eggs','monster','frog'].includes(act))loadScriptOnce('chars.js?v=1',()=>{if(S.view==='act'&&['eggs','monster','frog'].includes(S.act))render()});
   if(act==='eggs'){d.eggs=items().slice(0,9);d.hatched=[]}
   if(act==='monster'){d.cookies=items().slice(0,8);d.eaten=[];d.ready=null}
-  if(act==='frog'){const it=items();const bugs=shuffle(['🪰','🦟','🐞','🦗','🐛','🦋','🐝','🐜']);const start=Math.random()*Math.PI*2;d.paths=[0,1,2,3,4,5].map(i=>({a:start+i*Math.PI/3,bug:bugs[i],stones:[0,1,2].map(k=>it[(i*3+k)%it.length])}));d.pi=0;d.pos=-1;d.from=null}
+  if(act==='frog'){const it=items();const bugs=shuffle(['🪰','🦟','🐞','🦗','🐛','🦋','🐝','🐜']);const start=Math.random()*Math.PI*2;d.paths=[0,1,2,3,4,5].map(i=>({a:start+i*Math.PI/3,bug:bugs[i],stones:[0,1,2].map(k=>it[(i*3+k)%it.length])}));d.pi=0;d.pos=-1;d.from=null;d.bugk=Math.floor(Math.random()*9);loadScriptOnce('frogbugs.js?v=1',()=>{if(S.act==='frog')render()})}
   if(act==='memory'){const w=pick(items(),6);d.cards=shuffle([...w,...w].map((x,k)=>({w:x,k})));d.open=[];d.done=[]}
   if(act==='wheel'){d.items=items();d.wheel=d.items.slice(0,8);d.goal=d.wheel.length;d.order=shuffle([...Array(d.goal).keys()]);d.pieces=0;d.cur=null;d.count=0;d.rot=0;
     const pool=(S.sound!=null&&SOUNDS[S.sound]&&!['pair','vocab'].includes(S.stage))?soundWords():d.items.filter(x=>x[1]&&x[2]!=='syl');
@@ -3198,7 +3208,7 @@ function renderAct(){
       <div class="bog" id="bog">
         <div class="bigpad"></div>
         ${P.map((p,pi)=>p.stones.map((it,si)=>{const [x,y]=xy(pi,si);const st=pi<d.pi?'gone':pi>d.pi?'later':si<=d.pos?'past':si===d.pos+1?'next':'';
-          return `<button class="stone ${st}" data-pi="${pi}" data-si="${si}" style="left:${x}%;top:${y}%"><span>${it[0]}</span></button>`}).join('')+(pi>=d.pi||(pi===d.pi)?(()=>{const [bx,by]=bugxy(pi);return `<span class="bug ${pi===d.pi?'active':''} ${pi<d.pi?'eaten':''}" id="bug${pi}" style="left:${bx}%;top:${by}%"><span class="bugemo">${p.bug}</span></span>`})():'')).join('')}
+          return `<button class="stone ${st}" data-pi="${pi}" data-si="${si}" style="left:${x}%;top:${y}%"><span>${it[0]}</span></button>`}).join('')+(pi>=d.pi||(pi===d.pi)?(()=>{const [bx,by]=bugxy(pi);return `<span class="bug ${pi===d.pi?'active':''} ${pi<d.pi?'eaten':''}" id="bug${pi}" style="left:${bx}%;top:${by}%">${(window.FROGBUG||[]).length?`<img class="bugimg2" src="${FROGBUG[(d.bugk+pi)%FROGBUG.length]}" alt="">`:`<span class="bugemo">${p.bug}</span>`}</span>`})():'')).join('')}
         <div class="tongue" id="tongue"></div>
         <div class="frog2 ${CH('frog0')?'real':''}" id="frog">${CH('frog0')?`<img class="fr-c" src="${CH('frog0')}" alt=""><img class="fr-o" src="${CH('frog1')}" alt="">`:'🐸'}</div>
       </div></div>`);
@@ -3716,7 +3726,7 @@ function renderTherapist(){
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));logName(code,nick);
-    const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n• לצורך מעקב אחר ההתקדמות, האתר מעדכן אותי אילו פעילויות בוצעו ומתי. ההקלטות של הילד נשמרות רק במכשיר שלכם ואינן נשלחות אליי. המידע משמש אותי לצורך הטיפול בלבד.\n• אין להעביר את הקישור לאתר או הקוד האישי, הם מיועדים לשימוש אישי בלבד.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n• לצורך מעקב אחר ההתקדמות, האתר מעדכן אותי אילו פעילויות בוצעו ומתי. ההקלטות של הילד נשמרות רק במכשיר שלכם ואינן נשלחות אליי. המידע משמש אותי לצורך הטיפול בלבד.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
       <textarea class="txt" id="msg" rows="14" readonly>${esc(msg)}</textarea>
