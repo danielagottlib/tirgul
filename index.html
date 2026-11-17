@@ -909,7 +909,8 @@ body{background:#5E8F55}
 .word .hl,.letter{color:var(--coral)}
 .choice,.dzone,.dcard{border-radius:24px}
 .note{background:#FFF3D1;border-radius:16px}
-.tile .big img.ticon{display:block;width:min(104px,24vw);height:auto;aspect-ratio:1;object-fit:contain;border-radius:18px}
+.tile .big[data-tiled]{height:auto!important;width:auto!important;line-height:0;font-size:0;background:none!important;box-shadow:none!important;border:0!important}
+.tile .big img.ticon{display:block;width:min(92px,22vw,11vh);height:auto;aspect-ratio:1;object-fit:contain;border-radius:18px}
 .tile:hover .big img.ticon{transform:scale(1.06);transition:transform .2s ease}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
