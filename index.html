@@ -1200,7 +1200,7 @@ body{background:#5E8F55}
 @keyframes kimidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .kimbub{position:absolute;left:3%;top:3%;z-index:5;background:#fff;border:3px solid #E39A2D;border-radius:24px;padding:8px 18px;font-size:clamp(26px,5vw,42px);font-weight:900;animation:sgrow 1s cubic-bezier(.3,1.6,.5,1) both;box-shadow:0 8px 16px rgba(0,0,0,.15)}
 .kimkim{color:#C9653A}.kimm{color:#E5484D;letter-spacing:.06em;display:inline-block;animation:kimhum 1.2s ease-in-out infinite}@keyframes kimhum{50%{transform:scale(1.15)}}
-.kimscene.party .kimhouse{animation:froghappy .5s ease-in-out infinite alternate}.kimwho.dance{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.12s)}
+.kimscene.party{min-height:420px}.kimscene.party .kimhouse{left:32%;top:2%;width:36%;animation:kimhd .6s ease-in-out infinite alternate;transform-origin:50% 90%}@keyframes kimhd{from{transform:rotate(-5deg) scale(1)}to{transform:rotate(5deg) scale(1.06) translateY(-8px)}}.kimscene.party .kimrow{left:2%;right:2%;bottom:4%}.kimwho.dance{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.12s)}
 /* personal game: איפה זה? */
 .spscene{position:relative;width:min(100%,760px);aspect-ratio:16/9;margin:8px auto;border-radius:22px;overflow:hidden;background:linear-gradient(#FFF3DA 0 66%,#D9A86C 66%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
 .sptable{position:absolute;left:4%;bottom:6%;width:42%;z-index:2}.spbox{position:absolute;right:6%;bottom:6%;width:28%;z-index:2}
@@ -1211,6 +1211,8 @@ body{background:#5E8F55}
 .spobj.sp-in.new{animation:spdrop .6s cubic-bezier(.3,1.4,.5,1)}@keyframes spdrop{from{transform:translate(-50%,-140%)}}
 .spobj.sp-behind.new{animation:sppeek .7s ease-out}@keyframes sppeek{from{transform:translate(-50%,10%)}}
 .kimwho .kpic img.kimimg{width:1.25em;height:1.25em;object-fit:contain}.kimwin img.kimimg{width:1.3em;height:1.3em;object-fit:contain}
+.spheard{min-height:40px;font-size:26px;font-weight:800;background:#FFF8E8;border:2px solid #E39A2D;border-radius:14px;padding:6px 14px;margin:6px auto;max-width:600px}.spheard.bad{border-color:#E5484D}
+.sphint{display:inline-flex;flex-direction:column;align-items:center;font-size:34px;line-height:1;background:#fff;border-radius:12px;padding:4px 8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}.sphint small{font-size:13px;margin-top:2px}.sphint img{width:1.2em;height:1.2em;object-fit:contain}
 </style>
 </head>
 <body>
@@ -1271,7 +1273,21 @@ const MORE_WORDS={
  g:{s:[['גן','🏫'],['גביע','🏆'],['גוזל','🐣'],['גיר','🖍️'],['גור','🐶']],m:[['חגורה','🥋'],['עגלה','🛒'],['דגל','🚩'],['אגוז','🥜'],['רגל','🦵']],e:[['חג','🎉'],['נהג','🚗'],['בורג','🔩']]},
  z:{s:[['זיקית','🦎'],['זמר','🎤'],['זאב','🐺']],m:[['מזגן','❄️'],['חזיר','🐷'],['מזרן','🛏️'],['תזמורת','🎻'],['מזרקה','⛲']],e:[['עז','🐐'],['אורז','🍚'],['בז','🦅'],['גז','⛽']]},
  ts:{s:[['ציור','🖼️'],['צמיד','📿'],['צבי','🦌'],['צופר','📯']],m:[['נוצה','🪶'],['מצלמה','📷'],['מצנח','🪂'],['פצע','🩹']],e:[['קיץ','☀️'],['קופץ','🦘'],['ארץ','🌍'],['חמוץ','🍋']]}};
-SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});/* personal game 'איפה זה?': where each place is in the room picture (percent of the picture), and what is said */
+SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});/* stage 2 of 'איפה זה?': every place the child can say, with where it is in the room picture.
+   The box is drawn as back + front, so 'בתוך' sits between them and 'מאחורי' behind the whole box */
+const SPACE_SAY={'on-table':{at:[25,35],z:5},'under-table':{at:[25,70],z:1},'behind-table':{at:[33,39],z:1},'next-table':{at:[9,86],z:5},
+ 'on-box':{at:[80,47],z:5},'in-box':{at:[79,63],z:3},'behind-box':{at:[83,62],z:1},'next-box':{at:[93,88],z:5},'between':{at:[56,74],z:5}};
+/* "הדובי מתחת לשולחן" -> {e:'🧸', at:'under-table'}; null when the toy or the place was not understood */
+function spaceParse(text,items){const t=' '+String(text||'').replace(/[.,!?]/g,' ')+' ';
+  const syn={'כלב':['כלב','כלבלב','הכלב','הכלבלב'],'חתול':['חתול','חתלתול','החתול','החתלתול','חתולה'],'כדור':['כדור','הכדור'],'דובי':['דובי','דובון','הדובי','הדובון','דוב','הדוב'],'ארנב':['ארנב','ארנבון','הארנב','הארנבון','שפן']};
+  const obj=items.find(x=>{const base=x[0].replace(/^ה/,'');return (syn[base]||[base,x[0]]).some(w=>t.includes(' '+w+' ')||t.includes(' ו'+w+' '))});if(!obj)return null;
+  const table=/שולחן/.test(t),box=/קופס|ארגז/.test(t);let rel=null;
+  if(/בתוך|בקופס/.test(t))rel='in';else if(/מתחת/.test(t))rel='under';else if(/מאחור/.test(t))rel='behind';else if(/ בין /.test(t))rel='between';else if(/ ליד |ליד/.test(t))rel='next';else if(/ על /.test(t)||/ עלה? /.test(t))rel='on';
+  if(!rel)return null;
+  let at=rel==='between'?'between':rel==='in'?'in-box':rel==='under'?'under-table':rel+'-'+(box&&!table?'box':table&&!box?'table':rel==='behind'?'box':'table');
+  if(!SPACE_SAY[at])at=rel==='on'?'on-table':'next-table';
+  return {e:obj[1],w:obj[0],at}}
+/* personal game 'איפה זה?': where each place is in the room picture (percent of the picture), and what is said */
 /* the box is drawn twice: its back (z 2) and its front face (z 4, the part below the rim), so a toy 'בתוך' sits between them (z 3) and a toy 'מאחורי' is behind the whole box (z 1) */
 const SPACE_REL={on:{say:'על השולחן',hit:[25,32],at:[25,35],z:5},under:{say:'מתחת לשולחן',hit:[25,70],at:[25,70],z:1},between:{say:'בין השולחן לקופסה',hit:[56,72],at:[56,74],z:5},behind:{say:'מאחורי הקופסה',hit:[86,52],at:[83,62],z:1},in:{say:'בתוך הקופסה',hit:[79,62],at:[79,63],z:3}};
 const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
@@ -2686,7 +2702,7 @@ function renderAct(){
     /* say: the name, then "קִי" and a long humming ם */
     /* the name in the Google voice, then Daniela's own recording of 'קים' with a long ם (kim.m4a); the synthesized hum only if it cannot play */
     const kim=()=>{let ok=false;try{const a=new Audio('kim.m4a?v=1');a.onplaying=()=>{ok=true};a.onerror=()=>{if(!ok){saySyl('קִי');TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),550))}};a.play().catch(e=>{if(e&&e.name==='AbortError')return;saySyl('קִי');TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),550))})}catch(e){}};
-    const call=i=>{const it=all[i];saySyl(it[2]||it[0]);TIMERS.push(setTimeout(kim,1150))};
+    const call=i=>{const it=all[i],me=S.data;saySeq([it[2]||it[0]],()=>{if(S.data===me)TIMERS.push(setTimeout(kim,150))})};
     app.querySelectorAll('.kimwho').forEach(b=>b.onclick=()=>{if(S.overlay||d.cur!=null)return;const i=+b.dataset.i;d.cur=i;SFX.blip();render();call(i);
       TIMERS.push(setTimeout(()=>{const rh=document.getElementById('rh');if(!rh||d.cur!==i)return;
         recStep(rh,()=>{addStar();const el=app.querySelector(`.kimwho[data-i="${i}"]`),hs=app.querySelector('.kimhouse');
@@ -2701,6 +2717,29 @@ function renderAct(){
        then the child says the sentence. */
     const O=window.SPACE_IMG||{};
     if(!O.table){shell('<div class="card stage"><p class="muted">טוען את החדר... 📦</p></div>');loadScriptOnce('space.js?v=5',()=>{if(S.act==='mine')render()});return}
+    /* two stages: 1 = listen and put (the computer says where), 2 = the child says where and the toy goes there */
+    if(d.mode==null){shell(`<div class="card stage"><p class="drag-hint">איך משחקים היום? 📦</p>
+      <div class="grid" style="max-width:520px;margin:0 auto"><button class="tile" id="spm1" type="button"><span class="big">👂</span>שלב 1<span class="sub">מקשיבים ומשאירים במקום</span></button>
+      <button class="tile" id="spm2" type="button"><span class="big">🗣️</span>שלב 2<span class="sub">אני אומר איפה לשים</span></button></div></div>`);
+      document.getElementById('spm1').onclick=()=>{d.mode='listen';render()};document.getElementById('spm2').onclick=()=>{d.mode='say';d.put=[];d.heard='';render()};return}
+    if(d.mode==='say'){
+      /* stage 2: "הדובי מתחת לשולחן" -> the words are written on the screen and the teddy appears under the table */
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition,P=SPACE_SAY;
+      shell(`<div class="card stage"><p class="drag-hint">אומרים איפה לשים, למשל: "הדובי מתחת לשולחן" 🗣️</p>
+        <div class="spheard ${d.bad?'bad':''}">${d.listening?'🔴 '+esc(d.live||'מקשיבים...'):d.heard?esc(d.heard):'&nbsp;'}</div>${d.bad?'<p class="muted">לא הבנתי איפה 🤔 אומרים שוב, עם מי ואיפה</p>':''}
+        <div class="spscene" id="sps"><img class="sptable" src="${O.table}" alt=""><img class="spbox" src="${O.box}" alt=""><img class="spbox spboxf" src="${O.box}" alt="">
+          ${d.put.map((x,k)=>{const p=P[x.at];return `<span class="spobj ${k===d.put.length-1&&d.fresh?'new sp-'+x.at:''}" style="left:${p.at[0]}%;top:${p.at[1]}%;z-index:${p.z}">${x.e}</span>`}).join('')}</div>
+        <div class="sptray">${d.game.items.map(x=>`<span class="sphint">${x[1]}<small>${esc(x[0])}</small></span>`).join('')}</div>
+        <div class="row">${d.listening?'<button class="ghost" id="spstop" type="button">✋ סיימתי</button>':`<button class="btn coral recbtn" id="spsay" type="button">🎤 אומרים איפה לשים</button>`}${d.put.length&&!d.listening?'<button class="ghost" id="spundo" type="button">↩️ להוריד את האחרון</button>':''}${d.put.length>=4&&!d.listening?'<button class="btn leaf" id="spend" type="button">⭐ סיימנו</button>':''}</div>
+        ${!SR?'<p class="muted" style="font-size:13px">בדפדפן הזה אין כתיבה של דיבור. כדאי לפתוח ב-Chrome.</p>':''}</div>`);
+      d.fresh=false;
+      const go=document.getElementById('spsay');if(go)go.onclick=()=>{if(!SR)return;SFX.unlock&&SFX.unlock();d.listening=true;d.live='';d.bad=false;render();
+        try{d.sr=srListen(t=>{d.live=t;const h=app.querySelector('.spheard');if(h)h.textContent='🔴 '+t},t=>{if(S.data!==d)return;d.listening=false;d.heard=t;const r=spaceParse(t,d.game.items);
+          if(r){d.put.push(r);d.fresh=true;d.bad=false;SFX.good();addStar()}else{d.bad=!!t;if(t)SFX.bad()}render()})}catch(e){d.listening=false;render()}};
+      const st=document.getElementById('spstop');if(st)st.onclick=()=>{d.sr&&d.sr.stop()};
+      const un=document.getElementById('spundo');if(un)un.onclick=()=>{d.put.pop();SFX.plop&&SFX.plop();render()};
+      const en=document.getElementById('spend');if(en)en.onclick=()=>{SFX.fanfare();finish()};
+      return}
     const R=SPACE_REL,q=d.qs[d.k];if(!q){finish();return}
     const rel=R[q.r],sent=q.o[0]+' '+rel.say,ph=d.placed;
     const zone=(r,obj,cls)=>{const p=R[r].at;return `<span class="spobj ${cls||''} sp-${r}" style="left:${p[0]}%;top:${p[1]}%;z-index:${R[r].z}">${obj}</span>`};
