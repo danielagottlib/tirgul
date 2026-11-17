@@ -3426,10 +3426,12 @@ function renderAct(){
     const slide=z=>{card.style.transition='transform .7s ease-in-out';if(!z){card.style.transform='none';return}
       const c=card.getBoundingClientRect(),t=z.getBoundingClientRect(),cur=new DOMMatrix(getComputedStyle(card).transform).m41||0;
       card.style.transform=`translateX(${(t.left+t.width/2)-(c.left+c.width/2-cur)}px) scale(.85)`};
-    const demo=(t0)=>[[t0,()=>{slide(zB);saySyl(voiceless+'?')}],[t0+1700,()=>{slide(zA);saySyl(voiced+'?')}],[t0+3400,()=>{slide(null)}],[t0+4100,()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'}]]
+    /* each possibility: first the sound alone, long and clear (Daniela's recording: ססס / זזז), then the word said slowly: ססס... סנאי? או זזז... זנאי? */
+    const slow=t=>{try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&ttsspeed=0.4&q='+encodeURIComponent(t));window._sylA=a;a.play().catch(e=>{if(e&&e.name!=='AbortError')femaleSay(t)})}catch(e){}};
+    const demo=(t0)=>[[t0,()=>{slide(zB);playPh(pB)}],[t0+1900,()=>slow(voiceless+'?')],[t0+3700,()=>slow('אוֹ')],[t0+4400,()=>{slide(zA);playPh(pA)}],[t0+6300,()=>slow(voiced+'?')],[t0+8100,()=>{slide(null)}],[t0+8800,()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'}]]
       .forEach(([t,f])=>TIMERS.push(setTimeout(()=>{if(S.data===d)f()},t)));
     d.lock=true;demo(700);
-    card.onclick=()=>{if(d.lock)return;d.lock=true;demo(0)};
+    card.onclick=()=>{if(d.lock)return;d.lock=true;demo(0)};document.getElementById('cheer').textContent='מקשיבים לשתי האפשרויות... 👂';
     return;
   }
   if(S.act==='disc'){
