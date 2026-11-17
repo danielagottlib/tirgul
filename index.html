@@ -940,6 +940,44 @@ body{background:#5E8F55}
 .shelf .slot{min-height:78px}
 .bag{position:relative;line-height:1}.bagic{font-size:80px}
 .bagin{position:absolute;left:0;right:0;bottom:16%;display:flex;flex-wrap:wrap;justify-content:center;gap:1px;font-size:18px;padding:0 18%}.bagin img{width:20px;height:auto}
+/* tower, fishing, dragon, journey */
+.towerbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;min-height:min(56vh,380px);justify-content:flex-end}
+.tower{display:flex;flex-direction:column-reverse;align-items:center}
+.tblock{width:min(160px,42vw);height:36px;border-radius:10px;background:var(--c);border:2px solid rgba(255,255,255,.7);box-shadow:inset 0 -7px 0 rgba(0,0,0,.18),0 3px 6px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;gap:6px;margin-top:-2px;transform:translateX(var(--o,0))}
+.tblock .plabel{font-size:15px}
+.tblock.next{height:auto;padding:8px 18px;cursor:pointer;margin-bottom:12px;animation:thover 1.6s ease-in-out infinite}
+.tblock.next .bcr{font-size:30px;line-height:1}.tblock.next .bcr img{width:40px;height:auto}
+.tblock.drop{animation:tdrop .5s cubic-bezier(.3,1.5,.6,1)}
+.tground{width:min(280px,72vw);height:14px;border-radius:8px;background:linear-gradient(#8A6A45,#6B4E30)}
+.tflag{font-size:52px;animation:popin .5s ease-out}
+@keyframes thover{50%{transform:translateY(-8px)}}
+@keyframes tdrop{from{transform:translateY(-170px) translateX(var(--o,0))}}
+.pond{position:relative;width:100%;height:min(46vh,300px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#7FD0F0,#2E8FC0 70%,#1E6E9C);box-shadow:inset 0 8px 18px rgba(255,255,255,.35)}
+.fish{position:absolute;left:-25%;display:flex;align-items:center;background:none;border:0;padding:0;cursor:pointer;animation-timing-function:linear;animation-iteration-count:infinite}
+.fish.hooked{animation-play-state:paused;filter:drop-shadow(0 0 10px #fff)}
+.fish .fbody{font-size:min(13vw,58px);line-height:1;display:inline-block}
+.fish .fpic{width:min(11vw,50px);height:min(11vw,50px);border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.fish .fpic img{width:78%;height:auto}
+@keyframes swimR{from{left:-25%}to{left:105%}}
+@keyframes swimL{from{left:105%}to{left:-25%}}
+.bucket{position:relative;line-height:1}
+.dragonbox{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+.dragon{position:relative;font-size:min(30vw,130px);line-height:1;transform:scale(var(--s));transition:transform .45s ease;filter:drop-shadow(0 10px 10px rgba(0,0,0,.2));margin:10px 0 18px}
+.dragon.munch .dg{display:inline-block;animation:munch .45s ease}
+.dragon .fire{position:absolute;left:-46%;top:6%;font-size:.55em;animation:fire 1s ease-in-out infinite}
+@keyframes munch{30%{transform:scale(1.12,0.9)}60%{transform:scale(.95,1.08)}}
+@keyframes fire{50%{transform:scale(1.25) translateX(-6px)}}
+.foods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,420px)}
+.board{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,auto);gap:8px;width:min(100%,520px)}
+.cell{position:relative;aspect-ratio:1;border-radius:16px;background:#fff;border:3px solid var(--k2);border-bottom-width:6px;display:flex;align-items:center;justify-content:center}
+.cell:nth-child(3n+1){border-color:var(--k1)}.cell:nth-child(3n+2){border-color:var(--k5)}
+.cell .cmark{font-size:min(7vw,30px);opacity:.85}
+.cell.past{background:#E9F6EF}
+.cell.goal{background:#FFF3D1;border-color:var(--sun)}.cell.goal .cmark{font-size:min(9vw,40px);opacity:1}
+.cell.start{background:#FDF0E4}
+.pawn{position:absolute;inset:auto auto -6px 50%;transform:translateX(-50%);font-size:min(9vw,40px);filter:drop-shadow(0 4px 4px rgba(0,0,0,.3));animation:pawnhop .3s ease-out}
+@keyframes pawnhop{40%{transform:translate(-50%,-14px)}}
+.die{font-size:54px;line-height:1;min-width:54px;color:var(--ink)}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
 </style>
@@ -1732,14 +1770,18 @@ GAMES.color=['🎨','דפי צביעה','בוחרים צבע ואומרים מש
 GAMES.bubbles=['🫧','מפוצצים בועות','פוף! מי יוצא מהבועה?'];
 GAMES.puzzle=['🧩','פאזל','כל מילה פותחת חלק בתמונה'];
 GAMES.shop=['🛍️','קונים בחנות','"אני רוצה לקנות..." וממלאים את הסל'];
+GAMES.tower=['🧱','בונים מגדל','כל הברה מוסיפה קובייה'];
+GAMES.fishing=['🎣','דייגים','תופסים דג ואומרים את המילה'];
+GAMES.dragon=['🐉','מאכילים את הדרקון','"הדרקון אוכל..." והוא גדל'];
+GAMES.journey=['🗺️','מסע בממלכה','מטילים קובייה ומגיעים לטירה'];
 function gamesFor(st){
-  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
+  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['pscene','scene','absurd'];
-  if(st==='syl')return ['bubbles','eggs','monster','frog','balloon','train','wheel'];
+  if(st==='syl')return ['bubbles','tower','eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['silly','balloon','train','line','memory','wheel'];
-  if(st==='words')return ['puzzle','balloon','train','line','memory','wheel'];
+  if(st==='words')return ['puzzle','fishing','balloon','train','line','memory','wheel'];
   if(st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
-  if(st==='short')return ['shop','fix','cook','silly','balloon','train','line'];
+  if(st==='short')return ['shop','dragon','fix','cook','silly','balloon','train','line'];
   if(st==='long')return ['fix','cook','silly','balloon','train','line'];
   return ['balloon','train','line'];
 }
@@ -2061,6 +2103,10 @@ function startAct(act,from){
     const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
     let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<4)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));
     d.items=w.slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
+  if(act==='tower'){d.items=items().slice(0,8);d.k=0}
+  if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
+  if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' '))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
+  if(act==='journey'){const it=items();d.items=it.length?it:[['',''] ];d.k=0;d.pos=0;d.rolling=false;d.die=''}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
   if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
@@ -2087,7 +2133,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2372,6 +2418,55 @@ function renderAct(){
       <div class="bag" id="bag"><span class="bagic">🛍️</span><span class="bagin">${d.bought.map(ix=>`<span>${d.items[ix][1]}</span>`).join('')}</span></div></div></div>`);
     app.querySelectorAll('.sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
+    return;
+  }
+  if(S.act==='tower'){
+    /* syllables: the next block hovers above the tower; saying its syllable drops it on top, up to the flag */
+    const N=d.items.length,it=d.items[d.k],TC=['#E39A2D','#14A381','#C9653A','#3C8DC4','#F4C04A','#8E5BF0'];
+    shell(`<div class="card stage"><p class="muted">כל הברה מוסיפה קובייה למגדל. בונים עד השמיים! 🧱</p><div class="progress">${d.k} / ${N}</div>
+      <div class="towerbox">${d.k<N?`<button class="tblock next" id="tnext" type="button" style="--c:${TC[d.k%TC.length]}"><span class="bcr">${crit(it[1],40)}</span><span class="plabel syl">${it[0]}</span></button>`:'<div class="tflag">🚩</div>'}
+        <div class="tower">${d.items.slice(0,d.k).map((x,i)=>`<div class="tblock ${i===d.k-1&&d.justDrop?'drop':''}" style="--c:${TC[i%TC.length]};--o:${i%2?6:-6}px"><span class="plabel syl">${x[0]}</span></div>`).join('')}</div>
+        <div class="tground"></div></div></div>`);
+    d.justDrop=false;
+    const nb=document.getElementById('tnext');if(nb)nb.onclick=()=>{if(S.overlay)return;SFX.blip();
+      sayIt(it,()=>{d.k++;d.justDrop=true;SFX.thud();render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,1800))}})};
+    return;
+  }
+  if(S.act==='fishing'){
+    /* words: fish swim across the pond carrying pictures; touching one hooks it, the child says the word and it jumps into the bucket */
+    const N=d.items.length;
+    shell(`<div class="card stage"><p class="muted">נוגעים בדג, אומרים את המילה, והדג קופץ לדלי 🎣</p><div class="progress">בדלי: ${d.caught.length} / ${N}</div>
+      <div class="pond">${d.items.map((it,ix)=>{if(d.caught.includes(ix))return '';const r=ix%2===0;
+        return `<button class="fish" data-ix="${ix}" type="button" style="top:${8+(ix%4)*22}%;animation-name:${r?'swimR':'swimL'};animation-duration:${9+(ix%3)*2}s;animation-delay:-${(ix*2.3).toFixed(1)}s"><span class="fbody" style="transform:scaleX(${r?-1:1})">🐟</span><span class="fpic">${it[1]}</span></button>`}).join('')}</div>
+      <div class="bucket" id="bucket"><span class="bagic">🪣</span><span class="bagin">${d.caught.map(i=>`<span>${d.items[i][1]}</span>`).join('')}</span></div></div>`);
+    app.querySelectorAll('.fish').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;b.classList.add('hooked');SFX.blip();
+      sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bucket'),()=>{d.caught.push(ix);SFX.load();if(d.caught.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
+    return;
+  }
+  if(S.act==='dragon'){
+    /* short sentences: a hungry dragon; "הדרקון אוכל ..." and the food flies into it; it grows, and when full it puffs happy fire */
+    const N=d.items.length,full=d.fed.length>=N;
+    shell(`<div class="card stage"><p class="muted">${full?'הדרקון שבע ושמח! 🔥':'הדרקון רעב! נוגעים באוכל, אומרים את המשפט, ומאכילים אותו 🐉'}</p><div class="progress">${d.fed.length} / ${N}</div>
+      <div class="dragonbox"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(1+d.fed.length*.08).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span>':''}</div>
+      <div class="foods">${d.items.map((it,ix)=>d.fed.includes(ix)?'':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div></div></div>`);
+    app.querySelectorAll('.foods .sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
+      sayIt(d.items[ix],()=>{const g=document.getElementById('dragon');flyTo(b,g,()=>{SFX.chomp();g.classList.add('munch');d.fed.push(ix);
+        TIMERS.push(setTimeout(()=>{render();if(d.fed.length>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}},450))})})});
+    return;
+  }
+  if(S.act==='journey'){
+    /* long sentences: a board path through the kingdom to the castle; roll the die (1-3), walk, and say the sentence of the square */
+    const B=13,pawn=kidG()==='g'?'👸':'🤴',pos=d.pos,cellRC=i=>{const r=Math.floor(i/5),c=r%2?4-(i%5):i%5;return [r+1,c+1]};
+    const marks=['🌳','🌼','🍄','🌉','🐑','🌻','🪨','🦋','⛲','🌲','🌷'];
+    shell(`<div class="card stage"><p class="muted">מטילים קובייה, מתקדמים במסלול, ואומרים את המשפט של המשבצת 🗺️</p>
+      <div class="board">${Array.from({length:B},(x,i)=>{const [r,c]=cellRC(i);return `<div class="cell ${i===0?'start':''} ${i===B-1?'goal':''} ${i<pos?'past':''}" style="grid-row:${r};grid-column:${c}">
+        <span class="cmark">${i===0?'🚩':i===B-1?'🏰':marks[(i-1)%marks.length]}</span>${i===pos?`<span class="pawn">${pawn}</span>`:''}</div>`}).join('')}</div>
+      <div class="row"><button class="btn sun" id="roll" type="button" ${d.rolling||pos>=B-1?'disabled':''}>🎲 מטילים קובייה</button><span class="die" id="die">${d.die||''}</span></div></div>`);
+    const rb=document.getElementById('roll');if(rb)rb.onclick=()=>{if(d.rolling||S.overlay)return;d.rolling=true;rb.disabled=true;const F=['⚀','⚁','⚂'];let k=0;
+      const t=setInterval(()=>{SFX.tick();document.getElementById('die').textContent=F[k++%3];if(k>8){clearInterval(t);const n=1+Math.floor(Math.random()*3);d.die=F[n-1];
+        const target=Math.min(d.pos+n,B-1);const step=()=>{if(d.pos<target){d.pos++;SFX.blip();render();TIMERS.push(setTimeout(step,330))}
+          else if(d.pos>=B-1){SFX.fanfare();d.rolling=false;TIMERS.push(setTimeout(finish,1600))}
+          else{const it=d.items[d.k%d.items.length];d.k++;TIMERS.push(setTimeout(()=>sayIt(it,()=>{d.rolling=false;render()}),350))}};step()}},90);TIMERS.push(t)};
     return;
   }
   if(S.act==='eggs'){
