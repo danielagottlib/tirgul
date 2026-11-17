@@ -1166,6 +1166,11 @@ body{background:#5E8F55}
 .bub.peek{animation:bpeek .5s ease-out}@keyframes bpeek{0%{transform:scale(1)}60%{transform:scale(1.18)}100%{transform:scale(1.1)}}
 .bfree{position:absolute;left:var(--x);top:var(--y);width:22%;display:flex;flex-direction:column;align-items:center;animation:bland .4s ease-out}@keyframes bland{from{transform:scale(.7)}}
 .bubbles.party .bfree{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -.13s)}@keyframes bdance{0%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(0) translateY(-22px) scale(1.08)}100%{transform:rotate(12deg) translateY(0)}}
+.egg2w{background:none!important;border:none!important;box-shadow:none!important;animation:ewob 2.6s ease-in-out infinite;animation-delay:calc(var(--k) * -.4s)}.egg2w .egimg{width:88%;filter:hue-rotate(var(--h)) drop-shadow(0 8px 10px rgba(0,0,0,.25))}@keyframes ewob{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-7deg)}90%{transform:rotate(6deg)}95%{transform:rotate(-3deg)}}
+.egg2w.cracking{animation:ecrack .9s ease-in-out}@keyframes ecrack{0%,100%{transform:rotate(0)}15%{transform:rotate(-12deg)}30%{transform:rotate(12deg)}45%{transform:rotate(-14deg) scale(1.05)}60%{transform:rotate(14deg) scale(1.08)}80%{transform:scale(1.12)}}
+.egg2{position:relative;aspect-ratio:1;display:flex;align-items:flex-end;justify-content:center}.egg2 .ebot{position:absolute;bottom:0;left:6%;right:6%;height:52%;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;z-index:2}.egg2 .ebot img{width:100%;clip-path:polygon(0 48%,12% 42%,25% 50%,38% 41%,50% 50%,62% 41%,75% 50%,88% 42%,100% 48%,100% 100%,0 100%);filter:hue-rotate(var(--h)) drop-shadow(0 6px 8px rgba(0,0,0,.2));transform:translateY(0)}
+.egg2 .ecr{position:absolute;bottom:22%;z-index:1;font-size:44px;display:flex;justify-content:center;width:70%}.egg2 .ecr img{width:100%}.egg2.opening .ecr{animation:erise .7s cubic-bezier(.3,1.6,.5,1)}@keyframes erise{from{transform:translateY(60%) scale(.5);opacity:0}}
+.sbub2{position:absolute;top:-6%;right:-4%;z-index:3;background:#fff;border:3px solid #E39A2D;border-radius:22px;padding:4px 14px;font-size:30px;box-shadow:0 6px 14px rgba(0,0,0,.15)}.sbub2::after{content:'';position:absolute;bottom:-12px;left:22%;border:8px solid transparent;border-top:10px solid #E39A2D}.egg2.opening .sbub2{animation:sgrow 1.1s cubic-bezier(.3,1.6,.5,1) .35s both}@keyframes sgrow{0%{transform:scale(0);opacity:0}60%{transform:scale(1.35)}100%{transform:scale(1.15)}}.egg2.done .sbub2{font-size:22px;padding:2px 10px}
 </style>
 </head>
 <body>
@@ -3054,13 +3059,18 @@ function renderAct(){
     return;
   }
   if(S.act==='eggs'){
+    /* syllables: surprise eggs wobble; a touched egg cracks, the creature hatches out of it and a speech bubble with its
+       syllable grows over its head, so the child sees (and hears) what to say; then the child says it too */
+    d.open=d.open==null?-1:d.open;const eg=(ix,cls)=>CH('egg')?`<img class="egimg ${cls||''}" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell ${cls||''}" style="--h:${(ix*47)%360}deg"></span>`;
     shell(`<div class="card stage"><p class="muted">מי מסתתר בביצה? נוגעים בביצה, ומי שבוקע אומר הברה. אחר כך אומרים כמוהו!</p>
       <div class="progress">${d.hatched.length} / ${d.eggs.length}</div>
-      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix);return `<button class="egg ${h?'hatched':''}" data-ix="${ix}" aria-label="ביצה">${h?`<span class="cpic" style="font-size:44px">${crit(it[1],110)}</span><span class="plabel syl">${it[0]}</span>`:(CH('egg')?`<img class="egimg" src="${CH('egg')}" style="--h:${(ix*47)%360}deg" alt="">`:`<span class="shell" style="--h:${(ix*47)%360}deg"></span>`)}</button>`}).join('')}</div></div>`);
-    app.querySelectorAll('.egg:not(.hatched)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
-      b.classList.add('cracking');SFX.crack();
-      TIMERS.push(setTimeout(()=>{SFX.blip();sayIt(d.eggs[ix],()=>{d.hatched.push(ix);if(d.hatched.length===d.eggs.length){render();eggParty()}else render()})},900))});
-    /* all eggs open: one more golden egg wobbles, a chick hatches out of it and walks off peeping */
+      <div class="eggs">${d.eggs.map((it,ix)=>{const h=d.hatched.includes(ix),o=d.open===ix;
+        if(h||o)return `<div class="egg2 ${o?'opening':'done'}"><span class="ebot">${eg(ix,'half')}</span><span class="ecr">${crit(it[1],110)}</span><span class="sbub2"><b>${it[0]}</b></span></div>`;
+        return `<button class="egg egg2w" data-ix="${ix}" style="--k:${ix}" aria-label="ביצה">${eg(ix)}</button>`}).join('')}</div></div>`);
+    app.querySelectorAll('.egg2w').forEach(b=>b.onclick=()=>{if(S.overlay||d.open>=0||b.classList.contains('cracking'))return;const ix=+b.dataset.ix;
+      b.classList.add('cracking');SFX.crack();TIMERS.push(setTimeout(()=>SFX.crack(),450));
+      TIMERS.push(setTimeout(()=>{d.open=ix;SFX.pop&&SFX.pop();render();TIMERS.push(setTimeout(()=>saySyl(d.eggs[ix][0]),500));
+        TIMERS.push(setTimeout(()=>sayIt(d.eggs[ix],()=>{d.hatched.push(ix);d.open=-1;if(d.hatched.length===d.eggs.length){render();eggParty()}else render()}),1900))},950))});    /* all eggs open: one more golden egg wobbles, a chick hatches out of it and walks off peeping */
     const eggParty=()=>{const old=document.getElementById('chickshow');if(old)old.remove();
       document.body.insertAdjacentHTML('beforeend','<div class="chickshow" id="chickshow"><span class="bigegg" id="bigegg">'+(CH('egg')?'<img src="'+CH('egg')+'" alt="">':'🥚')+'</span></div>');
       TIMERS.push(setTimeout(()=>{const c=document.getElementById('chickshow');if(c)c.remove()},4300));
