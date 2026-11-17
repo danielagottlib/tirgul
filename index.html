@@ -978,6 +978,34 @@ body{background:#5E8F55}
 .pawn{position:absolute;inset:auto auto -6px 50%;transform:translateX(-50%);font-size:min(9vw,40px);filter:drop-shadow(0 4px 4px rgba(0,0,0,.3));animation:pawnhop .3s ease-out}
 @keyframes pawnhop{40%{transform:translate(-50%,-14px)}}
 .die{font-size:54px;line-height:1;min-width:54px;color:var(--ink)}
+/* story cards, director, bingo */
+.sslots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,560px)}
+.sslot{position:relative;aspect-ratio:1;border-radius:18px;border:3px dashed #CFC3A8;background:#FBF6EA;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sslot.full{border:3px solid var(--k2);background:#fff}
+.sslot img{width:100%;height:100%;object-fit:cover}
+.sslot .snum{position:absolute;top:6px;right:6px;z-index:1;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.sslot .slab{color:var(--muted);font-weight:600}
+.sslot.mystery{border:3px dashed var(--sun);background:#FFF6DA}
+.sslot.reveal{animation:pzflip .6s ease-out}
+.sq{font-size:min(14vw,64px);color:#E39A2D;font-weight:800}
+.scards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.scard{width:min(28vw,150px);aspect-ratio:1;border-radius:16px;border:3px solid #fff;box-shadow:0 10px 20px -10px rgba(0,0,0,.45);padding:0;overflow:hidden;cursor:pointer;background:#fff}
+.scard img{width:100%;height:100%;object-fit:cover;display:block}
+.scard:hover{transform:translateY(-4px) rotate(-1deg)}
+.scard.no{animation:shake .35s}
+.sstrip{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:6px}
+.sstrip img{width:min(22vw,110px);aspect-ratio:1;object-fit:cover;border-radius:12px}
+.bball{width:min(28vw,120px);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:54px;
+  background:radial-gradient(circle at 35% 30%,#fff 0 30%,#FFE9A8 60%,#F4C04A);box-shadow:0 10px 20px -10px rgba(0,0,0,.45),inset 0 -6px 0 rgba(0,0,0,.08);animation:popin .4s ease-out}
+.bball img{width:62%;height:auto}
+.bboard{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(100%,360px);padding:10px;border-radius:20px;background:#2E8F7A}
+.bcell{position:relative;aspect-ratio:1;border-radius:14px;background:#fff;border:0;font-size:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.bcell .bpic img{width:min(16vw,70px);height:auto}
+.bcell.marked{background:#FFF3D1}.bcell.marked .bpic{opacity:.55}
+.bcell .chip{position:absolute;font-size:30px;animation:popin .35s ease-out}
+.bcell.win{background:#FFE08A;box-shadow:0 0 0 3px #fff inset}
+.bcell.no{animation:shake .35s}
+.bwin{font-size:min(12vw,56px);font-weight:800;color:#E39A2D;text-shadow:0 3px 0 #fff;animation:popin .5s ease-out}
 /* kite, treasure, castle */
 .kitesky{position:relative;width:100%;height:min(48vh,320px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#5FB7F0,#BFE6FF 70%,#DDF2C8 70%,#9CCB6E)}
 .kc{position:absolute;font-style:normal;font-size:48px;opacity:.95;animation:kcl 18s linear infinite}
@@ -1804,14 +1832,19 @@ GAMES.journey=['🗺️','מסע בממלכה','מטילים קובייה ומג
 GAMES.kite=['🪁','מעיפים עפיפון','כל צירוף מרים אותו גבוה יותר'];
 GAMES.treasure=['💎','מחפשים מטמון','חופרים בחול ומוצאים אוצר'];
 GAMES.castle=['🏰','בונים את הטירה','כל משפט בונה עוד קומה'];
+GAMES.seq=['📚','קלפי רצף','מסדרים את הסיפור ומספרים'];
+GAMES.director=['🎬','הבמאי','ממציאים איך הסיפור נגמר'];
+GAMES.bingo=['🎲','בינגו','מוצאים את התמונה ואומרים'];
+/* three-step picture stories (story.js, Gemini): keys of STORY_IMG in order */
+const STORIES=[{name:'הפרח של נועה',k:['s0','s1','s2']},{name:'ארמון החול',k:['s3','s4','s5']},{name:'איש השלג',k:['s6','s7','s8']}];
 /* things that do not make sense to buy or to feed to a dragon (body parts, abstract words, numbers...) */
 const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
 function gamesFor(st){
   if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','castle','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
-  if(st==='story')return ['pscene','scene','absurd'];
+  if(st==='story')return ['seq','director','pscene','scene','absurd'];
   if(st==='syl')return ['bubbles','tower','eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['kite','silly','balloon','train','line','memory','wheel'];
-  if(st==='words')return ['puzzle','fishing','treasure','balloon','train','line','memory','wheel'];
+  if(st==='words')return ['puzzle','fishing','treasure','bingo','balloon','train','line','memory','wheel'];
   if(st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
   if(st==='short')return ['shop','dragon','fix','cook','silly','balloon','train','line'];
   if(st==='long')return ['fix','cook','silly','balloon','train','line'];
@@ -2137,6 +2170,8 @@ function startAct(act,from){
   if(act==='kite'){d.items=items().slice(0,6);d.n=0}
   if(act==='treasure'){const w=items();d.items=Array.from({length:8},(x,i)=>w[i%w.length]);d.dug=[];d.gem=Math.floor(Math.random()*8)}
   if(act==='castle'){d.items=items().slice(0,6);d.n=0}
+  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
+  if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
   if(act==='tower'){d.items=items().slice(0,8);d.k=0}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
   if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
@@ -2167,7 +2202,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2452,6 +2487,40 @@ function renderAct(){
       <div class="bag" id="bag"><span class="bagic">🛍️</span><span class="bagin">${d.bought.map(ix=>`<span>${d.items[ix][1]}</span>`).join('')}</span></div></div></div>`);
     app.querySelectorAll('.sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
+    return;
+  }
+  if(S.act==='seq'||S.act==='director'){
+    /* story level. seq: three cards of a picture story are mixed up; the child puts them in order (first, then, at the end) and tells the story.
+       director: the first two pictures are shown, the child invents the ending, then the real ending is revealed */
+    const IMG=window.STORY_IMG;if(!IMG){shell('<div class="card stage"><p class="muted">טוען את הסיפורים... 📚</p></div>');return}
+    const st=STORIES[d.order[d.si]],pic=i=>`<img src="${IMG[st.k[i]]}" alt="">`,N=STORIES.length,SL=['קודם','אחר כך','ובסוף'];
+    if(S.act==='seq'){const done=d.placed.length>=3;
+      shell(`<div class="card stage"><p class="muted">${done?'יופי! עכשיו מספרים את כל הסיפור 🗣️':'נוגעים בתמונה שקורית קודם, אחר כך, ובסוף 📚'}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>
+        <div class="sslots">${[0,1,2].map(i=>`<div class="sslot ${d.placed[i]!=null?'full':''}"><span class="snum">${i+1}</span>${d.placed[i]!=null?pic(d.placed[i]):`<span class="slab">${SL[i]}</span>`}</div>`).join('')}</div>
+        ${done?`<button class="btn leaf" id="tell" type="button">🎙️ מספרים את הסיפור</button>`:`<div class="scards">${d.cards.filter(c=>!d.placed.includes(c)).map(c=>`<button class="scard" data-c="${c}" type="button">${pic(c)}</button>`).join('')}</div>`}</div>`);
+      app.querySelectorAll('.scard').forEach(b=>b.onclick=()=>{if(S.overlay)return;const c=+b.dataset.c;
+        if(c===d.placed.length){SFX.good();const slot=app.querySelectorAll('.sslot')[d.placed.length];flyTo(b,slot,()=>{d.placed.push(c);render()})}
+        else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}});
+      const tb=document.getElementById('tell');if(tb)tb.onclick=()=>recOverlay(`<div class="sstrip">${[0,1,2].map(pic).join('')}</div><div>קודם... אחר כך... ובסוף...</div>`,()=>{addStar();d.si++;d.placed=[];d.cards=shuffle([0,1,2]);if(d.si>=N)finish();else render()},{max:45000});
+    }else{
+      shell(`<div class="card stage"><p class="muted">${d.told?'כך זה נגמר אצלנו! הסוף שלך היה שונה? 🎬':'מה קורה בסוף? ממציאים סוף לסיפור 🎬'}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>
+        <div class="sslots">${[0,1].map(i=>`<div class="sslot full"><span class="snum">${i+1}</span>${pic(i)}</div>`).join('')}<div class="sslot ${d.told?'full reveal':'mystery'}"><span class="snum">3</span>${d.told?pic(2):'<span class="sq">?</span>'}</div></div>
+        <button class="btn ${d.told?'sun':'leaf'}" id="dir" type="button">${d.told?'➡️ לסיפור הבא':'🎙️ ממציאים סוף'}</button></div>`);
+      document.getElementById('dir').onclick=()=>{if(d.told){d.told=false;d.si++;if(d.si>=N)finish();else render();return}
+        recOverlay(`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div><div>מה קרה בסוף?</div>`,()=>{addStar();d.told=true;SFX.fanfare();render()},{max:45000})};
+    }
+    return;
+  }
+  if(S.act==='bingo'){
+    /* words: a 3x3 bingo board; the caller ball shows a picture, the child finds it on the board and says the word; a full line is BINGO */
+    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],win=lines.find(l=>l.every(i=>d.marked.includes(i)));
+    const call=win?null:d.calls.find(i=>!d.marked.includes(i));
+    shell(`<div class="card stage"><p class="muted">${win?'בינגו! 🎉':'איפה התמונה שבכדור? מוצאים בלוח ואומרים 🎲'}</p>
+      ${win?'<div class="bwin">בינגו!</div>':`<div class="bball"><span>${d.items[call][1]}</span></div>`}
+      <div class="bboard">${d.items.map((it,ix)=>{const m=d.marked.includes(ix);return `<button class="bcell ${m?'marked':''} ${win&&win.includes(ix)?'win':''}" data-ix="${ix}" type="button" ${m||win?'disabled':''}><span class="bpic">${it[1]}</span>${m?'<span class="chip">⭐</span>':''}</button>`}).join('')}</div></div>`);
+    app.querySelectorAll('.bcell:not(.marked)').forEach(b=>b.onclick=()=>{if(S.overlay||win)return;const ix=+b.dataset.ix;
+      if(d.items[ix][1]!==d.items[call][1]){SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');return}
+      SFX.good();sayIt(d.items[ix],()=>{d.marked.push(ix);render();if(lines.some(l=>l.every(i=>d.marked.includes(i)))){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}})});
     return;
   }
   if(S.act==='kite'){
@@ -3150,7 +3219,7 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
   root.querySelectorAll('.tile .big').forEach(b=>{if(b.dataset.tiled)return;const w=b.querySelector('img.wimg');const v=(w?w.alt:b.textContent).trim();
     if(T[v]&&okImg(T[v])){b.dataset.tiled='1';b.innerHTML=`<img class="ticon" src="${T[v]}" alt="">`}})}
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
-loadScriptOnce('tiles.js?v=1',()=>swapTiles(document.body));
+loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
