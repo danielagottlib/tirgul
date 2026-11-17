@@ -1152,7 +1152,9 @@ body{background:#5E8F55}
 .vmcard{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:4px solid #E8DCC0;border-radius:20px;padding:14px 18px;min-width:min(38vw,170px);cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.08)}
 .vmpic{font-size:72px;line-height:1}.vmpic img{width:96px;height:96px;object-fit:contain}.vmw{font-size:28px;font-weight:900}
 .vmcard.good{border-color:#14A381;background:#E6F7F1;animation:pop .4s}.vmcard.no{animation:shake .5s}
-.vmend{font-size:22px;line-height:2;margin:10px 0}.vmend b{margin:0 10px;color:#E39A2D}</style>
+.vmend{font-size:22px;line-height:2;margin:10px 0}.vmend b{margin:0 10px;color:#E39A2D}.bagic.bagdance{position:relative;display:inline-block;animation:bagd .5s ease-in-out infinite alternate;transform-origin:50% 100%}.bagic.bagdance .notes{position:absolute;right:-35%;top:-10%;font-size:.4em;animation:dnote 1.2s ease-out infinite}.bagic.bagdance .notes.n2{right:auto;left:-35%;animation-delay:.6s}
+@keyframes bagd{0%{transform:rotate(-14deg) translateY(0) scale(1.05)}50%{transform:rotate(0) translateY(-18px) scale(1.15)}100%{transform:rotate(14deg) translateY(0) scale(1.05)}}
+</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -2687,7 +2689,7 @@ function renderAct(){
     const sent=cn?`אני ${pay} על ${it[0]} ${cn[1]}`:'';
     shell(`<div class="card stage"><p class="muted">${fin?'קנינו הכל! 🛍️':d.paid?'עכשיו מכניסים את המטבע לקופה 👇':cn?'אומרים את המשפט 🗣️':'כמה זה עולה? בוחרים מטבע 🪙'}</p><div class="progress">${Math.min(d.k+1,N)} / ${N}</div>
       <div class="shopc"><div class="register ${d.ding?'ding':''}" id="register"><div class="rscreen">₪ ${d.total}</div><div class="rslot"></div><div class="rkeys">${'<i></i>'.repeat(6)}</div><div class="rdrawer"></div></div>
-        ${fin?'<div class="bagic">🛍️</div>':`<div class="counter"><span class="cthing">${it[1]}</span>${cn?`<div class="sentence csent">${hl(sent,SOUNDS[S.sound].hl)}</div>`:''}</div>`}</div>
+        ${fin?'<div class="bagic bagdance">🛍️<span class="notes">🎵</span><span class="notes n2">🎶</span></div>':`<div class="counter"><span class="cthing">${it[1]}</span>${cn?`<div class="sentence csent">${hl(sent,SOUNDS[S.sound].hl)}</div>`:''}</div>`}</div>
       ${fin?'':`<div class="coins">${COINS.map((c,i)=>`<button class="coinb ${d.coin===i?'sel':''} ${d.coin===i&&d.paid?'ready':''}" data-c="${i}" type="button" ${d.coin!=null&&d.coin!==i?'disabled':''}><b>${c[0]}</b><small>₪</small></button>`).join('')}</div>`}</div>`);
     d.ding=false;
     if(fin)return;
@@ -2695,7 +2697,7 @@ function renderAct(){
       const c=COINS[d.coin];TIMERS.push(setTimeout(()=>sayIt([`אני ${pay} על ${it[0]} ${c[1]}`,it[1]],()=>{d.paid=true;render()}),400))});return}
     if(!d.paid)return;
     const coin=app.querySelector('.coinb.ready'),reg=document.getElementById('register');
-    const drop=()=>{const c=COINS[d.coin];flyTo(coin,reg,()=>{SFX.kaching();d.total+=c[0];d.ding=true;d.k++;d.coin=null;d.paid=false;render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}})};
+    const drop=()=>{const c=COINS[d.coin];flyTo(coin,reg,()=>{SFX.kaching();d.total+=c[0];d.ding=true;d.k++;d.coin=null;d.paid=false;render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),1000));TIMERS.push(setTimeout(finish,7500))}})};
     reg.onclick=drop;coin.onclick=drop;
     coin.onpointerdown=e=>{const r=coin.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
       const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>6){g=coin.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{position:'fixed',zIndex:80,left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',pointerEvents:'none'});document.body.appendChild(g);coin.style.visibility='hidden'}
