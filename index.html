@@ -941,6 +941,22 @@ body{background:#5E8F55}
 .bag{position:relative;line-height:1}.bagic{font-size:80px}
 .bagin{position:absolute;left:0;right:0;bottom:16%;display:flex;flex-wrap:wrap;justify-content:center;gap:1px;font-size:18px;padding:0 18%}.bagin img{width:20px;height:auto}
 /* tower, fishing, dragon, journey */
+.ctpl{position:relative;width:min(100%,380px,48vh);aspect-ratio:1;border-radius:22px;background:radial-gradient(circle at 50% 35%,#FFFFFF,#E6F3FA)}
+.ctpl .cghost2{position:absolute;inset:0;width:100%;height:100%;filter:grayscale(1) brightness(1.45) opacity(.38)}
+.ctpl.done .cghost2{display:none}
+.cpiece{position:absolute;width:33.4%;height:33.4%}
+.cpiece.placed{animation:cplace .45s cubic-bezier(.3,1.5,.6,1)}
+@keyframes cplace{from{transform:scale(1.25);filter:drop-shadow(0 0 14px #FFE27A)}}
+.cslot{position:absolute;width:33.333%;height:33.333%;border-radius:12px}
+.cslot.target{border:3px dashed var(--sun);background:rgba(255,226,122,.28);animation:ctg 1.2s ease-in-out infinite;cursor:pointer}
+@keyframes ctg{50%{background:rgba(255,226,122,.5)}}
+.csparks{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:34px;animation:popin .6s ease-out}
+.ctray{display:flex;justify-content:center}
+.cpart{width:min(30vw,130px);aspect-ratio:1;background:#fff;border-radius:18px;border:3px solid var(--k1);border-bottom-width:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;touch-action:none;cursor:pointer}
+.cpart img{width:78%;height:auto;pointer-events:none}
+.cpart.ready{border-color:var(--sun);box-shadow:0 0 0 5px rgba(244,192,74,.35);cursor:grab;animation:thover 1.4s ease-in-out infinite}
+.cpart.no{animation:shake .35s}
+.cpart.flying{position:fixed;z-index:80;pointer-events:none}
 .towerbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;min-height:min(56vh,380px);justify-content:flex-end}
 .tower{display:flex;flex-direction:column-reverse;align-items:center}
 .tblock{width:min(160px,42vw);height:36px;border-radius:10px;background:var(--c);border:2px solid rgba(255,255,255,.7);box-shadow:inset 0 -7px 0 rgba(0,0,0,.18),0 3px 6px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;gap:6px;margin-top:-2px;transform:translateX(var(--o,0))}
@@ -1838,7 +1854,7 @@ GAMES.color=['🎨','דפי צביעה','בוחרים צבע ואומרים מש
 GAMES.bubbles=['🫧','מפוצצים בועות','פוף! מי יוצא מהבועה?'];
 GAMES.puzzle=['🧩','פאזל','כל מילה פותחת חלק בתמונה'];
 GAMES.shop=['🛍️','קונים בחנות','"אני רוצה לקנות..." וממלאים את הסל'];
-GAMES.tower=['🧱','בונים מגדל','כל הברה מוסיפה קובייה'];
+GAMES.tower=['🧱','בונים טירה','גוררים כל חלק למקום שלו'];
 GAMES.fishing=['🎣','דייגים','תופסים דג ואומרים את המילה'];
 GAMES.dragon=['🐉','מאכילים את הדרקון','"הדרקון אוכל..." והוא גדל'];
 GAMES.journey=['🗺️','מסע בממלכה','מטילים קובייה ומגיעים לטירה'];
@@ -2185,7 +2201,7 @@ function startAct(act,from){
   if(act==='castle'){d.items=items().slice(0,6);d.n=0}
   if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
-  if(act==='tower'){d.items=items().slice(0,8);d.k=0}
+  if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
   if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
   if(act==='journey'){const it=items();d.items=it.length?it:[['',''] ];d.k=0;d.pos=0;d.rolling=false;d.die=''}
@@ -2215,7 +2231,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2578,15 +2594,29 @@ function renderAct(){
     return;
   }
   if(S.act==='tower'){
-    /* syllables: the next block hovers above the tower; saying its syllable drops it on top, up to the flag */
-    const N=d.items.length,it=d.items[d.k],TC=['#E39A2D','#14A381','#C9653A','#3C8DC4','#F4C04A','#8E5BF0'];
-    shell(`<div class="card stage"><p class="muted">כל הברה מוסיפה קובייה למגדל. בונים עד השמיים! 🧱</p><div class="progress">${d.k} / ${N}</div>
-      <div class="towerbox">${d.k<N?`<button class="tblock next" id="tnext" type="button" style="--c:${TC[d.k%TC.length]}"><span class="bcr">${crit(it[1],40)}</span><span class="plabel syl">${it[0]}</span></button>`:'<div class="tflag">🚩</div>'}
-        <div class="tower">${d.items.slice(0,d.k).map((x,i)=>`<div class="tblock ${i===d.k-1&&d.justDrop?'drop':''}" style="--c:${TC[i%TC.length]};--o:${i%2?6:-6}px"><span class="plabel syl">${x[0]}</span></div>`).join('')}</div>
-        <div class="tground"></div></div></div>`);
-    d.justDrop=false;
-    const nb=document.getElementById('tnext');if(nb)nb.onclick=()=>{if(S.overlay)return;SFX.blip();
-      sayIt(it,()=>{d.k++;d.justDrop=true;SFX.thud();render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,1800))}})};
+    /* syllables: build a realistic castle like a tangram. A pale silhouette of the castle waits; each part comes with a syllable.
+       The child says it, then drags the part to its place in the silhouette (or taps the glowing place), until the castle is complete */
+    const C=window.CASTLE_IMG;if(!C){shell('<div class="card stage"><p class="muted">טוען את הטירה... 🏰</p></div>');return}
+    const P=C.p,N=P.length,cur=P[d.k],fin=d.k>=N,pos=i=>`left:${(i%3)*33.333}%;top:${Math.floor(i/3)*33.333}%`;
+    shell(`<div class="card stage"><p class="muted">${fin?'הטירה מוכנה! 🏰✨':d.ready?'עכשיו גוררים את החלק למקום שלו בטירה 👆':'נוגעים בחלק, אומרים את ההברה, ובונים את הטירה 🏰'}</p><div class="progress">${Math.min(d.k,N)} / ${N}</div>
+      <div class="ctpl ${fin?'done':''}" id="ctpl"><img class="cghost2" src="${C.full}" alt="">
+        ${P.map((p,j)=>j<d.k?`<img class="cpiece ${j===d.k-1&&d.justPlaced?'placed':''}" src="${p.src}" style="${pos(p.i)}" alt="">`:(j===d.k&&d.ready?`<div class="cslot target" id="ctarget" style="${pos(p.i)}"></div>`:'')).join('')}
+        ${fin?'<div class="csparks">✨🎉✨</div>':''}</div>
+      ${fin?'':`<div class="ctray"><button class="cpart ${d.ready?'ready':''}" id="cpart" type="button"><img src="${cur.src}" alt=""><span class="plabel syl">${d.items[d.k%d.items.length][0]}</span></button></div>`}</div>`);
+    d.justPlaced=false;
+    if(fin)return;
+    const part=document.getElementById('cpart');
+    const place=()=>{d.k++;d.ready=false;d.justPlaced=true;SFX.thud();render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2400))}};
+    if(!d.ready){part.onclick=()=>{if(S.overlay)return;SFX.blip();sayIt(d.items[d.k%d.items.length],()=>{d.ready=true;render()})};return}
+    const tg=document.getElementById('ctarget');tg.onclick=()=>place();
+    part.onpointerdown=e=>{e.preventDefault();const r=part.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
+      const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>6){g=part.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(g);part.style.visibility='hidden'}
+        if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
+      const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);if(!g)return;g.remove();part.style.visibility='';
+        const b=tg.getBoundingClientRect(),pad=b.width*.35;
+        if(ev.clientX>=b.left-pad&&ev.clientX<=b.right+pad&&ev.clientY>=b.top-pad&&ev.clientY<=b.bottom+pad)place();
+        else{SFX.bad();part.classList.remove('no');void part.offsetWidth;part.classList.add('no')}};
+      document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
     return;
   }
   if(S.act==='fishing'){
