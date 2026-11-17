@@ -912,6 +912,34 @@ body{background:#5E8F55}
 .tile .big[data-tiled]{height:auto!important;width:auto!important;line-height:0;font-size:0;background:none!important;box-shadow:none!important;border:0!important}
 .tile .big img.ticon{display:block;width:min(92px,22vw,11vh);height:auto;aspect-ratio:1;object-fit:contain;border-radius:18px}
 .tile:hover .big img.ticon{transform:scale(1.06);transition:transform .2s ease}
+/* new games: bubbles, puzzle, shop */
+.bubbles{position:relative;width:100%;height:min(56vh,360px);border-radius:22px;background:linear-gradient(180deg,#BFE6FF,#EAF7FF);overflow:hidden}
+.bub{position:absolute;left:var(--x);top:var(--y);width:min(21vw,112px);aspect-ratio:1;border-radius:50%;padding:0;cursor:pointer;
+  border:2px solid rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:radial-gradient(circle at 30% 26%,#fff 0 8%,rgba(255,255,255,.4) 16%,transparent 34%),radial-gradient(circle at 72% 76%,hsla(var(--h),95%,72%,.55),transparent 58%),radial-gradient(circle,rgba(190,235,255,.25),rgba(150,205,255,.5));
+  box-shadow:inset 0 0 20px rgba(255,255,255,.75),0 10px 22px -12px rgba(0,60,90,.55);animation:bubfloat 4s ease-in-out infinite;animation-delay:var(--d)}
+.bub .bcr{font-size:34px;line-height:1}.bub .bcr img{width:min(56px,11vw);height:auto}
+.bub .plabel{font-size:17px}
+.bub.pop{animation:bubpop .33s ease-out forwards}
+@keyframes bubfloat{50%{transform:translateY(-14px) scale(1.03)}}
+@keyframes bubpop{to{transform:scale(1.6);opacity:0}}
+.puz{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:min(100%,520px,calc(62vh * 1.6));aspect-ratio:16/9;padding:6px;border-radius:20px;background:#EFE6D2}
+.puz.done{gap:0;padding:0;overflow:hidden;box-shadow:0 0 0 4px var(--sun),0 18px 30px -14px rgba(0,0,0,.4);transition:gap .6s,padding .6s}
+.pz{border:3px solid var(--k2);border-bottom-width:6px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:34px;line-height:1}
+.pz:nth-child(3n+2){border-color:var(--k1)}.pz:nth-child(3n){border-color:var(--k5)}
+.pz .pzpic img{width:min(58px,12vw);height:auto}
+.pz.open{background:var(--img) var(--px) var(--py)/300% 300% no-repeat;border:0;border-radius:6px;animation:pzflip .5s ease-out;cursor:default}
+.puz.done .pz.open{border-radius:0}
+@keyframes pzflip{from{transform:rotateY(90deg)}to{transform:none}}
+.shop{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 14px;width:min(100%,460px);padding:14px 14px 20px;border-radius:20px;
+  background:linear-gradient(180deg,#FFF8EA,#F4E3C1);box-shadow:inset 0 -10px 0 #C99A5B,inset 0 0 0 3px #E2C390}
+.sitem2{background:#fff;border:2px solid #EAD9B8;border-radius:16px;padding:8px;font-size:44px;line-height:1;box-shadow:0 6px 0 #D9B67A;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:78px}
+.sitem2:hover{transform:translateY(-3px)}
+.sitem2 img{width:min(62px,13vw);height:auto}
+.shelf .slot{min-height:78px}
+.bag{position:relative;line-height:1}.bagic{font-size:80px}
+.bagin{position:absolute;left:0;right:0;bottom:16%;display:flex;flex-wrap:wrap;justify-content:center;gap:1px;font-size:18px;padding:0 18%}.bagin img{width:20px;height:auto}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
 </style>
@@ -1700,13 +1728,19 @@ function stageItems(st,act){
 }
 const GAMES={pscene:['🖼️','תמונות מספרות','מוצאים בתמונה ומספרים מה קורה'],fix:['🛠️','בית המלאכה','אומרים משפט ומתקנים דברים שבורים'],cook:['👩‍🍳','מבשלים ארוחה','כל משפט מוסיף מצרך'],silly:['🎰','מכונת המשפטים','מסובבים את המכונה ואומרים'],scene:['🔎','מחפשים בתמונה','מוצאים דברים עם ההגה ומספרים'],absurd:['🤪','מה מצחיק בתמונה?','מוצאים ומסבירים מה לא הגיוני'],eggs:['🥚','ביצים מפתיעות','מי בוקע מהביצה?'],monster:['😋','המפלצון הרעב','מאכילים אותו עוגיות הברה'],frog:['🐸','הצפרדע הרעבה','קופצים על אבנים ותופסים חרקים'],balloon:['🎈','בלונים','מפוצצים בלון ואומרים'],train:['🚂','רכבת','מעמיסים את הקרונות'],line:['✏️','מותחים קו','מחברים כל תמונה לצל שלה'],memory:['🃏','זיכרון','מוצאים זוגות'],wheel:['🎡','גלגל המזל','מסובבים ואומרים 3 פעמים']};
 GAMES.color=['🎨','דפי צביעה','בוחרים צבע ואומרים משפט'];
+/* new games, one level each, so a child who moves up meets something new (Nov 2026) */
+GAMES.bubbles=['🫧','מפוצצים בועות','פוף! מי יוצא מהבועה?'];
+GAMES.puzzle=['🧩','פאזל','כל מילה פותחת חלק בתמונה'];
+GAMES.shop=['🛍️','קונים בחנות','"אני רוצה לקנות..." וממלאים את הסל'];
 function gamesFor(st){
   if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['pscene','scene','absurd'];
-  if(st==='syl')return ['eggs','monster','frog','balloon','train','wheel'];
+  if(st==='syl')return ['bubbles','eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['silly','balloon','train','line','memory','wheel'];
-  if(st==='words'||st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
-  if(st==='short'||st==='long')return ['fix','cook','silly','balloon','train','line'];
+  if(st==='words')return ['puzzle','balloon','train','line','memory','wheel'];
+  if(st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
+  if(st==='short')return ['shop','fix','cook','silly','balloon','train','line'];
+  if(st==='long')return ['fix','cook','silly','balloon','train','line'];
   return ['balloon','train','line'];
 }
 function stageTitle(st){if(st==='pair')return VOICING[S.pair].name;if(st==='vocab')return 'מה זה?';return (STAGES.find(x=>x[0]===st)||['','',''])[2]}
@@ -2021,6 +2055,9 @@ function startAct(act,from){
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
+  if(act==='bubbles'){d.items=items().slice(0,8);d.popped=[]}
+  if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];d.pic='kingdom-bg.jpg?v=2'}
+  if(act==='shop'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' '))).slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
   if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
@@ -2047,7 +2084,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2303,6 +2340,35 @@ function renderAct(){
         if(!ab){const old=b.querySelector('.slabel');if(!old){const s=document.createElement('span');s.className='slabel grey';s.textContent=it[1];b.appendChild(s);TIMERS.push(setTimeout(()=>s.remove(),1400))}}}});
     const t=document.getElementById('told');if(t)t.onclick=()=>recOverlay(ab?'מסבירים מה מצחיק בתמונה 🗣️':'מספרים מה קורה בתמונה 🗣️',()=>{addStar();d.si++;d.found=[];d.foundAt={};if(d.si>=d.scenes.length)finish();else render()},{max:15000});
     const tm=document.getElementById('tomove');if(tm)tm.onclick=()=>{d.move={items:targets.slice(),placed:{},sel:null};SFX.zip&&SFX.zip();render()};
+    return;
+  }
+  if(S.act==='bubbles'){
+    /* syllables: soap bubbles float; touching one pops it and the creature inside says a syllable for the child to copy */
+    const N=d.items.length;
+    shell(`<div class="card stage"><p class="muted">נוגעים בבועה, פוף! מי שבתוכה אומר הברה, ואומרים כמוהו 🫧</p><div class="progress">${d.popped.length} / ${N}</div>
+      <div class="bubbles">${d.items.map((it,ix)=>d.popped.includes(ix)?'':`<button class="bub" data-ix="${ix}" type="button" style="--x:${(ix%4)*24+2}%;--y:${Math.floor(ix/4)*48+4}%;--d:${((ix*0.7)%3).toFixed(1)}s;--h:${(ix*53)%360}deg" aria-label="בועה"><span class="bcr">${crit(it[1],56)}</span><span class="plabel syl">${it[0]}</span></button>`).join('')}</div></div>`);
+    app.querySelectorAll('.bub').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('pop'))return;const ix=+b.dataset.ix;b.classList.add('pop');SFX.pop();
+      TIMERS.push(setTimeout(()=>sayIt(d.items[ix],()=>{d.popped.push(ix);if(d.popped.length>=N)finish();else render()}),330))});
+    return;
+  }
+  if(S.act==='puzzle'){
+    /* words: nine cards cover a picture; every word said turns one card into its piece of the picture */
+    const N=d.items.length;
+    shell(`<div class="card stage"><p class="muted">כל מילה פותחת חלק בתמונה. מה מסתתר מאחורי הקלפים? 🧩</p><div class="progress">${d.open.length} / ${N}</div>
+      <div class="puz ${d.open.length>=N?'done':''}" style="--img:url(${d.pic})">${d.items.map((it,ix)=>{const o=d.open.includes(ix);
+        return `<button class="pz ${o?'open':''}" data-ix="${ix}" type="button" style="--px:${(ix%3)*50}%;--py:${Math.floor(ix/3)*50}%" ${o?'disabled':''}>${o?'':`<span class="pzpic">${it[1]}</span>`}</button>`}).join('')}</div></div>`);
+    app.querySelectorAll('.pz:not(.open)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
+      sayIt(d.items[ix],()=>{d.open.push(ix);SFX.good();render();if(d.open.length>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}})});
+    return;
+  }
+  if(S.act==='shop'){
+    /* short sentences: a shop shelf; the child picks something, says "אני רוצה לקנות ..." and it flies into the bag */
+    const N=d.items.length;
+    shell(`<div class="card stage"><p class="muted">נוגעים במה שרוצים לקנות, ואומרים את המשפט 🛍️</p><div class="progress">בסל: ${d.bought.length} / ${N}</div>
+      <div class="shop"><div class="shelf">${d.items.map((it,ix)=>d.bought.includes(ix)?'<span class="slot"></span>':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div>
+      <div class="bag" id="bag"><span class="bagic">🛍️</span><span class="bagin">${d.bought.map(ix=>`<span>${d.items[ix][1]}</span>`).join('')}</span></div></div></div>`);
+    app.querySelectorAll('.sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
+      sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
     return;
   }
   if(S.act==='eggs'){
