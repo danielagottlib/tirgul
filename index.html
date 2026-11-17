@@ -2009,19 +2009,50 @@ function renderSound(){
 const GAME_TPL={balloon:'אני תופס',train:'אני מעמיס',line:'אני רואה',memory:'מצאתי',wheel:'יש לי'};
 function tplFor(act){const L=SOUNDS[S.sound]?SOUNDS[S.sound].hl:'';const ok=t=>![...t].some(ch=>L.includes(ch));
   let want=GAME_TPL[act]||'אני רואה';if(want==='אני תופס'&&kidG()==='g')want='אני תופסת';if(ok(want))return want;return ['אני רואה','יש לי','הנה','מצאתי'].find(ok)||'הנה'}
+/* ---------- the position rule (Nov 2026): the target sound appears ONLY in the positions the therapist ticked
+   (start / middle / end of the word or syllable), in every stage and every game, for every sound.
+   A text is allowed only if it has the target sound and every place it appears is an allowed position. ---------- */
+let POS_DICT=null;
+function posDict(){if(POS_DICT)return POS_DICT;const d=new Set();
+  SOUNDS.forEach(s=>{if(s.w)Object.values(s.w).forEach(a=>(a||[]).forEach(x=>String(x[0]).split(' ').forEach(t=>d.add(t))))});
+  [...SCENES,...PHOTO_SCENES].forEach(sc=>sc.items.forEach(it=>String(it[1]).split(' ').forEach(t=>d.add(t))));
+  try{CATS.forEach(c=>c.i.forEach(x=>d.add(x[0])))}catch(e){}
+  return POS_DICT=d}
+/* the word without the little words glued to its start (ה, ו, ב, ל, מ, ש, כ): "הרובוט" -> "רובוט" */
+function bareWord(tok){const D=posDict();tok=String(tok).replace(/[^א-ת]/g,'');if(D.has(tok))return tok;
+  for(const p of ['וכש','ושה','וה','וב','ול','ומ','וש','שה','מה','כש','לה','בה','ה','ו','ב','ל','מ','ש','כ'])if(tok.startsWith(p)&&D.has(tok.slice(p.length)))return tok.slice(p.length);
+  if(tok.length>3&&tok[0]==='ה')return tok.slice(1);return tok}
+/* positions (s/m/e) of the target sound inside one word */
+function soundPos(tok,sid,flagK){const w=bareWord(tok),out=new Set(),n=w.length;if(!n)return out;
+  const at=i=>out.add(i===0?'s':i===n-1?'e':'m');
+  if(sid==='sh'){if(isSin(w)||isSin(tok))return out;[...w].forEach((c,i)=>{if(c==='ש')at(i)});return out}
+  if(sid==='k'){[...w].forEach((c,i)=>{if(c==='ק'||(c==='כ'&&i===0))at(i)});if(flagK&&!out.size)out.add('m');return out}
+  const L={r:'ר',l:'ל',s:'ס',g:'ג',z:'ז',ts:'צץ'}[sid]||'';[...w].forEach((c,i)=>{if(L.includes(c))at(i)});return out}
+function allowedPos(){return positions(S.bits).filter(p=>p==='s'||p==='m'||p==='e')}
+/* clusters / substitution words the therapist ticked are allowed as they are */
+function posWhite(){const s=SOUNDS[S.sound],w=new Set();if(!s||!s.w)return w;if(has(S.bits,21))(s.w.c||[]).forEach(x=>w.add(x[0]));if(has(S.bits,22))(s.w.x||[]).forEach(x=>w.add(x[0]));return w}
+function okPos(text,flagK){const s=SOUNDS[S.sound];if(!s)return true;const A=allowedPos();if(!A.length)return true;const W=posWhite();
+  let found=false;for(const t of String(text).split(/[\s,!?.:"׳״\-]+/)){if(!t)continue;if(W.has(t)||W.has(bareWord(t))){found=true;continue}
+    const ps=soundPos(t,s.id,flagK);for(const p of ps){if(!A.includes(p))return false;found=true}}
+  return found}
+/* keep the list to texts that follow the rule; never fall back to texts that break it */
+const posOr=l=>{const f=byPos(l);return f.length>=3?f:shuffle(soundWords())};
+function byPos(list,key){const k=key==null?0:key;return list.filter(x=>okPos(Array.isArray(x)?x[k]:x))}
 function stageItems(st,act){
   const s=SOUNDS[S.sound];
-  if(st==='syl'){const [L,F]=s.L;const cv=[L+'ָ',L+'ֶ',L+'ִי',L+'וֹ',L+'וּ'],vc=['אַ'+F,'אֶ'+F,'אִי'+F,'אוֹ'+F,'אוּ'+F];
-    const chains=[0,1,2,3].map(()=>pick(cv,3).join(' '));const cr=shuffle(CREATURES);return shuffle([...cv,...vc,...chains]).map((x,i)=>{const c=cr[i%cr.length];return [x,c[0],'syl',c[1],c[2]]})}
+  if(st==='syl'){const [L,F]=s.L;const cv=[L+'ָ',L+'ֶ',L+'ִי',L+'וֹ',L+'וּ'],vc=['אַ'+F,'אֶ'+F,'אִי'+F,'אוֹ'+F,'אוּ'+F],vcv=['אָ'+L+'ָ','אֶ'+L+'ֶ','אִי'+L+'ִי','אוֹ'+L+'וֹ','אוּ'+L+'וּ'];
+    /* only the syllable positions the therapist ticked: start = רָ, middle = אָרָ, end = אַר */
+    const A=allowedPos(),sets=[];if(!A.length||A.includes('s'))sets.push(cv);if(A.includes('m'))sets.push(vcv);if(A.includes('e'))sets.push(vc);
+    const chains=sets.map(set=>[0,1].map(()=>pick(set,3).join(' '))).flat();const cr=shuffle(CREATURES);return shuffle([...sets.flat(),...chains]).map((x,i)=>{const c=cr[i%cr.length];return [x,c[0],'syl',c[1],c[2]]})}
   if(st==='words')return shuffle(soundWords());
   /* memory game in the phrases stage: "ראיתי גזר, ראיתי גזר" — the carrier word also has the target sound */
-  if(st==='phr'&&act==='memory'){const C=MEMV[s.id]||'מצאתי';return shuffle(soundWords().filter(x=>!x[0].includes(' '))).map(w=>[`${C} ${w[0]}, ${C} ${w[0]}`,w[1]])}
-  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex)).map(x=>[x[0],tintPic(x[0],x[1])]);return shuffle(p.length>=4?p:soundWords())}
+  if(st==='phr'&&act==='memory'){const C=MEMV[s.id]||'מצאתי';return posOr(shuffle(soundWords().filter(x=>!x[0].includes(' '))).map(w=>[`${C} ${w[0]}, ${C} ${w[0]}`,w[1]]))}
+  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex)&&okPos(x[0])).map(x=>[x[0],tintPic(x[0],x[1])]);return shuffle(p.length>=4?p:soundWords())}
   /* in the train game the sentences are about the train itself */
-  if(act==='train'&&st==='short')return shuffle(soundWords()).map(w=>[w[0]+' עולה לרכבת',w[1]]);
-  if(act==='train'&&st==='long'){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length;i+=2)out.push([w[i][0]+' ו'+w[i+1][0]+' עולים לרכבת',w[i][1]+w[i+1][1]]);return out}
-  if(st==='short'){const t=tplFor(act);return shuffle(soundWords()).map(w=>[t+' '+w[0],w[1]])}
-  if(st==='long'){const ex=excluded();return shuffle([...s.short,...andSentences(),...(s.id==='k'?KI:[])].filter(x=>okText(x[0],ex)))}
+  if(act==='train'&&st==='short')return posOr(shuffle(soundWords()).map(w=>[w[0]+' עולה לרכבת',w[1]]));
+  if(act==='train'&&st==='long'){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length;i+=2)out.push([w[i][0]+' ו'+w[i+1][0]+' עולים לרכבת',w[i][1]+w[i+1][1]]);return posOr(out)}
+  if(st==='short'){const t=tplFor(act);return posOr(shuffle(soundWords()).map(w=>[t+' '+w[0],w[1]]))}
+  if(st==='long'){const ex=excluded();return posOr(shuffle([...s.short,...andSentences(),...(s.id==='k'?KI:[])].filter(x=>okText(x[0],ex))))}
   if(st==='pair'){const v=VOICING[S.pair];return shuffle([...v.a[1],...v.b[1]])}
   if(st==='vocab')return shuffle(allVocab());
   return [];
@@ -2078,7 +2109,7 @@ function ptFind(text){const D=ptDict(),out=[],seen=new Set(),t=' '+String(text).
     const w=c.find(x=>D.has(x));if(w&&!seen.has(w)&&!out.some(o=>o[0].includes(' ')&&o[0].includes(w))){seen.add(w);out.push([w,D.get(w)])}});
   return out.slice(0,4)}
 function ptChoices(sid){const D=ptDict(),s=SOUNDS.find(x=>x.id===sid),mine=[];
-  if(s&&s.w)['s','m','e'].forEach(p=>(s.w[p]||[]).forEach(x=>{if(D.has(x[0])&&!mine.some(m=>m[0]===x[0]))mine.push([x[0],x[1]])}));
+  if(s&&s.w)['s','m','e'].forEach(p=>(s.w[p]||[]).forEach(x=>{if(D.has(x[0])&&okPos(x[0])&&!mine.some(m=>m[0]===x[0]))mine.push([x[0],x[1]])}));
   const other=shuffle([...D.entries()].filter(([w])=>!mine.some(m=>m[0]===w)&&PT_SKY.has(w))).slice(0,3);
   return shuffle([...pick(mine,Math.min(9,mine.length)),...other])}
 const STORIES=[{name:'הפרח של נועה',k:['s0','s1','s2']},{name:'ארמון החול',k:['s3','s4','s5']},{name:'איש השלג',k:['s6','s7','s8']}];
@@ -2393,10 +2424,10 @@ function excluded(){const set=new Set();const s=SOUNDS[S.sound];
 function okText(text,ex){ex=ex||excluded();if(!ex.size)return true;
   return !String(text).split(/[\s,!?.]+/).some(t=>t&&(ex.has(t)||(t.length>3&&ex.has(t.slice(1)))||(t.length>4&&ex.has(t.slice(2)))))}
 function soundWords(){const s=SOUNDS[S.sound],ex=excluded();
-  const ps=S.stage==='words'?positions(S.bits):['s','m','e'].concat(has(S.bits,21)?['c']:[],has(S.bits,22)?['x']:[]);
+  const ps=positions(S.bits);
   const seen=new Set();let w=ps.flatMap(p=>s.w[p]||[]).filter(x=>!seen.has(x[0])&&seen.add(x[0]));
-  w=w.filter(x=>okText(x[0],ex));
-  return w.length?w:['s','m','e'].flatMap(p=>s.w[p]).filter(x=>okText(x[0],ex))}
+  w=w.filter(x=>okText(x[0],ex)&&okPos(x[0]));
+  return w}
 const allVocab=()=>CATS.flatMap(c=>c.i);
 function startAct(act,from){
   clearTimers();
@@ -2407,20 +2438,20 @@ function startAct(act,from){
   if(act==='line'){d.items=items();d.k=0;d.round=0;d.rounds=3;newLineRound(d)}
   if(act==='pscene'){const sid=SOUNDS[S.sound].id;d.scenes=PHOTO_SCENES.filter(sc=>sc.snd===sid);
     if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[];d.foundAt={}}
-  if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[];d.foundAt={}}
+  if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)&&okPos(it[1],it[6]==='k')).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[];d.foundAt={}}
   if(act==='absurd'){let sid=SOUNDS[S.sound].id;if(!(CARDS[sid]||[]).length)sid='r';
     d.sid=sid;d.cards=shuffle(CARDS[sid]);d.ci=0;d.used=[];d.phase='deck';
     loadScriptOnce('cards-'+sid+'.js?v='+CARDS_V,()=>{if(S.act==='absurd')render()})}
   if(act==='fix'){d.j=0;d.said=false;d.fixed=false;const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;
     /* short sentences: always "צריך לתקן/לצבוע את ה..." with an object that has the target sound */
-    if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid].filter(j=>okText(j[1]))).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
-    else d.jobs=shuffle((FIXBY[sid]||FIXJOBS).filter(j=>okText(j[3]||j[1]))).slice(0,6);d.toolset=TOOLS;
+    if(S.stage==='short'&&FIXSHORT[sid])d.jobs=shuffle(FIXSHORT[sid].filter(j=>okText(j[1])&&okPos(j[1]))).slice(0,6).map(([e,o,t])=>{const paint=t==='🖌️';return [e,o,t,`צריך ${paint?'לצבוע':'לתקן'} את ${o}`,paint?'לצבוע':'לתקן',paint?'צבעת':'תיקנת']});
+    else{const all=(FIXBY[sid]||FIXJOBS).filter(j=>okText(j[3]||j[1])),f=all.filter(j=>okPos(j[3]||j[1]));d.jobs=shuffle(f.length>=3?f:all.filter(j=>okPos(j[1]))).slice(0,6)}d.toolset=TOOLS;
     if(S.stage==='long'&&FIXHOUSE[sid]){d.house=FIXHOUSE[sid];d.done=[];d.cur=null;d.phase='pick'}}
   if(act==='disc'){const sid=SOUNDS[S.sound].id,ex=excluded();
-    const yes=pick(['s','m','e'].flatMap(p=>SOUNDS[S.sound].w[p]||[]).filter(w=>okText(w[0],ex)&&!w[0].includes(' ')),5);
+    const yes=pick(soundWords().filter(w=>!w[0].includes(' ')),5);
     const no=pick(SOUNDS.filter(x=>x.id!==sid).flatMap(x=>['s','m','e'].flatMap(p=>x.w[p]||[])).filter(w=>!w[0].includes(' ')&&!sceneHas([0,w[0]],sid)&&!yes.some(y=>y[0]===w[0])).filter((w,k,A)=>A.findIndex(x=>x[0]===w[0])===k),5);
     d.list=shuffle([...yes.map(w=>[w[0],w[1],1]),...no.map(w=>[w[0],w[1],0])]);d.k=0;d.inYes=[];d.inNo=[]}
-  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
+  if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1])&&okPos(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='bubbles'){d.items=items().slice(0,8);d.popped=[]}
   if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];d.pic='kingdom-bg.jpg?v=2'}
@@ -2434,7 +2465,7 @@ function startAct(act,from){
   if(act==='seqrec'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;d.sid=SEQ4[sid]?sid:'r';d.st=SEQ4[d.sid];d.placed=[null,null,null,null];d.tray=shuffle([0,1,2,3]);d.phase='order';d.blobs=[];d.k=0;d.sel=null;d.heard=false;
     loadScriptOnce('seq4.js?v=1',()=>{if(S.act==='seqrec')render()})}
   if(act==='paint'){const s=SOUNDS[S.sound];d.objs=[];d.lines=[];d.phase='idle';d.choices=[];d.pick=[];d.text='';
-    const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length);d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
+    const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length&&okPos(t));d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
   if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,8);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle2.js?v=1',()=>{if(S.act==='tower')render()})}
@@ -2691,7 +2722,7 @@ function renderAct(){
   }
   if(S.act==='scene'||S.act==='pscene'){
     const sc=d.scenes[d.si],ab=S.act==='absurd',ps=S.act==='pscene'||!!sc.img;
-    const exw=excluded();const targetsAll=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id)&&okText(it[1],exw));
+    const exw=excluded();const targetsAll=ab?sc.absurd:sc.items.filter(it=>sceneHas(it,SOUNDS[S.sound].id)&&okText(it[1],exw)&&okPos(it[1],it[6]==='k'));
     /* one word may have several tap spots (grass, sky): it counts once, and only the spot that was tapped gets the label */
     const targets=targetsAll.filter((it,k)=>targetsAll.findIndex(x=>x[1]===it[1])===k);d.foundAt=d.foundAt||{};
     const all=ab?[...sc.items.map(x=>[...x,'n']),...sc.absurd.map(x=>[...x.slice(0,6),'','a'])]:sc.items;
