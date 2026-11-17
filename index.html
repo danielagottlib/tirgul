@@ -1243,7 +1243,7 @@ body{background:#5E8F55}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=3"></script><script src="mygames.js?v=5"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=3"></script><script src="mygames.js?v=6"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script src="blocked.js"></script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1554,7 +1554,9 @@ const SFX=(()=>{
     kaching(){noise(.12,{vol:.25,hp:1800,lp:9000});tone(2093,.3,{type:'triangle',vol:.2,at:.06});tone(2637,.6,{type:'triangle',vol:.2,at:.14});tone(3136,.5,{type:'sine',vol:.08,at:.14})},
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
     /* eating: soft crunchy chewing, then a gulp (not hard hits) */
-    chomp(){[0,.28,.52,.8,1.02,1.3].forEach((t,k)=>{const j=Math.random()*.05;hiss(.075+Math.random()*.04,{at:t+j,vol:.13+Math.random()*.06,hp:700+k*60,lp:3200});tone(95+Math.random()*20,.11,{at:t+j+.02,vol:.07,to:70})});tone(360,.17,{at:1.62,vol:.16,to:130});tone(240,.22,{at:1.8,type:'triangle',vol:.06,to:200})},
+    chomp(){/* crunchy chewing: each bite = a crisp crunch made of tiny cracks + a soft jaw thump; then a gulp */
+      [0,.34,.62,.98,1.26,1.6].forEach((t,k)=>{const j=Math.random()*.06;noise(.05,{at:t+j,vol:.32,hp:1200,lp:5200});for(let c=0;c<6;c++)noise(.012,{at:t+j+.02+c*.018+Math.random()*.01,vol:.18+Math.random()*.12,hp:2200,lp:7000});tone(85+Math.random()*25,.12,{at:t+j,vol:.12,to:60})});
+      tone(380,.18,{at:1.95,vol:.2,to:120});tone(220,.25,{at:2.12,type:'triangle',vol:.08,to:180})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
     hammer(){[0,.25,.5].forEach(t=>{noise(.06,{at:t,vol:.6,hp:600,lp:4000});tone(220,.08,{at:t,vol:.25,to:110})})},
     plop(){tone(500,.15,{vol:.2,to:150})},
@@ -3200,7 +3202,7 @@ function renderAct(){
       <div class="foods">${d.items.map((it,ix)=>d.fed.includes(ix)?'':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div></div></div>`);
     {const ns=d.fed.length>=N?4.8:1+d.fed.length/N*3,dg=document.getElementById('dragon');if(dg&&Math.abs((d.prevS||1)-ns)>.01){requestAnimationFrame(()=>requestAnimationFrame(()=>{dg.classList.add('grow');dg.style.setProperty('--s',ns.toFixed(2))}))}d.prevS=ns}
     app.querySelectorAll('.foods .sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
-      sayIt(d.items[ix],()=>{const g=document.getElementById('dragon');flyTo(b,g,()=>{SFX.chomp();g.classList.add('munch');d.fed.push(ix);
+      sayIt(d.items[ix],()=>{const g=document.getElementById('dragon');flyTo(b,g,()=>{SFX.chomp();TIMERS.push(setTimeout(()=>saySyl('הַם הַם הַם... יַאמִי!'),700));g.classList.add('munch');d.fed.push(ix);
         TIMERS.push(setTimeout(()=>{render();if(d.fed.length>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),1200));TIMERS.push(setTimeout(finish,6500))}},450))})})});
     return;
   }
