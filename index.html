@@ -909,6 +909,8 @@ body{background:#5E8F55}
 .word .hl,.letter{color:var(--coral)}
 .choice,.dzone,.dcard{border-radius:24px}
 .note{background:#FFF3D1;border-radius:16px}
+.tile .big img.ticon{display:block;width:min(104px,24vw);height:auto;aspect-ratio:1;object-fit:contain;border-radius:18px}
+.tile:hover .big img.ticon{transform:scale(1.06);transition:transform .2s ease}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
 </style>
@@ -2910,9 +2912,14 @@ window.addEventListener('hashchange',()=>{if(!isAdmin()&&S.view==='therapist')S.
 /* realistic word pictures (words-*.js, Gemini): an element whose whole text is one emoji we have a picture for
    shows the picture instead (in every game, for every sound and goal). A picture blocked by a network filter keeps the emoji */
 function swapPics(root){const W=window.WORD_IMG;if(!W||!root)return;const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const hits=[];
-  while(tw.nextNode()){const t=tw.currentNode,v=t.nodeValue.trim();if(v.length<=4&&W[v]&&okImg(W[v])&&t.parentNode&&!t.parentNode.closest('.top,.ghost,.stars,textarea,option'))hits.push([t,v])}
+  while(tw.nextNode()){const t=tw.currentNode,v=t.nodeValue.trim();if(v.length<=4&&W[v]&&okImg(W[v])&&t.parentNode&&!t.parentNode.closest('.top,.ghost,.stars,textarea,option')&&!(window.TILE_IMG&&TILE_IMG[v]&&t.parentNode.closest('.tile .big')))hits.push([t,v])}
   hits.forEach(([t,v])=>{const im=document.createElement('img');im.className='wimg';im.src=W[v];im.alt=v;t.parentNode.replaceChild(im,t)})}
-let swapQ=false;new MutationObserver(()=>{if(swapQ||!window.WORD_IMG)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
+/* game tiles get their own 3D illustration (tiles.js, Gemini) in place of the emoji; checked before the word pictures */
+function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelectorAll)return;
+  root.querySelectorAll('.tile .big').forEach(b=>{if(b.dataset.tiled)return;const w=b.querySelector('img.wimg');const v=(w?w.alt:b.textContent).trim();
+    if(T[v]&&okImg(T[v])){b.dataset.tiled='1';b.innerHTML=`<img class="ticon" src="${T[v]}" alt="">`}})}
+let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
+loadScriptOnce('tiles.js?v=1',()=>swapTiles(document.body));
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
