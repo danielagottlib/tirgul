@@ -2683,7 +2683,9 @@ function renderAct(){
       </div><div id="rh"></div>${cur!=null&&!fin?'<button class="ghost" id="kimagain" type="button">🔊 שומעים שוב</button>':''}</div>`);
     if(fin)return;
     /* say: the name, then "קִי" and a long humming ם */
-    const call=i=>{const it=all[i];saySyl(it[2]||it[0]);TIMERS.push(setTimeout(()=>saySyl('קִי'),1100));TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),1650))};
+    /* the name in the Google voice, then Daniela's own recording of 'קים' with a long ם (kim.m4a); the synthesized hum only if it cannot play */
+    const kim=()=>{let ok=false;try{const a=new Audio('kim.m4a?v=1');a.onplaying=()=>{ok=true};a.onerror=()=>{if(!ok){saySyl('קִי');TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),550))}};a.play().catch(e=>{if(e&&e.name==='AbortError')return;saySyl('קִי');TIMERS.push(setTimeout(()=>SFX.mmm&&SFX.mmm(),550))})}catch(e){}};
+    const call=i=>{const it=all[i];saySyl(it[2]||it[0]);TIMERS.push(setTimeout(kim,1150))};
     app.querySelectorAll('.kimwho').forEach(b=>b.onclick=()=>{if(S.overlay||d.cur!=null)return;const i=+b.dataset.i;d.cur=i;SFX.blip();render();call(i);
       TIMERS.push(setTimeout(()=>{const rh=document.getElementById('rh');if(!rh||d.cur!==i)return;
         recStep(rh,()=>{addStar();const el=app.querySelector(`.kimwho[data-i="${i}"]`),hs=app.querySelector('.kimhouse');
