@@ -2673,7 +2673,7 @@ function renderAct(){
        ("טאטי קים!") and it walks home into the house. The computer says the name and then a long, separated
        "קִי — םםםם" so the child hears that the ם at the end has to be said. At the end everyone dances at home */
     const O=window.SPACE_IMG||{},all=d.items,home=d.done,cur=d.cur;
-    if(!O.house){shell('<div class="card stage"><p class="muted">טוען את הבית... 🏠</p></div>');loadScriptOnce('space.js?v=2',()=>{if(S.act==='mine')render()});return}
+    if(!O.house){shell('<div class="card stage"><p class="muted">טוען את הבית... 🏠</p></div>');loadScriptOnce('space.js?v=3',()=>{if(S.act==='mine')render()});return}
     const fin=home.length>=all.length;
     shell(`<div class="card stage"><p class="drag-hint">${fin?'כולם בבית! 🎉':cur!=null?'קוראים לו: '+esc(all[cur][0])+' קִים!':'נוגעים במי שרוצים לקרוא לו הביתה 🏠'}</p>
       <div class="progress">${home.length} / ${all.length}</div>
@@ -2700,7 +2700,7 @@ function renderAct(){
        to the right place (on / under the table, between the table and the box, behind / inside the box);
        then the child says the sentence. */
     const O=window.SPACE_IMG||{};
-    if(!O.table){shell('<div class="card stage"><p class="muted">טוען את החדר... 📦</p></div>');loadScriptOnce('space.js?v=2',()=>{if(S.act==='mine')render()});return}
+    if(!O.table){shell('<div class="card stage"><p class="muted">טוען את החדר... 📦</p></div>');loadScriptOnce('space.js?v=3',()=>{if(S.act==='mine')render()});return}
     const R=SPACE_REL,q=d.qs[d.k];if(!q){finish();return}
     const rel=R[q.r],sent=q.o[0]+' '+rel.say,ph=d.placed;
     const zone=(r,obj,cls)=>{const p=R[r].at;return `<span class="spobj ${cls||''} sp-${r}" style="left:${p[0]}%;top:${p[1]}%;z-index:${R[r].z}">${obj}</span>`};
