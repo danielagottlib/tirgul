@@ -1228,7 +1228,18 @@ const SOUNDS=[
  {id:'z',name:'ז',hl:'ז',iso:['🐝','זזזז... כמו דבורה','זזזז'],L:['ז','ז'],short:[['הזחל זוחל', '🐛'], ['יש לי זהב', '🪙'], ['אני אוכל זית', '🫒'], ['יש לי תפוז', '🍊'], ['הברווז שוחה', '🦆'], ['הדבורה עושה זזזז', '🐝'], ['יש לי מזוודה', '🧳'], ['הארגז גדול', '📦']],long:[['הזחל והברווז זזים לאט לאט', '🐛'], ['אמא קנתה זיתים ותפוזים', '🫒'], ['שמנו את כל הצעצועים בארגז הגדול', '📦'], ['הדבורה זמזמה ליד האוזן שלי', '👂'], ['ארזנו מזוודה ונסענו לטיול', '🧳']],w:{s:[['זית','🫒'],['זחל','🐛'],['זהב','🪙'],['זקן','🧔']],m:[['מזלג','🍴'],['מזוודה','🧳'],['אוזן','👂'],['גזר','🥕']],e:[['ארגז','📦'],['תפוז','🍊'],['ברווז','🦆'],['אגוז','🥜']],c:[['זבוב','🪰'],['זרוע','💪'],['זברה','🦓'],['זר פרחים','💐']]}},
  {id:'ts',name:'צ',hl:'צץ',iso:['🐦','צִיץ-צִיץ... כמו ציפור','ציץ ציץ'],L:['צ','ץ'],short:[['הצב הולך לאט', '🐢'], ['הציפור מצייצת', '🐦'], ['העציץ ירוק', '🪴'], ['אני אוכל פיצה', '🍕'], ['יש לי מיץ', '🧃'], ['העץ גבוה', '🌳'], ['אני צובע ציור', '🎨'], ['יש לי ביצה', '🥚']],long:[['הצב והציפור יושבים ליד העץ', '🐢'], ['אני רוצה פיצה וביצה לארוחת צהריים', '🍕'], ['הציפור הקטנה מצייצת על העץ בחצר', '🐦'], ['צבעתי ציור עם צבע צהוב', '🎨'], ['ציפי הציירת ציירה ציפור צבעונית', '🧃']],w:{s:[['צב','🐢'],['ציפור','🐦'],['צלחת','🍽️'],['צבע','🎨'],['צהוב','🟡']],m:[['ביצה','🥚'],['פיצה','🍕'],['חצאית','👗'],['עצים','🌳']],e:[['עציץ','🪴'],['מיץ','🧃'],['עץ','🌳'],['חץ','🏹']],c:[['צפרדע','🐸'],['צדף','🐚'],['צריף','🛖']]}}
 ];
-const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
+/* more words for every sound and position (Nov 2026), so that practising only one position still has enough words.
+   Each word has the target sound only in its own position (checked again by okPos) */
+const MORE_WORDS={
+ r:{s:[['רופא','🧑‍⚕️'],['רשת','🥅'],['רוח','🌬️'],['רוכב','🏇']],m:[['כרית','🛏️'],["ג'ירפה",'🦒'],['מרק','🍲'],['תירס','🌽'],['עורב','🐦']],e:[['תנור','🔥'],['חמור','🫏'],['ציפור','🐦'],['סיר','🍲'],['כינור','🎻'],['אוצר','💎']]},
+ l:{s:[['לחמנייה','🥖'],['לגו','🧱'],['לוח','📋'],['לשון','👅']],m:[['מלח','🧂'],['חלון','🪟'],['צלחת','🍽️'],['מלון','🍈'],['עלים','🍃']],e:[['חול','🏖️'],['מעיל','🧥'],['אוהל','⛺'],['אשכול','🍇'],['בצל','🧅'],['כחול','🔵']]},
+ sh:{s:[['שלום','👋'],['שולחן','🪑'],['שועל','🦊'],['שוטר','👮'],['שופר','📯'],['שוק','🛒']],m:[['דשא','🌱'],['משקפיים','👓'],['אשפה','🗑️'],['מכשף','🧙'],['בשר','🥩']],e:[['אש','🔥'],['איש','🧑'],['קש','🥤'],['ראש','🙂']]},
+ s:{s:[['סבתא','👵'],['סוודר','🧥'],['סכין','🔪'],['סיר','🍲'],['סולם','🪜'],['סוללה','🔋']],m:[['כיסא','🪑'],['חסה','🥬'],['מסטיק','🍬'],['פסל','🗿'],['מסיכה','🎭']],e:[['פנס','🔦'],['קרקס','🎪'],['תירס','🌽'],['אגס','🍐']]},
+ k:{s:[['קיר','🧱'],['קן','🪺'],['כפית','🥄'],['כיסא','🪑'],['קערה','🥣'],['קוביה','🎲']],m:[['מקלחת','🚿'],['חקלאי','🧑‍🌾'],['נקר','🐦'],['מקרר','🧊']],e:[['מרק','🍲'],['שוק','🛒'],['צחוק','😂'],['חיבוק','🤗'],['ירוק','🟢']]},
+ g:{s:[['גן','🏫'],['גביע','🏆'],['גוזל','🐣'],['גיר','🖍️'],['גור','🐶']],m:[['חגורה','🥋'],['עגלה','🛒'],['דגל','🚩'],['אגוז','🥜'],['רגל','🦵']],e:[['חג','🎉'],['נהג','🚗'],['בורג','🔩']]},
+ z:{s:[['זיקית','🦎'],['זמר','🎤'],['זאב','🐺']],m:[['מזגן','❄️'],['חזיר','🐷'],['מזרן','🛏️'],['תזמורת','🎻'],['מזרקה','⛲']],e:[['עז','🐐'],['אורז','🍚'],['בז','🦅'],['גז','⛽']]},
+ ts:{s:[['ציור','🖼️'],['צמיד','📿'],['צבי','🦌'],['צופר','📯']],m:[['נוצה','🪶'],['מצלמה','📷'],['מצנח','🪂'],['פצע','🩹']],e:[['קיץ','☀️'],['קופץ','🦘'],['ארץ','🌍'],['חמוץ','🍋']]}};
+SOUNDS.forEach(s=>{const m=MORE_WORDS[s.id];if(!m||!s.w)return;['s','m','e'].forEach(p=>{const have=new Set((s.w[p]||[]).map(x=>x[0]));s.w[p]=(s.w[p]||[]).concat((m[p]||[]).filter(x=>!have.has(x[0])))})});const TOOLS=[['🔨','פטיש'],['🪛','מברג'],['🔧','מפתח ברגים'],['🪡','מחט וחוט'],['🖌️','מברשת צבע'],['🩹','פלסטר']];
 const FIXJOBS=[['🪑','הכיסא','🔨'],['🚲','האופניים','🔧'],['🧸','הדובי','🪡'],['🕰️','השעון','🪛'],['🏠','הבית','🖌️'],['🛴','הקורקינט','🔧'],['🎒','התיק','🪡'],['🚪','הדלת','🔨'],['🤖','הרובוט','🪛'],['🐕','הכלב שנפצע ברגל','🩹'],['🛶','הסירה','🔨'],['🧱','הקיר','🖌️']];
 const FIXBY={
  r:[['🚲','האופניים','🔧','צריך לתקן את האופניים עם מפתח ברגים'],['🪑','הכיסא','🔨','אני דופק מסמרים עם פטיש'],['🧸','הדובי','🪡','אני תופר את הדובי הקרוע'],['🤖','הרובוט','🪛','אני מבריג בורג ברובוט'],['🏠','הבית','🖌️','אני צובע את הקיר באדום'],['🚪','הדלת','🔨','צריך לסגור את הדלת עם מסמר'],['🛶','הסירה','🔨','אני מתקן חור בסירה']],
@@ -2031,7 +2042,9 @@ function soundPos(tok,sid,flagK){const w=bareWord(tok),out=new Set(),n=w.length;
 function allowedPos(){return positions(S.bits).filter(p=>p==='s'||p==='m'||p==='e')}
 /* clusters / substitution words the therapist ticked are allowed as they are */
 function posWhite(){const s=SOUNDS[S.sound],w=new Set();if(!s||!s.w)return w;if(has(S.bits,21))(s.w.c||[]).forEach(x=>w.add(x[0]));if(has(S.bits,22))(s.w.x||[]).forEach(x=>w.add(x[0]));return w}
-function okPos(text,flagK){const s=SOUNDS[S.sound];if(!s)return true;const A=allowedPos();if(!A.length)return true;const W=posWhite();
+function okPos(text,flagK){const s=SOUNDS[S.sound];if(!s)return true;
+  /* positions matter in the syllables, words and phrases stages; from short sentences on, all positions are practised */
+  if(S.stage!=='syl'&&S.stage!=='words'&&S.stage!=='phr')return true;const A=allowedPos();if(!A.length)return true;const W=posWhite();
   let found=false;for(const t of String(text).split(/[\s,!?.:"׳״\-]+/)){if(!t)continue;if(W.has(t)||W.has(bareWord(t))){found=true;continue}
     const ps=soundPos(t,s.id,flagK);for(const p of ps){if(!A.includes(p))return false;found=true}}
   return found}
@@ -2047,7 +2060,9 @@ function stageItems(st,act){
   if(st==='words')return shuffle(soundWords());
   /* memory game in the phrases stage: "ראיתי גזר, ראיתי גזר" — the carrier word also has the target sound */
   if(st==='phr'&&act==='memory'){const C=MEMV[s.id]||'מצאתי';return posOr(shuffle(soundWords().filter(x=>!x[0].includes(' '))).map(w=>[`${C} ${w[0]}, ${C} ${w[0]}`,w[1]]))}
-  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex)&&okPos(x[0])).map(x=>[x[0],tintPic(x[0],x[1])]);return shuffle(p.length>=4?p:soundWords())}
+  if(st==='phr'){const ex=excluded();const p=(PHRASES[s.id]||[]).filter(x=>okText(x[0],ex)&&okPos(x[0])).map(x=>[x[0],tintPic(x[0],x[1])]);
+    /* not enough ready phrases for the ticked position: the child's words + 'יפה' (no target sound, fits boys' and girls' words) */
+    const more=soundWords().filter(w=>!w[0].includes(' ')&&!p.some(x=>x[0].startsWith(w[0]))).map(w=>[w[0]+' יפה',w[1]]);return shuffle(p.length>=6?p:[...p,...more])}
   /* in the train game the sentences are about the train itself */
   if(act==='train'&&st==='short')return posOr(shuffle(soundWords()).map(w=>[w[0]+' עולה לרכבת',w[1]]));
   if(act==='train'&&st==='long'){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length;i+=2)out.push([w[i][0]+' ו'+w[i+1][0]+' עולים לרכבת',w[i][1]+w[i+1][1]]);return posOr(out)}
@@ -2424,7 +2439,7 @@ function excluded(){const set=new Set();const s=SOUNDS[S.sound];
 function okText(text,ex){ex=ex||excluded();if(!ex.size)return true;
   return !String(text).split(/[\s,!?.]+/).some(t=>t&&(ex.has(t)||(t.length>3&&ex.has(t.slice(1)))||(t.length>4&&ex.has(t.slice(2)))))}
 function soundWords(){const s=SOUNDS[S.sound],ex=excluded();
-  const ps=positions(S.bits);
+  const ps=(S.stage==='words'||S.stage==='phr')?positions(S.bits):['s','m','e'].concat(has(S.bits,21)?['c']:[],has(S.bits,22)?['x']:[]);
   const seen=new Set();let w=ps.flatMap(p=>s.w[p]||[]).filter(x=>!seen.has(x[0])&&seen.add(x[0]));
   w=w.filter(x=>okText(x[0],ex)&&okPos(x[0]));
   return w}
@@ -3625,7 +3640,7 @@ function renderTherapist(){
       <datalist id="patients">${[...new Set(list.map(r=>r.n).filter(Boolean))].map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
       <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
     <fieldset><legend>היגוי</legend><div class="checks">${SOUNDS.map((s,i)=>`<label><input type="checkbox" id="g${i}" data-bit="${i}"> הגה ${s.name}</label>`).join('')}</div></fieldset>
-    <fieldset class="sndonly" hidden><legend>מיקום ההגה במילה</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א)':''}</label>`).join('')}</div></fieldset>
+    <fieldset class="sndonly" hidden><legend>מיקום ההגה במילה (חל על הברות, מילים וצירופים)</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א)':''}</label>`).join('')}</div></fieldset>
     <fieldset class="stgonly" hidden><legend>עד איזה שלב פתוח לתרגול</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]} · קולי/בלתי קולי: ${['הגרון המזמזם','עד רועש או שקט','עד ממיינים מילים 1','עד ממיינים מילים 2','עד זוגות מילים','הכל'][i]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select>
       <p class="muted" style="font-size:14px;margin-top:4px">אותו שלב חל גם על ההגאים וגם על הקולי ובלתי קולי (בקוד אין מקום לשני שלבים נפרדים). בקולי ובלתי קולי נפתחים רק המשחקים עד השלב שבחרת.</p></fieldset>
     <fieldset><legend>קולי ובלתי קולי</legend><div class="checks">${VOICING.map(v=>`<label><input type="checkbox" id="v${v.bit}" data-bit="${v.bit}"> ${v.name}</label>`).join('')}</div></fieldset>
