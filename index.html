@@ -978,7 +978,12 @@ body{background:#5E8F55}
 @keyframes swimL{from{left:105%}to{left:-25%}}
 .bucket{position:relative;line-height:1}
 .dragonbox{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
-.dragon{position:relative;font-size:min(30vw,130px);line-height:1;transform:scale(var(--s));transition:transform .45s ease;filter:drop-shadow(0 10px 10px rgba(0,0,0,.2));margin:10px 0 18px}
+.dstage{height:min(62vw,270px);display:flex;align-items:flex-end;justify-content:center;width:100%}
+.dragon{position:relative;font-size:min(17vw,76px);line-height:1;transform:scale(var(--s));transform-origin:50% 100%;transition:transform .7s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 10px 10px rgba(0,0,0,.2))}
+.dragon.full .dg{display:inline-block;animation:ddance .5s ease-in-out infinite alternate}
+@keyframes ddance{0%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(0) translateY(-10px)}100%{transform:rotate(12deg) translateY(0)}}
+.dragon .notes{position:absolute;right:-30%;top:-10%;font-size:.4em;animation:dnote 1.2s ease-out infinite}.dragon .notes.n2{right:auto;left:-30%;animation-delay:.6s}
+@keyframes dnote{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
 .dragon.munch .dg{display:inline-block;animation:munch .45s ease}
 .dragon .fire{position:absolute;left:-46%;top:6%;font-size:.55em;animation:fire 1s ease-in-out infinite}
 @keyframes munch{30%{transform:scale(1.12,0.9)}60%{transform:scale(.95,1.08)}}
@@ -1023,6 +1028,23 @@ body{background:#5E8F55}
 .bcell.no{animation:shake .35s}
 .bwin{font-size:min(12vw,56px);font-weight:800;color:#E39A2D;text-shadow:0 3px 0 #fff;animation:popin .5s ease-out}
 /* kite, treasure, castle */
+.shopc{display:flex;align-items:flex-end;justify-content:center;gap:22px;flex-wrap:wrap;width:100%}
+.register{position:relative;width:min(40vw,170px);height:min(30vw,128px);border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#61717F,#3B4752);box-shadow:0 12px 20px -12px rgba(0,0,0,.6);cursor:pointer}
+.register .rscreen{position:absolute;top:10px;left:14px;right:14px;height:30px;border-radius:7px;background:#A8EBC0;color:#0E4D30;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;direction:ltr;box-shadow:inset 0 2px 4px rgba(0,0,0,.25)}
+.register .rslot{position:absolute;top:50px;left:50%;width:56px;height:8px;border-radius:4px;background:#1E262D;transform:translateX(-50%)}
+.register .rkeys{position:absolute;left:16px;right:16px;bottom:22px;display:grid;grid-template-columns:repeat(6,1fr);gap:4px}.register .rkeys i{height:10px;border-radius:3px;background:#D8DEE4}
+.register .rdrawer{position:absolute;left:8px;right:8px;bottom:-12px;height:18px;border-radius:4px;background:#4C5966;transition:transform .2s}
+.register.ding .rdrawer{animation:drawer .7s ease-out}.register.ding .rscreen{animation:popin .4s ease-out}
+@keyframes drawer{30%{transform:translateY(14px)}100%{transform:none}}
+.counter{display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%}
+.counter .cthing{font-size:min(20vw,90px);line-height:1}.counter .cthing img{width:min(26vw,110px);height:auto}
+.csent{font-size:min(5.5vw,24px)!important}
+.coins{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.coinb{width:66px;height:66px;border-radius:50%;border:3px solid #C98A00;background:radial-gradient(circle at 35% 30%,#FFF1B0,#F4C04A 55%,#D9961C);color:#5A3500;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;cursor:pointer;box-shadow:0 5px 0 #A8700F;touch-action:none}
+.coinb b{font-size:24px}.coinb small{font-size:12px}
+.coinb[disabled]{opacity:.35;box-shadow:none}
+.coinb.sel{transform:scale(1.12)}
+.coinb.ready{animation:thover 1.2s ease-in-out infinite;box-shadow:0 0 0 6px rgba(244,192,74,.45),0 5px 0 #A8700F;cursor:grab}
 .kitesky2{position:relative;width:100%;height:min(52vh,340px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#4FA8E8,#A8DBFF 72%,#CDEBB0 72%,#8DBF62)}
 .kcloud{position:absolute;transform:translate(-50%,-50%);border:0;background:none;padding:0;cursor:pointer;animation:kfloat 5s ease-in-out infinite;animation-delay:var(--dl)}
 .kcloud .kcl{font-size:min(20vw,92px);line-height:1;filter:drop-shadow(0 6px 6px rgba(0,60,110,.25))}
@@ -1406,6 +1428,8 @@ const SFX=(()=>{
     phone,
     /* a soft gust of wind (kite game) */
     wind(){hiss(1.4,{hp:120,lp:700,vol:.16})},
+    /* cash register: drawer rattle + two bells */
+    kaching(){noise(.12,{vol:.25,hp:1800,lp:9000});tone(2093,.3,{type:'triangle',vol:.2,at:.06});tone(2637,.6,{type:'triangle',vol:.2,at:.14});tone(3136,.5,{type:'sine',vol:.08,at:.14})},
     crack(){noise(.06,{vol:.5,hp:2000});noise(.06,{at:.25,vol:.5,hp:2000});noise(.12,{at:.55,vol:.6,hp:1500})},
     chomp(){[0,.15,.3].forEach(t=>{noise(.07,{at:t,vol:.5,hp:300,lp:2500});tone(180,.07,{at:t,vol:.2,to:120})})},
     burp(){tone(110,.5,{type:'sawtooth',vol:.12,to:70})},
@@ -1884,6 +1908,8 @@ GAMES.journey=['🗺️','מסע בממלכה','מטילים קובייה ומג
 GAMES.kite=['🪁','מעיפים עפיפון','כל צירוף מרים אותו גבוה יותר'];
 GAMES.treasure=['💎','מחפשים מטמון','חופרים בחול ומוצאים אוצר'];
 GAMES.castle=['🏰','בונים את הטירה','כל משפט בונה עוד קומה'];
+GAMES.cashier=['🪙','משלמים בקופה','"אני משלם על... שקלים" ודינג!'];
+const COINS=[[1,'שקל אחד'],[2,'שני שקלים'],[5,'חמישה שקלים'],[10,'עשרה שקלים']];
 GAMES.seq=['📚','קלפי רצף','מסדרים את הסיפור ומספרים'];
 GAMES.director=['🎬','הבמאי','ממציאים איך הסיפור נגמר'];
 GAMES.bingo=['🎲','בינגו','מוצאים את התמונה ואומרים'];
@@ -1892,7 +1918,7 @@ const STORIES=[{name:'הפרח של נועה',k:['s0','s1','s2']},{name:'ארמ�
 /* things that do not make sense to buy or to feed to a dragon (body parts, abstract words, numbers...) */
 const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
 function gamesFor(st){
-  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','castle','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
+  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','castle','cashier','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['seq','director','pscene','scene','absurd'];
   if(st==='syl')return ['bubbles','tower','eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['kite','silly','balloon','train','line','memory','wheel'];
@@ -2222,6 +2248,7 @@ function startAct(act,from){
   if(act==='kite'){d.items=items().slice(0,6);d.done=[];d.kpos=null}
   if(act==='treasure'){const w=items();d.items=Array.from({length:8},(x,i)=>w[i%w.length]);d.dug=[];d.opened=false;d.prize=''}
   if(act==='castle'){d.items=items().slice(0,6);d.n=0}
+  if(act==='cashier'){let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<3)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));d.items=w.slice(0,6);d.k=0;d.coin=null;d.paid=false;d.total=0}
   if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='tower')render()})}
@@ -2254,7 +2281,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2541,6 +2568,32 @@ function renderAct(){
       sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
     return;
   }
+  if(S.act==='cashier'){
+    /* long sentences: a shop counter and a cash register. For each thing the child picks a coin and says
+       "אני משלם/ת על <thing> <amount> שקלים", then drags the coin into the register (or taps it): ka-ching! */
+    const N=d.items.length,fin=d.k>=N,it=d.items[Math.min(d.k,N-1)],pay=kidG()==='g'?'משלמת':'משלם',cn=d.coin!=null?COINS[d.coin]:null;
+    const sent=cn?`אני ${pay} על ${it[0]} ${cn[1]}`:'';
+    shell(`<div class="card stage"><p class="muted">${fin?'קנינו הכל! 🛍️':d.paid?'עכשיו מכניסים את המטבע לקופה 👇':cn?'אומרים את המשפט 🗣️':'כמה זה עולה? בוחרים מטבע 🪙'}</p><div class="progress">${Math.min(d.k+1,N)} / ${N}</div>
+      <div class="shopc"><div class="register ${d.ding?'ding':''}" id="register"><div class="rscreen">₪ ${d.total}</div><div class="rslot"></div><div class="rkeys">${'<i></i>'.repeat(6)}</div><div class="rdrawer"></div></div>
+        ${fin?'<div class="bagic">🛍️</div>':`<div class="counter"><span class="cthing">${it[1]}</span>${cn?`<div class="sentence csent">${hl(sent,SOUNDS[S.sound].hl)}</div>`:''}</div>`}</div>
+      ${fin?'':`<div class="coins">${COINS.map((c,i)=>`<button class="coinb ${d.coin===i?'sel':''} ${d.coin===i&&d.paid?'ready':''}" data-c="${i}" type="button" ${d.coin!=null&&d.coin!==i?'disabled':''}><b>${c[0]}</b><small>₪</small></button>`).join('')}</div>`}</div>`);
+    d.ding=false;
+    if(fin)return;
+    if(d.coin==null){app.querySelectorAll('.coinb').forEach(b=>b.onclick=()=>{d.coin=+b.dataset.c;SFX.blip();render();
+      const c=COINS[d.coin];TIMERS.push(setTimeout(()=>sayIt([`אני ${pay} על ${it[0]} ${c[1]}`,it[1]],()=>{d.paid=true;render()}),400))});return}
+    if(!d.paid)return;
+    const coin=app.querySelector('.coinb.ready'),reg=document.getElementById('register');
+    const drop=()=>{const c=COINS[d.coin];flyTo(coin,reg,()=>{SFX.kaching();d.total+=c[0];d.ding=true;d.k++;d.coin=null;d.paid=false;render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}})};
+    reg.onclick=drop;coin.onclick=drop;
+    coin.onpointerdown=e=>{const r=coin.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
+      const mv=ev=>{if(!g&&Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>6){g=coin.cloneNode(true);g.classList.add('flying');Object.assign(g.style,{position:'fixed',zIndex:80,left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',pointerEvents:'none'});document.body.appendChild(g);coin.style.visibility='hidden'}
+        if(g){g.style.left=(ev.clientX-(sx-r.left))+'px';g.style.top=(ev.clientY-(sy-r.top))+'px'}};
+      const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);if(!g)return;g.remove();coin.style.visibility='';
+        const b=reg.getBoundingClientRect();if(ev.clientX>=b.left-30&&ev.clientX<=b.right+30&&ev.clientY>=b.top-30&&ev.clientY<=b.bottom+30){coin.onclick=null;
+          SFX.kaching();const c=COINS[d.coin];d.total+=c[0];d.ding=true;d.k++;d.coin=null;d.paid=false;render();if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}}};
+      document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
+    return;
+  }
   if(S.act==='seq'||S.act==='director'){
     /* story level. seq: three cards of a picture story are mixed up; the child puts them in order (first, then, at the end) and tells the story.
        director: the first two pictures are shown, the child invents the ending, then the real ending is revealed */
@@ -2662,11 +2715,11 @@ function renderAct(){
     /* short sentences: a hungry dragon; "הדרקון אוכל ..." and the food flies into it; it grows, and when full it puffs happy fire */
     const N=d.items.length,full=d.fed.length>=N;
     shell(`<div class="card stage"><p class="muted">${full?'הדרקון שבע ושמח! 🔥':'הדרקון רעב! נוגעים באוכל, אומרים את המשפט, ומאכילים אותו 🐉'}</p><div class="progress">${d.fed.length} / ${N}</div>
-      <div class="dragonbox"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(1+d.fed.length*.08).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span>':''}</div>
+      <div class="dragonbox"><div class="dstage"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(1+d.fed.length*.3).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span><span class="notes">🎵</span><span class="notes n2">🎶</span>':''}</div></div>
       <div class="foods">${d.items.map((it,ix)=>d.fed.includes(ix)?'':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div></div></div>`);
     app.querySelectorAll('.foods .sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{const g=document.getElementById('dragon');flyTo(b,g,()=>{SFX.chomp();g.classList.add('munch');d.fed.push(ix);
-        TIMERS.push(setTimeout(()=>{render();if(d.fed.length>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2200))}},450))})})});
+        TIMERS.push(setTimeout(()=>{render();if(d.fed.length>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),1200));TIMERS.push(setTimeout(finish,6500))}},450))})})});
     return;
   }
   if(S.act==='journey'){
