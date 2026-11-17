@@ -1173,6 +1173,12 @@ body{background:#5E8F55}
 .sbub2{position:absolute;top:-6%;right:-4%;z-index:3;background:#fff;border:3px solid #E39A2D;border-radius:22px;padding:4px 14px;font-size:36px;font-weight:900;box-shadow:0 6px 14px rgba(0,0,0,.15)}.sbub2::after{content:'';position:absolute;bottom:-12px;left:22%;border:8px solid transparent;border-top:10px solid #E39A2D}.egg2.opening .sbub2{animation:sgrow 1.1s cubic-bezier(.3,1.6,.5,1) .35s both}@keyframes sgrow{0%{transform:scale(0);opacity:0}60%{transform:scale(1.35)}100%{transform:scale(1.15)}}.egg2.done .sbub2{font-size:22px;padding:2px 10px}
 .monster.mgrow{transition:transform 1.8s cubic-bezier(.45,.05,.35,1)}.mplay.mgiant{overflow:visible;z-index:30}.card:has(.mgiant),.stage:has(.mgiant){overflow:visible}.mplay.mgiant .monster{z-index:30}.mplay.mgiant .yumbub{z-index:40}
 .bug .bugemo{font-size:34px;line-height:1;display:inline-block;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}.bug .bugemo img{width:46px;height:46px;object-fit:contain}
+.dragon .dgimg{width:1.25em;height:1.25em;object-fit:contain;display:block}
+.sboard{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 290px);margin:0 auto;border-radius:20px;overflow:hidden;background:#7CC66A url(kingdom-bg.jpg?v=2) center/cover;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6),0 10px 24px rgba(0,0,0,.2);touch-action:none}
+.sbs{position:absolute;transform:translate(-50%,-50%) scale(var(--s));font-size:clamp(34px,6vw,58px);line-height:1;cursor:grab;touch-action:none;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3));animation:sbob 2.4s ease-in-out infinite;animation-delay:var(--d)}.sbs img,.sbt img,.sdrag img{width:1.2em;height:1.2em;object-fit:contain;display:block;pointer-events:none}
+@keyframes sbob{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -6px;rotate:3deg}}
+.stray{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;padding:10px;border-radius:16px;background:rgba(255,248,232,.9);border:2px dashed #E39A2D;min-height:70px}
+.sbt{font-size:40px;line-height:1;cursor:grab;touch-action:none;padding:4px;border-radius:12px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12)}.sdrag{font-size:48px;line-height:1}
 </style>
 </head>
 <body>
@@ -1552,7 +1558,7 @@ function pickVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)
   /* only a woman's voice; if the device has only a man's Hebrew voice (e.g. "Asaf" on Windows), stay silent */
   HEV=v.find(x=>/carmit|hila|female|אישה|google/i.test(x.name))||v.find(x=>!/asaf|avri|male/i.test(x.name))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function greet(text){if(SFX.muted)return;try{if(!HEV)pickVoice();if(!HEV)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(niq(text));u.voice=HEV;u.lang=HEV.lang;u.rate=.92;u.pitch=1.15;speechSynthesis.speak(u)}catch(e){}}
+function greet(text){sayWord(text)}
 /* any Hebrew voice (a man's voice is fine here) to say single words in the listening stage */
 function anyHebVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang));return v.find(x=>/hila|carmit|google/i.test(x.name))||v[0]||null}catch(e){return null}}
 /* vowel marks so the speech voice says every practice word correctly (without them it guesses, e.g. כלב / כלוב) */
@@ -1568,7 +1574,9 @@ const NIQ={'אבוקדו':'אָבוֹקָדוֹ','אגוז':'אֱגוֹז','אג
  'שבלול':'שַׁבְּלוּל','שוקולד':'שׁוֹקוֹלָד','שיר':'שִׁיר','שלג':'שֶׁלֶג','שלושה':'שְׁלוֹשָׁה','שמונה':'שְׁמוֹנָה','שמיכה':'שְׂמִיכָה','שמש':'שֶׁמֶשׁ','שן':'שֵׁן','שעון':'שָׁעוֹן','שתיים':'שְׁתַּיִם','תולעת':'תּוֹלַעַת','תיק':'תִּיק','תפוז':'תפוז','תרנגול':'תרנגול'};
 const niq=t=>String(t).replace(/[א-ת]+/g,w=>NIQ[w]||w);
 /* single words are said by the Google voice (the computer voice misreads words: KOV, TEAPUZ, TEIK); the computer voice is the fallback */
-function sayWord(w,local){if(SFX.muted)return;if(!local&&navigator.onLine!==false&&!/\s/.test(String(w).trim())){saySyl(niq(String(w).trim()));return}try{const v=anyHebVoice();if(!v)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(niq(w));u.voice=v;u.lang=v.lang;u.rate=.8;u.pitch=1;speechSynthesis.speak(u)}catch(e){}}
+/* every word and sentence is said by the Google Hebrew (woman's) voice; the device voice (a man's voice that mispronounces) is not used */
+function gChunks(t){const out=[];let cur='';String(t).split(/\s+/).forEach(w=>{if((cur+' '+w).trim().length>180){if(cur)out.push(cur);cur=w}else cur=(cur+' '+w).trim()});if(cur)out.push(cur);return out}
+function sayWord(w){if(SFX.muted||!String(w||'').trim())return;saySeq(gChunks(niq(String(w).trim())))}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
 const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!'],
@@ -1593,8 +1601,8 @@ function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);retu
 function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
-      a.onended=go;a.onerror=()=>{sayWord(t,1);setTimeout(go,1100)};a.play().catch(()=>{sayWord(t,1);setTimeout(go,1100)})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
-function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;sayWord(t,1)};
+      a.onended=go;a.onerror=()=>setTimeout(go,300);a.play().catch(()=>setTimeout(go,300))}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
+function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{done=true};
   try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
     a.onerror=fb;a.play().then(()=>{done=true}).catch(fb)}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
@@ -1844,6 +1852,7 @@ function render(){
   if(S.view==='mine')return renderMine();
   if(S.view==='act')return renderAct();
   if(S.view==='album')return renderAlbum();
+  if(S.view==='board')return renderBoard();
 }
 function renderAlbum(){
   const got=Math.min(STICKERS.length,Math.floor(S.stars/PER_STICKER)),rem=PER_STICKER-S.stars%PER_STICKER;
@@ -1851,8 +1860,32 @@ function renderAlbum(){
     <p class="muted">כל ${PER_STICKER} כוכבים ⭐ שווים מדבקה חדשה!</p>
     ${got<STICKERS.length?`<div class="nextbar" aria-hidden="true"><i style="width:${(S.stars%PER_STICKER)/PER_STICKER*100}%"></i></div><p>${rem===1?'עוד כוכב אחד':'עוד '+rem+' כוכבים'} עד המדבקה הבאה</p>`:'<h2>אספת את כל המדבקות! 👑</h2>'}
     <p class="progress">${got} / ${STICKERS.length} מדבקות</p>
-    <div class="album">${STICKERS.map((s,i)=>i<got?`<div class="stk got" style="--i:${i}">${s}</div>`:`<div class="stk lock" aria-hidden="true"><span>${s}</span></div>`).join('')}</div></div>`;
+    ${got?'<button class="btn sun" id="toboard" type="button" style="margin-bottom:12px">🏰 מדביקים בממלכה!</button>':''}<div class="album">${STICKERS.map((s,i)=>i<got?`<div class="stk got" style="--i:${i}">${s}</div>`:`<div class="stk lock" aria-hidden="true"><span>${s}</span></div>`).join('')}</div></div>`;
+  bindCommon();const tb=document.getElementById('toboard');if(tb)tb.onclick=()=>go('board');
+}
+/* sticker board: the stickers the child collected are taken out of the album and stuck on the kingdom picture (forest, stream,
+   castle), like a magnet board: drag from the tray to stick, drag to move, touch to make bigger, drag back down to take off.
+   Saved on this device for this child */
+function renderBoard(){
+  const got=Math.min(STICKERS.length,Math.floor(S.stars/PER_STICKER)),key='board-'+S.code;let B=[];try{B=JSON.parse(store.get(key)||'[]')||[]}catch(e){B=[]}
+  const save=()=>{try{store.set(key,JSON.stringify(B))}catch(e){}};
+  app.innerHTML=header('מדביקים בממלכה','home')+`<div class="card stage"><p class="muted">גוררים מדבקה אל התמונה. נוגעים במדבקה כדי להגדיל אותה, וגוררים למטה כדי להוריד 🏰</p>
+    <div class="sboard" id="sboard">${B.map((o,k)=>`<span class="sbs" data-k="${k}" style="left:${o.x}%;top:${o.y}%;--s:${o.s||1};--d:${(k%5)*.4}s">${STICKERS[o.i]||''}</span>`).join('')}</div>
+    <div class="stray" id="stray">${got?STICKERS.slice(0,got).map((s,i)=>`<span class="sbt" data-i="${i}">${s}</span>`).join(''):'<p class="muted">עוד אין מדבקות. אוספים כוכבים במשחקים ⭐</p>'}</div></div>`;
   bindCommon();
+  const bd=document.getElementById('sboard'),inB=(x,y)=>{const r=bd.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom};
+  const pct=(x,y)=>{const r=bd.getBoundingClientRect();return [Math.max(3,Math.min(97,(x-r.left)/r.width*100)),Math.max(4,Math.min(96,(y-r.top)/r.height*100))]};
+  const drag=(src,e,onDrop,onTap)=>{e.preventDefault();const r=src.getBoundingClientRect(),g=src.cloneNode(true);g.classList.add('sdrag');
+    Object.assign(g.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',zIndex:90,pointerEvents:'none',margin:0,transform:'scale(1.15)'});document.body.appendChild(g);
+    const ox=e.clientX-r.left,oy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;let moved=false;
+    const mv=ev=>{if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>6)moved=true;g.style.left=(ev.clientX-ox)+'px';g.style.top=(ev.clientY-oy)+'px'};
+    const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);g.remove();
+      if(!moved){onTap&&onTap();return}onDrop(ev.clientX-ox+r.width/2,ev.clientY-oy+r.height/2)};
+    document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)};
+  app.querySelectorAll('.sbt').forEach(t=>t.onpointerdown=e=>drag(t,e,(x,y)=>{if(!inB(x,y))return;const [px,py]=pct(x,y);B.push({i:+t.dataset.i,x:+px.toFixed(1),y:+py.toFixed(1),s:1});save();SFX.pop&&SFX.pop();renderBoard()}));
+  app.querySelectorAll('.sbs').forEach(t=>t.onpointerdown=e=>{const k=+t.dataset.k;t.style.visibility='hidden';
+    drag(t,e,(x,y)=>{if(inB(x,y)){const [px,py]=pct(x,y);B[k].x=+px.toFixed(1);B[k].y=+py.toFixed(1);SFX.blip()}else{B.splice(k,1);SFX.plop&&SFX.plop()}save();renderBoard()},
+      ()=>{B[k].s=B[k].s>=2?1:+(B[k].s+.5).toFixed(1);save();SFX.boing&&SFX.boing();renderBoard()})});
 }
 
 /* the therapy table with the clinic's games, shown to parents before the door opens; parts of it move */
@@ -1915,7 +1948,7 @@ const vKind=v=>['ז','V'].includes(v.a[0])?'fric':'stop';
 function renderPair(){
   const v=VOICING[S.pair];
   const A=vLab(v.a[0]),B=vLab(v.b[0]);
-  const acts=[['vbuzz','🐝','הגרון המזמזם','שומעים ומרגישים: רועש או שקט'],['vquiz','👂','רועש או שקט?','מקשיבים לצליל ובוחרים'],['vsort','🧺','ממיינים מילים','גוררים כל תמונה ל'+B+' או ל'+A],['vmin','🔀','זוגות מילים','אות אחת משנה את כל המילה'],['games','🎮','משחקי אמירה','מילים עם '+A+' ועם '+B]];
+  const acts=[['vbuzz','🐝','הגרון המזמזם','שומעים ומרגישים: רועש או שקט'],['vquiz','👂','רועש או שקט?','מקשיבים לצליל ובוחרים'],['vsortg','🧺','ממיינים מילים 1','המחשב משמיע את שתי האפשרויות'],['vsort','🧺','ממיינים מילים 2','שומעים את המילה ומחליטים לבד'],['vmin','🔀','זוגות מילים','אות אחת משנה את כל המילה'],['games','🎮','משחקי אמירה','מילים עם '+A+' ועם '+B]];
   app.innerHTML=header(v.name,'home')+`<div class="grid">${acts.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
   bindCommon();
   app.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(b.dataset.act==='games')go('games',{stage:'pair',gback:'pair'});else startAct(b.dataset.act,'pair')});
@@ -2407,7 +2440,7 @@ function startAct(act,from){
   if(act==='journey'){const it=items();d.items=it.length?it:[['','']];d.k=0;d.pos=0;d.roll=null;d.phase='roll';d.note='';d.cnt=null;d.hl=null}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
-  if(act==='vsort'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
+  if(act==='vsort'||act==='vsortg'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
     const A=V?V.a:v.a[1].map(sy),B=V?V.b:v.b[1].map(sy);
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
@@ -2431,7 +2464,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -3024,7 +3057,7 @@ function renderAct(){
     /* short sentences: a hungry dragon; "הדרקון אוכל ..." and the food flies into it; it grows, and when full it puffs happy fire */
     const N=d.items.length,full=d.fed.length>=N;
     shell(`<div class="card stage"><p class="muted">${full?'הדרקון שבע ושמח! 🔥':'הדרקון רעב! נוגעים באוכל, אומרים את המשפט, ומאכילים אותו 🐉'}</p><div class="progress">${d.fed.length} / ${N}</div>
-      <div class="dragonbox"><div class="dstage"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(d.prevS||1).toFixed(2)}"><span class="dg">🐉</span>${full?'<span class="fire">🔥</span><span class="notes">🎵</span><span class="notes n2">🎶</span>':''}</div></div>
+      <div class="dragonbox"><div class="dstage"><div class="dragon ${full?'full':''}" id="dragon" style="--s:${(d.prevS||1).toFixed(2)}"><span class="dg">${(window.WORD_IMG||{})['🐉']?`<img class="dgimg" src="${WORD_IMG['🐉']}" alt="">`:'🐉'}</span>${full?'<span class="fire">🔥</span><span class="notes">🎵</span><span class="notes n2">🎶</span>':''}</div></div>
       <div class="foods">${d.items.map((it,ix)=>d.fed.includes(ix)?'':`<button class="sitem2" data-ix="${ix}" type="button"><span class="spic2">${it[1]}</span></button>`).join('')}</div></div></div>`);
     {const ns=d.fed.length>=N?4.8:1+d.fed.length/N*3,dg=document.getElementById('dragon');if(dg&&Math.abs((d.prevS||1)-ns)>.01){requestAnimationFrame(()=>requestAnimationFrame(()=>{dg.classList.add('grow');dg.style.setProperty('--s',ns.toFixed(2))}))}d.prevS=ns}
     app.querySelectorAll('.foods .sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
@@ -3315,7 +3348,7 @@ function renderAct(){
           TIMERS.push(setTimeout(()=>{d.j++;d.said=false;d.fixed=false;if(d.j>=d.jobs.length)finish();else render()},1800))},900))})});
     return;
   }
-  if(S.act==='vbuzz'||S.act==='vquiz'||S.act==='vsort'){
+  if(S.act==='vbuzz'||S.act==='vquiz'||S.act==='vsort'||S.act==='vsortg'){
     const v=VOICING[S.pair],kind=vKind(v),A=vLab(v.a[0]),B=vLab(v.b[0]);
     const side=(loud,inner,extra)=>`<button class="vside ${loud?'loud':'quiet'}" ${extra||''} type="button">${inner}</button>`;
     const fx=loud=>`<span class="vmeter"><i></i></span><span class="vfx">${loud?'<i></i><i></i><i></i>':'💨'}</span>`;
@@ -3356,7 +3389,7 @@ function renderAct(){
       return;
     }
     /* vsort: a picture; touching it says the word; the child drags it to the voiceless side or the voiced side */
-    const it=d.list[d.k],voiceOk=!!anyHebVoice();
+    const it=d.list[d.k],voiceOk=true;
     shell(`<div class="card stage"><p class="drag-hint">${kidG()==='g'?'הקשיבי':'הקשב'} לתחילת המילה: האם זה צליל חלש או צליל חזק? 👂</p>
       <p class="muted" style="font-size:15px;margin-top:-4px">נוגעים בתמונה כדי לשמוע שוב, וגוררים אותה לצד הנכון</p>
       <div class="progress">${d.k+1} / ${d.list.length}</div>
@@ -3381,12 +3414,25 @@ function renderAct(){
         const inZ=z=>{const b=z.getBoundingClientRect();return ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom};
         if(inZ(zA))choose(true);else if(inZ(zB))choose(false)};
       document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)};
-    d.lock=false;TIMERS.push(setTimeout(()=>saySeq([it[3],it[3],niq(it[0])]),450));
+    d.lock=false;
+    if(S.act!=='vsortg'){TIMERS.push(setTimeout(()=>saySeq([it[3],it[3],niq(it[0])]),450));return}
+    /* guided sorting: the computer says both possibilities ("פָּרָה? בָּרָה?") and the picture slides to each side as it is said;
+       then the child decides where the picture goes */
+    const lv=v.a[0]==='V'?'ו':v.a[0],lb=v.b[0]==='F'?'פ':v.b[0],w=niq(it[0]),rest=w.slice(1).replace(/^ּ/,'');
+    const dg=x=>v.b[0]!=='F'&&'בפכתדג'.includes(x)?'ּ':'';
+    const voiced=it[2]?w:lv+dg(lv)+rest,voiceless=it[2]?lb+dg(lb)+rest:w;
+    const slide=z=>{card.style.transition='transform .7s ease-in-out';if(!z){card.style.transform='none';return}
+      const c=card.getBoundingClientRect(),t=z.getBoundingClientRect(),cur=new DOMMatrix(getComputedStyle(card).transform).m41||0;
+      card.style.transform=`translateX(${(t.left+t.width/2)-(c.left+c.width/2-cur)}px) scale(.85)`};
+    const demo=(t0)=>[[t0,()=>{slide(zB);saySyl(voiceless+'?')}],[t0+1700,()=>{slide(zA);saySyl(voiced+'?')}],[t0+3400,()=>{slide(null)}],[t0+4100,()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'}]]
+      .forEach(([t,f])=>TIMERS.push(setTimeout(()=>{if(S.data===d)f()},t)));
+    d.lock=true;demo(700);
+    card.onclick=()=>{if(d.lock)return;d.lock=true;demo(0)};
     return;
   }
   if(S.act==='disc'){
     /* auditory discrimination: hear the word, drag the picture to the house (has the sound) or to the tree (doesn't) */
-    const L=SOUNDS[S.sound],it=d.list[d.k],chip=`<span class="letterchip">${L.name}</span>`,voiceOk=!!anyHebVoice();
+    const L=SOUNDS[S.sound],it=d.list[d.k],chip=`<span class="letterchip">${L.name}</span>`,voiceOk=true;
     shell(`<div class="card stage"><p class="drag-hint">מקשיבים למילה 👂 יש בה ${chip}? גוררים לבית. אין? גוררים לעץ.</p>
       <div class="progress">${d.k+1} / ${d.list.length}</div>
       <div class="discbox">
