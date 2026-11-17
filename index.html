@@ -1951,7 +1951,8 @@ function renderPair(){
   const v=VOICING[S.pair];
   const A=vLab(v.a[0]),B=vLab(v.b[0]);
   const acts=[['vbuzz','🐝','הגרון המזמזם','שומעים ומרגישים: רועש או שקט'],['vquiz','👂','רועש או שקט?','מקשיבים לצליל ובוחרים'],['vsortg','🧺','ממיינים מילים 1','המחשב משמיע את שתי האפשרויות'],['vsort','🧺','ממיינים מילים 2','שומעים את המילה ומחליטים לבד'],['vmin','🔀','זוגות מילים','אות אחת משנה את כל המילה'],['games','🎮','משחקי אמירה','מילים עם '+A+' ועם '+B]];
-  app.innerHTML=header(v.name,'home')+`<div class="grid">${acts.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
+  const ms=maxStage(S.bits),open=ms>=6?acts:acts.slice(0,ms);
+  app.innerHTML=header(v.name,'home')+`<div class="grid">${open.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
   bindCommon();
   app.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(b.dataset.act==='games')go('games',{stage:'pair',gback:'pair'});else startAct(b.dataset.act,'pair')});
 }
@@ -3594,7 +3595,8 @@ function renderTherapist(){
       <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
     <fieldset><legend>היגוי</legend><div class="checks">${SOUNDS.map((s,i)=>`<label><input type="checkbox" id="g${i}" data-bit="${i}"> הגה ${s.name}</label>`).join('')}</div></fieldset>
     <fieldset class="sndonly" hidden><legend>מיקום ההגה במילה</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א)':''}</label>`).join('')}</div></fieldset>
-    <fieldset class="sndonly" hidden><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select></fieldset>
+    <fieldset class="stgonly" hidden><legend>עד איזה שלב פתוח לתרגול</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]} · קולי/בלתי קולי: ${['הגרון המזמזם','עד רועש או שקט','עד ממיינים מילים 1','עד ממיינים מילים 2','עד זוגות מילים','הכל'][i]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select>
+      <p class="muted" style="font-size:14px;margin-top:4px">אותו שלב חל גם על ההגאים וגם על הקולי ובלתי קולי (בקוד אין מקום לשני שלבים נפרדים). בקולי ובלתי קולי נפתחים רק המשחקים עד השלב שבחרת.</p></fieldset>
     <fieldset><legend>קולי ובלתי קולי</legend><div class="checks">${VOICING.map(v=>`<label><input type="checkbox" id="v${v.bit}" data-bit="${v.bit}"> ${v.name}</label>`).join('')}</div></fieldset>
     <fieldset><legend>שפה</legend><div class="checks">${GOAL_LANG.map(g=>`<label><input type="checkbox" id="l${g.bit}" data-bit="${g.bit}"> ${g.name}</label>`).join('')}</div></fieldset>
     <fieldset class="mgset"><legend>⭐ משחקים אישיים</legend><p class="muted" style="font-size:14px;margin:0 0 6px">בלי שלבים: המטופל יראה רק את המשחקים שסימנת.</p>${myGames().length?`<div class="checks">${myGames().map(g=>`<label><input type="checkbox" class="mgc" value="${esc(g.id)}"> ${g.icon} ${esc(g.name)}</label>`).join('')}</div>`:'<p class="muted">עדיין אין משחקים אישיים.</p>'}</fieldset>
@@ -3689,8 +3691,8 @@ function renderTherapist(){
   const ghIn=document.getElementById('ghTok');document.getElementById('ghSave').onclick=async()=>{const v=ghIn.value.trim();const st=document.getElementById('ghStat');if(!v){store.del('gh-token');st.textContent='המפתח נמחק מהמכשיר.';return}
     store.set('gh-token',v);ghIn.value='';st.textContent='בודק...';try{const r=await fetch(GH_FILE+'?ref=main',{headers:{'Authorization':'Bearer '+v,'Accept':'application/vnd.github+json'}});st.textContent=r.ok?'✓ מחובר. מעכשיו חסימות והחלפות נשמרות לבד.':'המפתח לא עובד ('+r.status+'). בדקי שנתת הרשאת Contents: Read and write למאגר tirgul.'}catch(e){st.textContent='אין חיבור ל-GitHub מהמכשיר הזה.'}};
   /* position and stage only matter for sounds: show them once a sound is ticked */
-  const sndUpd=()=>{const any=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked});app.querySelectorAll('#tf .sndonly').forEach(f=>f.hidden=!any)};
-  SOUNDS.forEach((s,i)=>{const c=document.getElementById('g'+i);if(c)c.addEventListener('change',sndUpd)});sndUpd();
+  const sndUpd=()=>{const any=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked});app.querySelectorAll('#tf .sndonly').forEach(f=>f.hidden=!any);const anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});app.querySelectorAll('#tf .stgonly').forEach(f=>f.hidden=!(any||anyV))};
+  SOUNDS.forEach((s,i)=>{const c=document.getElementById('g'+i);if(c)c.addEventListener('change',sndUpd)});VOICING.forEach(v=>{const c=document.getElementById('v'+v.bit);if(c)c.addEventListener('change',sndUpd)});sndUpd();
   setupVrec();
   const mp=document.getElementById('mgPat');
   if(mp){const boxes=[...app.querySelectorAll('.mge')],sv=document.getElementById('mgSaveBtn'),st=document.getElementById('mgStat');
