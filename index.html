@@ -1154,6 +1154,8 @@ body{background:#5E8F55}
 .vmcard.good{border-color:#14A381;background:#E6F7F1;animation:pop .4s}.vmcard.no{animation:shake .5s}
 .vmend{font-size:22px;line-height:2;margin:10px 0}.vmend b{margin:0 10px;color:#E39A2D}.bagic.bagdance{position:relative;display:inline-block;animation:bagd .5s ease-in-out infinite alternate;transform-origin:50% 100%}.bagic.bagdance .notes{position:absolute;right:-35%;top:-10%;font-size:.4em;animation:dnote 1.2s ease-out infinite}.bagic.bagdance .notes.n2{right:auto;left:-35%;animation-delay:.6s}
 @keyframes bagd{0%{transform:rotate(-14deg) translateY(0) scale(1.05)}50%{transform:rotate(0) translateY(-18px) scale(1.15)}100%{transform:rotate(14deg) translateY(0) scale(1.05)}}
+.dmine{position:relative;width:min(100%,460px);aspect-ratio:1;margin:8px auto;border-radius:18px;overflow:hidden;background:linear-gradient(#8FD3FF 0 50%,#7CC66A 50%);container-type:inline-size;box-shadow:0 8px 20px rgba(0,0,0,.18)}.dmbg{position:absolute;inset:0;opacity:.35}.dmbg img{width:100%;height:100%;object-fit:cover}.dmcap{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,255,255,.92);border-radius:12px;padding:6px 10px;font-size:20px;font-weight:800}
+.dboth{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;align-items:flex-start}.dboth>div{display:flex;flex-direction:column;align-items:center;gap:4px;width:min(100%,300px)}.dboth .dmine{width:100%}.dboth .dreal{width:100%;aspect-ratio:1}
 </style>
 </head>
 <body>
@@ -2722,12 +2724,38 @@ function renderAct(){
         else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}});
       const tb=document.getElementById('tell');if(tb)tb.onclick=()=>recOverlay(`<div class="sstrip">${[0,1,2].map(pic).join('')}</div><div>קודם... אחר כך... ובסוף...</div>`,()=>{addStar();d.si++;d.placed=[];d.cards=shuffle([0,1,2]);if(d.si>=N)finish();else render()},{max:45000});
     }else{
-      shell(`<div class="card stage"><p class="muted">${d.told?'כך זה נגמר אצלנו! הסוף שלך היה שונה? 🎬':'מה קורה בסוף? ממציאים סוף לסיפור 🎬'}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>
-        <div class="sslots">${[0,1].map(i=>`<div class="sslot full"><span class="snum">${i+1}</span>${pic(i)}</div>`).join('')}<div class="sslot ${d.told?'full reveal':'mystery'}"><span class="snum">3</span>${d.told?pic(2):'<span class="sq">?</span>'}</div></div>
-        <button class="btn ${d.told?'sun':'leaf'}" id="dir" type="button">${d.told?'➡️ לסיפור הבא':'🎙️ ממציאים סוף'}</button></div>`);
-      document.getElementById('dir').onclick=()=>{if(d.told){d.told=false;d.si++;if(d.si>=N)finish();else render();return}
-        recOverlay(`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div><div>מה קרה בסוף?</div>`,()=>{addStar();d.told=true;SFX.fanfare();render()},{max:45000})};
-    }
+      /* director: the child invents the ending and says it; the computer writes what was said, the parent reads it and approves
+         with ✔ (so speech errors are not misunderstood), and the ending appears as a picture made of what was said.
+         Then the real ending of the story is revealed next to it */
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition,L=SOUNDS[S.sound]||{hl:''},ph=d.dp||'ask';
+      const mine=()=>{const f=ptFind(d.dtext||''),toks=String(d.dtext||'').split(/\s+/);let gi=0,si=0;
+        return `<div class="dmine"><div class="dmbg">${pic(1)}</div>${f.map(([w,e])=>{const sky=PT_SKY.has(w),pos=sky?PT_SKYPOS[si++%8]:PT_GROUNDPOS[gi++%12];
+          const ix=toks.findIndex(t=>t.endsWith(w.split(' ')[0])),nx=ix>=0?(toks[ix+1]||''):'';return `<span class="ptobj new" style="left:${pos[0]}%;top:${pos[1]}%;--s:1.2">${tintPic(w+' '+nx,e)}</span>`}).join('')}
+          <div class="dmcap">${hl(esc(d.dtext||''),L.hl)}</div></div>`};
+      let body='',ctl='';
+      if(ph==='ask'){body=`<div class="sslots">${[0,1].map(i=>`<div class="sslot full"><span class="snum">${i+1}</span>${pic(i)}</div>`).join('')}<div class="sslot mystery"><span class="snum">3</span><span class="sq">?</span></div></div>`;
+        ctl=`<button class="btn leaf" id="dir" type="button">🎤 ממציאים סוף</button>`}
+      else if(ph==='listen'){body=`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div>`;ctl=`<div class="recbox"><div class="recdot">🔴 מקשיבים... מה קרה בסוף?</div><div class="ptlive">${esc(d.live||'')}</div><button class="ghost" id="dstop" type="button">✋ סיימתי</button></div>`}
+      else if(ph==='confirm'){body=`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div>`;ctl=`<div class="ptsaid">${esc(d.dtext)}</div><p class="note">להורה: הקריאו לילד מה נכתב. זה מה שהוא אמר?</p>
+        <div class="row"><button class="btn leaf" id="dyes" type="button">✔ נכון!</button><button class="btn sun" id="dagain" type="button">🔁 אומרים שוב</button></div>`}
+      else if(ph==='mine'){body=mine();ctl=`<button class="btn sun" id="dreal" type="button">🎬 ומה קרה בסיפור שלנו?</button>`}
+      else{body=`<div class="dboth">${d.dtext?`<div><b>הסוף שלך</b>${mine()}</div>`:''}<div><b>הסוף שלנו</b><div class="sslot full reveal dreal">${pic(2)}</div></div></div>`;ctl=`<button class="btn sun" id="dnext" type="button">➡️ לסיפור הבא</button>`}
+      const msg={ask:'מה קורה בסוף? ממציאים סוף לסיפור 🎬',listen:'מספרים מה קרה בסוף 🗣️',confirm:'כך כתבתי. נכון?',mine:'זה הסוף שלך! 🎨',told:'כך זה נגמר אצלנו! הסוף שלך היה שונה? 🎬'}[ph];
+      shell(`<div class="card stage"><p class="muted">${msg}</p><div class="progress">${st.name} · ${d.si+1} / ${N}</div>${body}<div class="ptctl">${ctl}</div>
+        ${SR&&(ph==='ask'||ph==='listen')?'<p class="muted" style="font-size:12px">להורים: את מה שהילד אומר כותב שירות הדיבור של הדפדפן (Google).</p>':''}</div>`);
+      const listen=()=>{if(!SR){recOverlay(`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div><div>מה קרה בסוף?</div>`,()=>{addStar();d.dtext='';d.dp='told';SFX.fanfare();render()},{max:45000});return}
+        try{REC.release&&REC.release()}catch(e){}
+        const r=new SR();r.lang='he-IL';r.interimResults=true;r.continuous=true;d.sr=r;let fin='';
+        r.onresult=e=>{let t='',f='';for(const x of e.results){t+=x[0].transcript;if(x.isFinal)f+=x[0].transcript}fin=f;d.live=t;const lv=app.querySelector('.ptlive');if(lv)lv.textContent=t};
+        r.onend=()=>{if(S.data!==d||d.dp!=='listen')return;const t=(d.live||fin||'').trim();d.live='';if(!t){d.dp='ask';render();return}d.dtext=t;d.dp='confirm';render()};
+        d.dp='listen';d.live='';render();try{r.start();TIMERS.push(setTimeout(()=>{try{r.stop()}catch(e){}},25000))}catch(e){d.dp='ask';render()}};
+      const on=(id,f)=>{const b=document.getElementById(id);if(b)b.onclick=f};
+      on('dir',()=>{SFX.unlock&&SFX.unlock();listen()});
+      on('dstop',()=>{try{d.sr&&d.sr.stop()}catch(e){}});
+      on('dyes',()=>{addStar();SFX.good();d.dp='mine';render()});
+      on('dagain',()=>{d.dtext='';listen()});
+      on('dreal',()=>{SFX.fanfare();d.dp='told';render()});
+      on('dnext',()=>{d.dp='ask';d.dtext='';d.si++;if(d.si>=N)finish();else render()});    }
     return;
   }
   if(S.act==='seqrec'){
