@@ -1859,12 +1859,22 @@ const TINT={'כחול':'grayscale(1) sepia(1) saturate(6) hue-rotate(175deg) bri
   'צהוב':'grayscale(1) sepia(1) saturate(7) hue-rotate(8deg) brightness(1.2)','אדום':'grayscale(1) sepia(1) saturate(8) hue-rotate(-38deg) brightness(.95)',
   'ירוק':'grayscale(1) sepia(1) saturate(5) hue-rotate(55deg) brightness(.95)','ורוד':'grayscale(1) sepia(1) saturate(4) hue-rotate(285deg) brightness(1.15)',
   'לבן':'grayscale(1) brightness(1.55) contrast(.85)','שחור':'grayscale(1) brightness(.4) contrast(1.3)','זהוב':'sepia(1) saturate(3.5) hue-rotate(8deg) brightness(1.1)'};
-function tintPic(text,emo){const w=String(text).split(' ').map(x=>x.replace(/ה$/,'').replace(/ות$|ים$/,''));
+const COLOR_WORDS=new Set(['ירוק','צהוב','אדום','כחול','סגול','ורוד','לבן','שחור','כתום','זהוב','חום']);
+function tintPic(text,emo){if(String(emo).includes('class="tinted"'))return emo;
+  const w=[];String(text).split(/[\s,.!?]+/).forEach(x=>{const b=x.replace(/(ה|ות|ים)$/,'');w.push(b,b.replace(/^[הב]/,''))});
   const k=Object.keys(TINT).find(c=>w.includes(c));return k?`<span class="tinted" style="filter:${TINT[k]}">${emo}</span>`:emo}
+/* every sentence in the data that names a color gets a picture of that color (checked over all sounds and games, Nov 2026).
+   Painting jobs in the workshop are tinted only after the child paints. */
+function applyTints(){
+  SOUNDS.forEach(s=>['short','long'].forEach(k=>(s[k]||[]).forEach(x=>{if(x[0]==='הכדור כתום')x[1]='🏀';else x[1]=tintPic(x[0],x[1])})));
+  const fixT=j=>{if(j[2]!=='🖌️')j[0]=tintPic(j[3]||j[1],j[0])};
+  Object.values(FIXSHORT).forEach(a=>a.forEach(fixT));Object.values(FIXBY).forEach(a=>a.forEach(fixT));
+  Object.values(COOK2).forEach(r=>(r.ing||[]).forEach(x=>{x[0]=tintPic(x[1],x[0])}));
+}
 const MEMV={r:'ראיתי',ts:'מצאתי',l:'לקחתי',k:'לקחתי',sh:'יש',s:'תפסתי',g:'גיליתי',z:'זכרתי'};
 /* simple long sentences for kindergarten: the old short sentences, "אני רוצה X ו-Y", and for כ/ק also sentences with "כי" */
 const KI=[['צריך כובע כי קר','🎩'],['הקוף קופץ כי הוא שמח','🐒'],['הכלב נובח כי הוא רוצה כדור','🐕'],['אני שותה כוס מים כי חם','🥛'],['הקיפוד קטן כי הוא תינוק','🦔'],['אני רוצה כדור כי אני רוצה לשחק','⚽']];
-function andSentences(){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));const out=[];for(let i=0;i+1<w.length&&out.length<8;i+=2)out.push(['אני רוצה '+w[i][0]+' ו'+w[i+1][0],w[i][1]+w[i+1][1]]);return out}
+function andSentences(){const w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])&&!COLOR_WORDS.has(x[0])));const out=[];for(let i=0;i+1<w.length&&out.length<8;i+=2)out.push(['אני רוצה '+w[i][0]+' ו'+w[i+1][0],w[i][1]+w[i+1][1]]);return out}
 function renderSound(){
   const s=SOUNDS[S.sound],mx=maxStage(S.bits),p=prog();
   const st=STAGES.slice(0,mx).map(a=>[a,p.ctx['snd'+S.sound+':'+a[0]]||0]);
@@ -2972,7 +2982,7 @@ function renderAct(){
     const job=d.jobs[d.j],it=['',''],L=SOUNDS[S.sound];
     const said=d.said;
     shell(`<div class="card stage"><p class="muted">בית המלאכה של ${esc(kidName()||'הילד')} 🛠️ · תיקון ${d.j+1} / ${d.jobs.length}</p>
-      <div class="workbench"><div class="broken ${d.fixed?'fixed':''}" id="obj">${job[0]}${d.fixed?'':'<span class="crack">💥</span>'}</div>${d.fixed?'<div class="sparkles">✨</div>':''}</div>
+      <div class="workbench"><div class="broken ${d.fixed?'fixed':''}" id="obj">${d.fixed&&job[2]==='🖌️'?tintPic(job[3]||job[1],job[0]):job[0]}${d.fixed?'':'<span class="crack">💥</span>'}</div>${d.fixed?'<div class="sparkles">✨</div>':''}</div>
       ${!said?`<div class="saybox"><p class="muted">כדי ${job[4]||'לתקן'} את ${job[1]}, קודם אומרים את המשפט:</p><div class="sentence">${job[3]?hl(job[3],L.hl):(it[1]?it[1]+' ':'')+hl(it[0],L.hl)}</div><button class="btn leaf" id="said">⭐ אמרתי!</button></div>`
         :d.fixed?`<div class="cheer">${job[5]||'תיקנת'} את ${job[1]}! 🎉</div>`
         :`<p class="drag-hint">באיזה כלי ${job[4]==='לצבוע'?'צובעים':'מתקנים'} את ${job[1]}?</p><div class="tools">${d.toolset.map((t,ix)=>`<button class="tool" data-t="${ix}"><span>${t[0]}</span><small>${t[1]}</small></button>`).join('')}</div>`}
@@ -3353,6 +3363,7 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
     if(T[v]&&okImg(T[v])){b.dataset.tiled='1';b.innerHTML=`<img class="ticon" src="${T[v]}" alt="">`}})}
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
 loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
+try{applyTints()}catch(e){}
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
 </script>
