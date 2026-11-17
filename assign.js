@@ -11,5 +11,8 @@ window.MY_ASSIGN={
  ],
  "EZQ8-YG7Y": [
   "mbox-ri"
+ ],
+ "WZWJ-QUBE": [
+  "house-l"
  ]
 };
