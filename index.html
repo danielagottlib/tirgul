@@ -2047,10 +2047,10 @@ GAMES.bingo=['🎲','בינגו','מוצאים את התמונה ואומרים'
 /* minimal pairs for the voicing pairs: [vowelled word for the voice, word, picture]; the two words differ only in the voiced/voiceless sound */
 const VMIN=[
  [[['בֵּיצָה','ביצה','🥚'],['פִּיצָה','פיצה','🍕']],[['בֶּנִי','בני','👦'],['פֶּנִי','פני','👧']],[['בָּנִים','בנים','👦'],['פָּנִים','פנים','🙂']]],
- [[['דּוֹדָה','דודה','👩'],['תּוֹדָה','תודה','🙏']],[['דּוֹב','דוב','🐻'],['טוֹב','טוב','👍']],[['דָּלִי','דלי','🪣'],['טָלִי','טלי','👧']],[['דָּג','דג','🐟'],['תָּג','תג','🏷️']],[['דַּף','דף','📄'],['טַף','טף','🧒']]],
- [[['גִּיר','גיר','🖍️'],['קִיר','קיר','🧱']],[['גּוּף','גוף','🧍'],['קוֹף','קוף','🐒']],[['גֶּשֶׁר','גשר','🌉'],['קֶשֶׁר','קשר','🪢']],[['גּוֹל','גול','⚽'],['קוֹל','קול','🔊']]],
- [[['מַזְרֵק','מזרק','💉'],['מַסְרֵק','מסרק','🪮']]],
- [[['וֶרֶד','ורד','🌹'],['פֶרֶד','פרד','🫏']],[['אָב','אבא','👨'],['אַף','אף','👃']]]];/* "סיפור בהמשכים": a 4-picture story for every sound (pictures in seq4.js); cap = a sentence the parent can offer for each picture */
+ [[['דִּירָה','דירה','🏢'],['טִירָה','טירה','🏰']],[['דּוֹדָה','דודה','👩'],['תּוֹדָה','תודה','🙏']],[['דּוֹב','דוב','🐻'],['טוֹב','טוב','👍']],[['דָּלִי','דלי','🪣'],['טָלִי','טלי','👧']],[['בַּד','בד','🧵'],['בַּת','בת','👧']],[['דָּג','דג','🐟'],['תָּג','תג','🏷️']],[['דַּף','דף','📄'],['טַף','טף','🧒']]],
+ [[['גַּן','גן','🏫'],['קַן','קן','🪺']],[['גִּיר','גיר','🖍️'],['קִיר','קיר','🧱']],[['גּוּף','גוף','🧍'],['קוֹף','קוף','🐒']],[['גֶּשֶׁר','גשר','🌉'],['קֶשֶׁר','קשר','🪢']],[['גּוֹל','גול','⚽'],['קוֹל','קול','🔊']],[['דָּג','דג','🐟'],['דַּק','דק','🥢']]],
+ [[['זִירָה','זירה','🏟️'],['סִירָה','סירה','⛵']],[['זֶרֶת','זרת','🤙'],['סֶרֶט','סרט','🎀']],[['מַזְרֵק','מזרק','💉'],['מַסְרֵק','מסרק','🪮']]],
+ [[['צָב','צב','🐢'],['צָף','צף','🛟']],[['וֶרֶד','ורד','🌹'],['פֶרֶד','פרד','🫏']],[['אָב','אבא','👨'],['אַף','אף','👃']]]];/* "סיפור בהמשכים": a 4-picture story for every sound (pictures in seq4.js); cap = a sentence the parent can offer for each picture */
 const SEQ4={
  r:{name:'הארנב והגזר',cap:['הארנב רואה גזר גדול בגינה','הארנב מושך ומושך את הגזר','הגזר יצא והארנב נפל על הגב','הארנב מתחלק בגזר עם החברים']},
  l:{name:'הליצן והבלון',cap:['הליצן מנפח בלון צהוב','הבלון גדל וגדל','הבלון עף למעלה, לשמיים','ילדה תופסת את הבלון ומחזירה לליצן']},
@@ -2434,7 +2434,7 @@ function startAct(act,from){
     loadScriptOnce('seq4.js?v=1',()=>{if(S.act==='seqrec')render()})}
   if(act==='paint'){const s=SOUNDS[S.sound];d.objs=[];d.lines=[];d.phase='idle';d.choices=[];d.pick=[];d.text='';
     const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length);d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
-  if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps,...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,6);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
+  if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,8);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle2.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
