@@ -1575,6 +1575,8 @@ const NIQ={'אבוקדו':'אָבוֹקָדוֹ','אגוז':'אֱגוֹז','אג
 const niq=t=>String(t).replace(/[א-ת]+/g,w=>NIQ[w]||w);
 /* single words are said by the Google voice (the computer voice misreads words: KOV, TEAPUZ, TEIK); the computer voice is the fallback */
 /* every word and sentence is said by the Google Hebrew (woman's) voice; the device voice (a man's voice that mispronounces) is not used */
+/* if Google cannot be reached: only a woman's device voice (Hila / Carmit / Google), never the man's voice (Asaf) */
+function femaleSay(t){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang)).find(x=>/hila|carmit|google/i.test(x.name));if(!v)return false;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.voice=v;u.lang=v.lang;u.rate=.85;speechSynthesis.speak(u);return true}catch(e){return false}}
 function gChunks(t){const out=[];let cur='';String(t).split(/\s+/).forEach(w=>{if((cur+' '+w).trim().length>180){if(cur)out.push(cur);cur=w}else cur=(cur+' '+w).trim()});if(cur)out.push(cur);return out}
 function sayWord(w){if(SFX.muted||!String(w||'').trim())return;saySeq(gChunks(niq(String(w).trim())))}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
@@ -1601,8 +1603,8 @@ function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);retu
 function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
-      a.onended=go;a.onerror=()=>setTimeout(go,300);a.play().catch(()=>setTimeout(go,300))}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
-function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{done=true};
+      a.onended=go;a.onerror=()=>{femaleSay(t);setTimeout(go,1200)};a.play().catch(()=>{femaleSay(t);setTimeout(go,1200)})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
+function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
   try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
     a.onerror=fb;a.play().then(()=>{done=true}).catch(fb)}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
