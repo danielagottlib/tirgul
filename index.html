@@ -1161,6 +1161,11 @@ body{background:#5E8F55}
 .cintitle{position:absolute;color:#FFE27A;font-size:clamp(28px,6vw,56px);font-weight:900;text-align:center;transition:opacity .6s;z-index:2;text-shadow:0 4px 18px rgba(0,0,0,.6)}.cintitle.gone{opacity:0}
 .cinimg{width:100vw;height:100vh;object-fit:contain;opacity:0;transform:scale(1);transition:opacity .45s}.cinimg.show{opacity:1;animation:kenb 9s ease-out forwards}@keyframes kenb{to{transform:scale(1.12)}}
 .cinx{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px;z-index:3;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer}
+.bub.closed{background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95) 0 9%,transparent 10%),radial-gradient(circle at 50% 50%,hsla(var(--h),85%,78%,.92),hsla(calc(var(--h) + 120deg),80%,70%,.95) 60%,hsla(calc(var(--h) + 240deg),80%,65%,.98));box-shadow:inset 0 -10px 24px rgba(255,255,255,.55),inset 0 0 0 3px rgba(255,255,255,.7),0 8px 18px rgba(0,0,0,.15)}
+.bub.closed::after{content:'?';position:absolute;inset:0;display:grid;place-items:center;font-size:42px;font-weight:900;color:rgba(255,255,255,.9);text-shadow:0 2px 6px rgba(0,0,0,.2)}
+.bub.peek{animation:bpeek .5s ease-out}@keyframes bpeek{0%{transform:scale(1)}60%{transform:scale(1.18)}100%{transform:scale(1.1)}}
+.bfree{position:absolute;left:var(--x);top:var(--y);width:22%;display:flex;flex-direction:column;align-items:center;animation:bland .4s ease-out}@keyframes bland{from{transform:scale(.7)}}
+.bubbles.party .bfree{animation:bdance .55s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -.13s)}@keyframes bdance{0%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(0) translateY(-22px) scale(1.08)}100%{transform:rotate(12deg) translateY(0)}}
 </style>
 </head>
 <body>
@@ -2389,7 +2394,7 @@ function startAct(act,from){
     const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length);d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
   if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,6);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
   if(act==='bingo'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.marked=[];d.calls=shuffle([0,1,2,3,4,5,6,7,8]);d.ci=0}
-  if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='tower')render()})}
+  if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle2.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
   if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
   if(act==='journey'){const it=items();d.items=it.length?it:[['','']];d.k=0;d.pos=0;d.roll=null;d.phase='roll';d.note='';d.cnt=null;d.hl=null}
@@ -2678,15 +2683,22 @@ function renderAct(){
     return;
   }
   if(S.act==='bubbles'){
-    /* syllables: soap bubbles float; touching one pops it and the creature inside says a syllable for the child to copy */
-    const N=d.items.length;
-    shell(`<div class="card stage"><p class="muted">נוגעים בבועה, פוף! מי שבתוכה אומר הברה, ואומרים כמוהו 🫧</p><div class="progress">${d.popped.length} / ${N}</div>
-      <div class="bubbles">${d.items.map((it,ix)=>d.popped.includes(ix)?'':`<button class="bub" data-ix="${ix}" type="button" style="--x:${(ix%4)*24+2}%;--y:${Math.floor(ix/4)*48+4}%;--d:${((ix*0.7)%3).toFixed(1)}s;--h:${(ix*53)%360}deg" aria-label="בועה"><span class="bcr">${crit(it[1],56)}</span><span class="plabel syl">${it[0]}</span></button>`).join('')}</div></div>`);
-    app.querySelectorAll('.bub').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('pop'))return;const ix=+b.dataset.ix;b.classList.add('pop');SFX.pop();
-      TIMERS.push(setTimeout(()=>sayIt(d.items[ix],()=>{d.popped.push(ix);if(d.popped.length>=N)finish();else render()}),330))});
+    /* syllables: closed soap bubbles float (you cannot see who is inside). Touching one opens it: the creature inside appears
+       and says its syllable for the child to copy, then the bubble pops and the creature stays on the screen.
+       When all the bubbles are popped, all the creatures dance together to music */
+    const N=d.items.length,fin=d.popped.length>=N;d.open=d.open==null?-1:d.open;
+    const pos=ix=>`--x:${(ix%4)*24+2}%;--y:${Math.floor(ix/4)*48+4}%;--d:${((ix*0.7)%3).toFixed(1)}s;--h:${(ix*53)%360}deg`;
+    shell(`<div class="card stage"><p class="muted">${fin?'כולם יצאו מהבועות! רוקדים יחד 🎉':'נוגעים בבועה... מי מסתתר בתוכה? 🫧'}</p><div class="progress">${d.popped.length} / ${N}</div>
+      <div class="bubbles ${fin?'party':''}">${d.items.map((it,ix)=>d.popped.includes(ix)
+        ?`<div class="bfree" style="${pos(ix)};--k:${ix}"><span class="bcr">${crit(it[1],56)}</span><span class="plabel syl">${it[0]}</span></div>`
+        :`<button class="bub ${d.open===ix?'peek':'closed'}" data-ix="${ix}" type="button" style="${pos(ix)}" aria-label="בועה">${d.open===ix?`<span class="bcr">${crit(it[1],56)}</span><span class="plabel syl">${it[0]}</span>`:''}</button>`).join('')}</div></div>`);
+    if(fin)return;
+    app.querySelectorAll('.bub').forEach(b=>b.onclick=()=>{if(S.overlay||d.open>=0)return;const ix=+b.dataset.ix;d.open=ix;SFX.blip();render();
+      TIMERS.push(setTimeout(()=>sayIt(d.items[ix],()=>{const el=app.querySelector(`.bub[data-ix="${ix}"]`);if(el)el.classList.add('pop');SFX.pop();
+        TIMERS.push(setTimeout(()=>{d.popped.push(ix);d.open=-1;render();
+          if(d.popped.length>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),900));TIMERS.push(setTimeout(finish,8000))}},340))}),700))});
     return;
-  }
-  if(S.act==='puzzle'){
+  }  if(S.act==='puzzle'){
     /* words: nine cards cover a picture; every word said turns one card into its piece of the picture */
     const N=d.items.length;
     shell(`<div class="card stage"><p class="muted">כל מילה פותחת חלק בתמונה. מה מסתתר מאחורי הקלפים? 🧩</p><div class="progress">${d.open.length} / ${N}</div>
@@ -2967,7 +2979,7 @@ function renderAct(){
   if(S.act==='tower'){
     /* syllables: build a realistic castle like a tangram. A pale silhouette of the castle waits; each part comes with a syllable.
        The child says it, then drags the part to its place in the silhouette (or taps the glowing place), until the castle is complete */
-    const C=window.CASTLE_IMG;if(!C){shell('<div class="card stage"><p class="muted">טוען את הטירה... 🏰</p></div>');return}
+    const C=window.CASTLE2_IMG;if(!C){shell('<div class="card stage"><p class="muted">טוען את הטירה... 🏰</p></div>');return}
     const P=C.p,N=P.length,cur=P[d.k],fin=d.k>=N,pos=i=>`left:${(i%3)*33.333}%;top:${Math.floor(i/3)*33.333}%`;
     shell(`<div class="card stage"><p class="muted">${fin?'הטירה מוכנה! 🏰✨':d.ready?'עכשיו גוררים את החלק למקום שלו בטירה 👆':'נוגעים בחלק, אומרים את ההברה, ובונים את הטירה 🏰'}</p><div class="progress">${Math.min(d.k,N)} / ${N}</div>
       <div class="ctpl ${fin?'done':''}" id="ctpl"><img class="cghost2" src="${C.full}" alt="">
