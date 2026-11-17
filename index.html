@@ -1603,10 +1603,10 @@ function playPh(ph){if(SFX.muted)return;if(PHREC[ph]===false){SFX.phone(ph);retu
 function saySeq(arr){if(SFX.muted)return;const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId||k>=arr.length)return;const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
-      a.onended=go;a.onerror=()=>{femaleSay(t);setTimeout(go,1200)};a.play().catch(()=>{femaleSay(t);setTimeout(go,1200)})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
+      a.onended=go;const bad=()=>{if(me!==window._seqId)return;femaleSay(t);setTimeout(go,1200)};a.onerror=bad;a.play().catch(e=>{if(e&&e.name==='AbortError')return;bad()})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
 function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
   try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
-    a.onerror=fb;a.play().then(()=>{done=true}).catch(fb)}catch(e){fb()}}
+    a.onerror=()=>{if(window._sylA===a)fb()};a.play().then(()=>{done=true}).catch(e=>{if(e&&e.name==='AbortError')return;if(window._sylA===a)fb()})}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done2.webm',
   cheer:['audio/cheer1.webm','audio/cheer2.webm','audio/cheer3.webm']};
