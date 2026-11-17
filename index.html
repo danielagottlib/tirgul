@@ -2110,7 +2110,17 @@ async function cinema(imgs,blobs,title,done){SFX.unlock&&SFX.unlock();const ov=d
   requestAnimationFrame(()=>ov.classList.add('on'));await sleep(1600);ov.querySelector('.cintitle').classList.add('gone');const im=ov.querySelector('.cinimg');
   for(let i=0;i<imgs.length&&!stop;i++){im.classList.remove('show');await sleep(450);if(stop)return;im.src=imgs[i];void im.offsetWidth;im.classList.add('show');await sleep(600);
     if(blobs&&blobs[i]){try{await REC.play(blobs[i])}catch(e){}}else await sleep(2500);await sleep(700)}
-  if(stop)return;im.classList.remove('show');ov.querySelector('.cintitle').textContent='🎉 הסוף! 🎉';ov.querySelector('.cintitle').classList.remove('gone');SFX.fanfare();await sleep(2600);if(!stop)close()}function recStep(host,done,opts){
+  if(stop)return;im.classList.remove('show');ov.querySelector('.cintitle').textContent='🎉 הסוף! 🎉';ov.querySelector('.cintitle').classList.remove('gone');SFX.fanfare();await sleep(2600);if(!stop)close()}/* speech to text (paint, director): listens until the parent/child presses "סיימתי" or up to 90 seconds;
+   if the browser stops after a pause it starts again and keeps what was said */
+function srListen(onLive,onDone){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let acc='',live='',user=false,ended=false;const t0=Date.now();let r=null;
+  const fin=()=>{if(ended)return;ended=true;onDone((acc+' '+live).replace(/\s+/g,' ').trim())};
+  const start=()=>{r=new SR();r.lang='he-IL';r.interimResults=true;r.continuous=true;let done='';
+    r.onresult=e=>{let t='';done='';for(const x of e.results){t+=x[0].transcript;if(x.isFinal)done+=x[0].transcript}live=t;onLive((acc+' '+t).trim())};
+    r.onerror=e=>{if(e&&(e.error==='not-allowed'||e.error==='service-not-allowed'))user=true};
+    r.onend=()=>{if(!user&&Date.now()-t0<90000){acc=(acc+' '+live).trim();live='';try{start()}catch(e){fin()}}else fin()};
+    r.start()};
+  start();const tm=setTimeout(()=>{user=true;try{r.stop()}catch(e){}},90000);TIMERS.push(tm);
+  return {stop(){user=true;try{r.stop()}catch(e){fin()}}}}function recStep(host,done,opts){
   opts=opts||{};
   if(REC.state==='no'){done();return}
   const gen=REC.gen;const alive=()=>gen===REC.gen&&document.body.contains(host);
@@ -2349,7 +2359,7 @@ function startAct(act,from){
   if(act==='line'){d.items=items();d.k=0;d.round=0;d.rounds=3;newLineRound(d)}
   if(act==='pscene'){const sid=SOUNDS[S.sound].id;d.scenes=PHOTO_SCENES.filter(sc=>sc.snd===sid);
     if(!d.scenes.length)d.scenes=PHOTO_SCENES.filter(sc=>sc.items.filter(it=>sceneHas(it,sid)).length>=3);if(!d.scenes.length)d.scenes=PHOTO_SCENES.slice(0,1);d.si=0;d.found=[];d.foundAt={}}
-  if(act==='scene'){loadScriptOnce('scenes-d.js?v=1',()=>{if(S.act==='scene')render()});const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[];d.foundAt={}}
+  if(act==='scene'){const sid=SOUNDS[S.sound].id;d.scenes=[...SCENES.map(sc=>[sc,sc.items.filter(it=>sceneHas(it,sid)).length]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1]).map(x=>x[0])];if(!d.scenes.length)d.scenes=[SCENES[0]];d.si=0;d.found=[];d.foundAt={}}
   if(act==='absurd'){let sid=SOUNDS[S.sound].id;if(!(CARDS[sid]||[]).length)sid='r';
     d.sid=sid;d.cards=shuffle(CARDS[sid]);d.ci=0;d.used=[];d.phase='deck';
     loadScriptOnce('cards-'+sid+'.js?v='+CARDS_V,()=>{if(S.act==='absurd')render()})}
@@ -2642,7 +2652,7 @@ function renderAct(){
     const head=ab?`<p class="drag-hint">מה מצחיק בתמונה? 🤪 מוצאים ${targets.length} דברים משונים!</p>`
                  :`<p class="drag-hint">מחפשים בתמונה דברים עם <span class="letterchip">${L.name}</span> ונוגעים בהם ✨</p>`;
     shell(`<div class="card stage">${head}<div class="progress">${sc.name} · מצאת ${d.found.length} / ${targets.length}${done?'':' <button class="ghost hintbtn" id="hint" type="button">💡 רמז</button>'}</div>
-      <div class="scenebox ${sc.img?'photo':'bg-'+sc.bg} ${done?'all-found':''}" id="sbox">${sc.img?`<div class="photoin" style="background-image:url(${(window.SCENE_IMG||{})[sc.id]||''})">`:sceneDecor(sc)}
+      <div class="scenebox ${sc.img?'photo':'bg-'+sc.bg} ${done?'all-found':''}" id="sbox">${sc.img?`<div class="photoin" style="background-image:url(${(window.SCENE_IMG||{})[sc.id]||(S.act==='scene'?'scn/'+sc.id+'.jpg':'')})">`:sceneDecor(sc)}
       ${all.map((it,ix)=>{const f=d.found.includes(it[1])&&(d.foundAt[it[1]]==null||d.foundAt[it[1]]===ix);
         const lab=f?`<span class="slabel ${ab?'ab':''}">${ab?it[1]:hl(it[1],L.hl)}</span>`:'';return sceneItemHtml(it,ix,f?'glow':'',lab)}).join('')}${sc.img?'<i class="glint"></i></div>':''}
       ${done?'<div class="confetti">'+Array.from({length:24},(x,k)=>`<i style="--x:${(k*37)%100};--d:${(k%6)*.12}s;--c:${['#F6B21E','#12A397','#F06A4F','#8E6CEF'][k%4]}"></i>`).join('')+'</div>':''}
@@ -2737,7 +2747,7 @@ function renderAct(){
         ${done?`<button class="btn sun" id="cine" type="button">🎬 צופים בסרט</button>`:`<div class="scards">${d.cards.filter(c=>!d.placed.includes(c)).map(c=>`<button class="scard" data-c="${c}" type="button">${pic(c)}</button>`).join('')}</div>
         <button class="ghost hintbtn" id="shint" type="button">💡 רמז</button>`}</div>`);
       const place=(b,c)=>{if(c===n){SFX.good();d.placed.push(c);render();
-          recOverlay(`<div class="sstrip">${pic(c)}</div><div>מה קורה בתמונה?</div>`,()=>{addStar();render()},{max:30000,onBlob:x=>{d.blobs[n]=x}})}
+          recOverlay(`<div class="sstrip">${pic(c)}</div><div>מה קורה בתמונה?</div>`,()=>{addStar();render();if(d.placed.length>=3)TIMERS.push(setTimeout(()=>{const cb=document.getElementById('cine');if(cb)cb.click()},700))},{max:30000,onBlob:x=>{d.blobs[n]=x}})}
         else{SFX.bad();b.style.visibility='';b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}};
       const sh=document.getElementById('shint');if(sh)sh.onclick=()=>{const b=app.querySelector(`.scard[data-c="${n}"]`);if(!b)return;SFX.blip();b.classList.remove('hinted');void b.offsetWidth;b.classList.add('hinted');TIMERS.push(setTimeout(()=>b.classList.remove('hinted'),3000))};
       app.querySelectorAll('.scard').forEach(el=>{el.onpointerdown=e=>{if(S.overlay)return;e.preventDefault();const r=el.getBoundingClientRect(),g=el.cloneNode(true);
@@ -2771,13 +2781,10 @@ function renderAct(){
         ${SR&&(ph==='ask'||ph==='listen')?'<p class="muted" style="font-size:12px">להורים: את מה שהילד אומר כותב שירות הדיבור של הדפדפן (Google).</p>':''}</div>`);
       const listen=()=>{if(!SR){recOverlay(`<div class="sstrip">${[0,1].map(pic).join('')}<span class="sq">?</span></div><div>מה קרה בסוף?</div>`,()=>{addStar();d.dtext='';d.dp='told';SFX.fanfare();render()},{max:45000});return}
         try{REC.release&&REC.release()}catch(e){}
-        const r=new SR();r.lang='he-IL';r.interimResults=true;r.continuous=true;d.sr=r;let fin='';
-        r.onresult=e=>{let t='',f='';for(const x of e.results){t+=x[0].transcript;if(x.isFinal)f+=x[0].transcript}fin=f;d.live=t;const lv=app.querySelector('.ptlive');if(lv)lv.textContent=t};
-        r.onend=()=>{if(S.data!==d||d.dp!=='listen')return;const t=(d.live||fin||'').trim();d.live='';if(!t){d.dp='ask';render();return}d.dtext=t;d.dp='confirm';render()};
-        d.dp='listen';d.live='';render();try{r.start();TIMERS.push(setTimeout(()=>{try{r.stop()}catch(e){}},25000))}catch(e){d.dp='ask';render()}};
+        d.dp='listen';d.live='';render();try{d.sr=srListen(t=>{d.live=t;const lv=app.querySelector('.ptlive');if(lv)lv.textContent=t},t=>{if(S.data!==d||d.dp!=='listen')return;d.live='';if(!t){d.dp='ask';render();return}d.dtext=t;d.dp='confirm';render()})}catch(e){d.dp='ask';render()}};
       const on=(id,f)=>{const b=document.getElementById(id);if(b)b.onclick=f};
       on('dir',()=>{SFX.unlock&&SFX.unlock();listen()});
-      on('dstop',()=>{try{d.sr&&d.sr.stop()}catch(e){}});
+      on('dstop',()=>{d.sr&&d.sr.stop()});
       on('dyes',()=>{addStar();SFX.good();d.dp='mine';render()});
       on('dagain',()=>{d.dtext='';listen()});
       on('dreal',()=>{SFX.fanfare();d.dp='told';render()});
@@ -2794,16 +2801,16 @@ function renderAct(){
       return `<div class="q4slot ${c!=null?'full':''} ${cur||pl?'now':''} ${d.blobs[i]?'told':''}" data-s="${i}"><span class="q4n">${i+1}</span>${c!=null?pic(c):'<span class="q4q">?</span>'}${d.blobs[i]?'<span class="q4ok">🎙️</span>':''}</div>`}).join('')}</div>`;
     if(d.phase==='order'){
       const left=d.tray.filter(c=>!d.placed.includes(c));
-      shell(`<div class="card stage"><p class="drag-hint">מסדרים את הסיפור: גוררים כל תמונה למקום שלה. מה קורה קודם? 🎞️</p><div class="progress">${st.name}</div>
+      shell(`<div class="card stage"><p class="drag-hint">גוררים תמונה למקום שלה ומספרים מה קורה בה. מה קורה קודם? 🎞️</p><div class="progress">${st.name}</div>
         ${slots}<div class="q4tray">${left.map(c=>`<button class="q4card" data-c="${c}" type="button">${pic(c)}</button>`).join('')}</div>
         <p class="muted" style="font-size:15px">אפשר גם לגעת בתמונה ואחר כך במקום</p></div>`);
-      const put=(c,s)=>{if(d.placed[s]!=null)return;d.placed[s]=c;SFX.blip();d.sel=null;
-        if(d.placed.every(x=>x!=null)){const wrong=d.placed.map((x,i)=>x===i?null:i).filter(x=>x!=null);render();
-          if(!wrong.length){SFX.fanfare();TIMERS.push(setTimeout(()=>{d.phase='rec';d.k=0;render()},1300))}
-          else TIMERS.push(setTimeout(()=>{wrong.forEach(i=>{const el=app.querySelector(`.q4slot[data-s="${i}"]`);if(el)el.classList.add('no')});SFX.bad();
-            TIMERS.push(setTimeout(()=>{wrong.forEach(i=>d.placed[i]=null);render()},900))},500))}
-        else render()};
-      const slotAt=(x,y)=>{const el=document.elementFromPoint(x,y);const t=el&&el.closest&&el.closest('.q4slot');return t?+t.dataset.s:-1};
+      /* a picture put in its right place is told about at once (recording); after the last one the film starts by itself */
+      const put=(c,s)=>{if(d.placed[s]!=null)return;d.sel=null;
+        if(c!==s){SFX.bad();render();const el=app.querySelector(`.q4slot[data-s="${s}"]`);if(el){el.classList.add('no');TIMERS.push(setTimeout(()=>el.classList.remove('no'),600))}return}
+        d.placed[s]=c;SFX.good();render();
+        recOverlay(`<div class="q4big">${pic(c)}</div><div>מה קורה בתמונה?</div>`,()=>{addStar();
+          if(d.placed.every(x=>x!=null)){d.phase='done';render();TIMERS.push(setTimeout(()=>cinema([0,1,2,3].map(i=>IMG[d.sid+i]),d.blobs,st.name,()=>{d.heard=true;render()}),700))}else render()},
+          {max:30000,onBlob:b=>{d.blobs[s]=b}})};      const slotAt=(x,y)=>{const el=document.elementFromPoint(x,y);const t=el&&el.closest&&el.closest('.q4slot');return t?+t.dataset.s:-1};
       app.querySelectorAll('.q4slot').forEach(e=>e.onclick=()=>{if(d.sel!=null)put(d.sel,+e.dataset.s)});
       app.querySelectorAll('.q4card').forEach(el=>{el.onpointerdown=e=>{if(S.overlay)return;e.preventDefault();const r=el.getBoundingClientRect(),g=el.cloneNode(true);g.classList.add('flying','dragging');
         Object.assign(g.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',zIndex:50,pointerEvents:'none'});document.body.appendChild(g);el.style.visibility='hidden';
@@ -2814,6 +2821,8 @@ function renderAct(){
           if(s>=0&&d.placed[s]==null)put(+el.dataset.c,s);else if(tap){el.style.visibility='';d.sel=+el.dataset.c;app.querySelectorAll('.q4card').forEach(x=>x.classList.toggle('sel',x===el))}else el.style.visibility=''};
         document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)}});
       return}
+    if(d.phase==='done'){shell(`<div class="card stage"><p class="drag-hint">${d.heard?'איזה סרט! 🎬':'הסרט מתחיל... 🎬'}</p><div class="progress">${st.name}</div>${slots}<div class="row"><button class="btn sun" id="q4again" type="button">🎬 צופים שוב</button>${d.heard?'<button class="btn leaf" id="q4end" type="button">⭐ סיימנו!</button>':''}</div></div>`);
+      document.getElementById('q4again').onclick=()=>cinema([0,1,2,3].map(i=>IMG[d.sid+i]),d.blobs,st.name,()=>{d.heard=true;render()});const e2=document.getElementById('q4end');if(e2)e2.onclick=()=>finish();return}
     if(d.phase==='rec'){
       shell(`<div class="card stage"><p class="drag-hint">מספרים מה קורה בתמונה ${d.k+1} 🎙️</p><div class="progress">${st.name} · ${d.k+1} / 4</div>${slots}
         <div class="q4big">${pic(d.k)}</div><div id="rh"></div><p class="note">להורה: אפשר לעזור במשפט: "${st.cap[d.k]}"</p></div>`);
@@ -2858,12 +2867,9 @@ function renderAct(){
     const go=document.getElementById('ptgo');if(go)go.onclick=()=>{SFX.unlock&&SFX.unlock();
       if(!SR){d.phase='rec';render();recStep(document.getElementById('rh'),()=>{d.text='';d.pick=[];d.choices=ptChoices(L.id);d.phase='choose';render()},{max:20000});return}
       try{REC.release&&REC.release()}catch(e){}
-      const r=new SR();r.lang='he-IL';r.interimResults=true;r.maxAlternatives=1;r.continuous=false;d.sr=r;let fin='';
-      r.onresult=e=>{let t='';for(const x of e.results){t+=x[0].transcript;if(x.isFinal)fin=t}d.live=t;const lv=app.querySelector('.ptlive');if(lv)lv.textContent=t};
-      r.onerror=()=>{};r.onend=()=>{if(S.data!==d||d.phase!=='listen')return;const t=(fin||d.live||'').trim();d.live='';
-        if(!t){d.text='';d.pick=[];d.choices=ptChoices(L.id);d.phase='choose'}else{d.text=t;d.phase='confirm'}render()};
-      d.phase='listen';d.live='';render();try{r.start()}catch(e){d.phase='idle';render()}};
-    const sp=document.getElementById('ptstop');if(sp)sp.onclick=()=>{try{d.sr&&d.sr.stop()}catch(e){}};
+      d.phase='listen';d.live='';render();try{d.sr=srListen(t=>{d.live=t;const lv=app.querySelector('.ptlive');if(lv)lv.textContent=t},t=>{if(S.data!==d||d.phase!=='listen')return;d.live='';
+        if(!t){d.text='';d.pick=[];d.choices=ptChoices(L.id);d.phase='choose'}else{d.text=t;d.phase='confirm'}render()})}catch(e){d.phase='idle';render()}};
+    const sp=document.getElementById('ptstop');if(sp)sp.onclick=()=>{d.sr&&d.sr.stop()};
     const y=document.getElementById('ptyes');if(y)y.onclick=()=>{const f=ptFind(d.text);if(f.length)add(f,d.text);else{d.pick=[];d.choices=ptChoices(L.id);d.phase='choose';render()}};
     const ag=document.getElementById('ptagain');if(ag)ag.onclick=()=>{d.phase='idle';d.text='';render();const g2=document.getElementById('ptgo');if(g2)g2.click()};
     app.querySelectorAll('.ptopt').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;d.pick=d.pick.includes(k)?d.pick.filter(x=>x!==k):[...d.pick,k];render()});
