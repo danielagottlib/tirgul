@@ -978,6 +978,33 @@ body{background:#5E8F55}
 .pawn{position:absolute;inset:auto auto -6px 50%;transform:translateX(-50%);font-size:min(9vw,40px);filter:drop-shadow(0 4px 4px rgba(0,0,0,.3));animation:pawnhop .3s ease-out}
 @keyframes pawnhop{40%{transform:translate(-50%,-14px)}}
 .die{font-size:54px;line-height:1;min-width:54px;color:var(--ink)}
+/* kite, treasure, castle */
+.kitesky{position:relative;width:100%;height:min(48vh,320px);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#5FB7F0,#BFE6FF 70%,#DDF2C8 70%,#9CCB6E)}
+.kc{position:absolute;font-style:normal;font-size:48px;opacity:.95;animation:kcl 18s linear infinite}
+.kc.c1{top:6%;left:-20%}.kc.c2{top:20%;left:-20%;animation-delay:-7s;font-size:36px}.kc.c3{top:2%;left:-20%;animation-delay:-12s;font-size:30px}
+@keyframes kcl{to{left:110%}}
+.kite{position:absolute;transform:translateX(-50%);transition:bottom 1s cubic-bezier(.3,1.2,.5,1),left 1s ease;z-index:2}
+.kite .kbody{display:inline-block;font-size:min(14vw,60px);animation:ksway 2.4s ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(0,0,0,.2))}
+@keyframes ksway{50%{transform:rotate(12deg) translateY(-6px)}}
+.kstring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.kitesky .kid{position:absolute;bottom:2%;left:50%;transform:translateX(-50%);font-size:min(11vw,46px)}
+.kcards{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;width:100%}
+.kcard[disabled]{opacity:.45;cursor:default;box-shadow:none}
+.kcard.next{animation:thover 1.4s ease-in-out infinite;border-color:var(--sun)}
+.beach{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:min(100%,480px);padding:16px;border-radius:24px;background:radial-gradient(circle at 30% 20%,#FBE7B5,#EFCB86)}
+.mound{position:relative;aspect-ratio:1;border:0;background:none;cursor:pointer;padding:0;display:flex;align-items:flex-end;justify-content:center}
+.mound .sand{position:absolute;inset:30% 0 0;border-radius:50% 50% 14px 14px;background:radial-gradient(circle at 40% 30%,#F8DFA4,#D6A75A);box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+.mound .shovel{position:relative;font-size:min(6vw,24px);margin-bottom:46%;opacity:.8}
+.mound.digging .sand{animation:shake .25s 3}
+.mound.dug{align-items:center}
+.mound .found{font-size:min(9vw,40px);line-height:1;animation:popin .4s ease-out}.mound .found img{width:min(15vw,62px);height:auto}
+.mound .chest{position:absolute;top:-8px;left:-6px;font-size:28px;animation:popin .5s ease-out}
+.cbuild{position:relative;font-size:min(42vw,190px);line-height:1;height:1.05em;margin:6px 0}
+.cbuild .cghost,.cbuild .cfull{position:absolute;left:50%;top:0;transform:translateX(-50%)}
+.cbuild .cghost{opacity:.18;filter:grayscale(1)}
+.cbuild .cfull{z-index:1;transition:clip-path .8s ease;filter:drop-shadow(0 10px 10px rgba(0,0,0,.2))}
+.cbuild .cflags{position:absolute;left:50%;top:-.3em;transform:translateX(-50%);font-size:.25em;z-index:2;animation:popin .6s ease-out;white-space:nowrap}
+.cnext{animation:thover 1.4s ease-in-out infinite;border-color:var(--sun)}
 /* short texts that sit straight on the picture get a white pill so they stay readable */
 #app>p.muted,#app>p:not([class]),#app>.drag-hint{align-self:center;background:rgba(255,255,255,.93);border-radius:999px;padding:5px 18px;color:var(--ink);font-weight:600;box-shadow:0 10px 22px -14px rgba(8,40,36,.55)}
 </style>
@@ -1774,12 +1801,17 @@ GAMES.tower=['🧱','בונים מגדל','כל הברה מוסיפה קוביי
 GAMES.fishing=['🎣','דייגים','תופסים דג ואומרים את המילה'];
 GAMES.dragon=['🐉','מאכילים את הדרקון','"הדרקון אוכל..." והוא גדל'];
 GAMES.journey=['🗺️','מסע בממלכה','מטילים קובייה ומגיעים לטירה'];
+GAMES.kite=['🪁','מעיפים עפיפון','כל צירוף מרים אותו גבוה יותר'];
+GAMES.treasure=['💎','מחפשים מטמון','חופרים בחול ומוצאים אוצר'];
+GAMES.castle=['🏰','בונים את הטירה','כל משפט בונה עוד קומה'];
+/* things that do not make sense to buy or to feed to a dragon (body parts, abstract words, numbers...) */
+const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
 function gamesFor(st){
-  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
+  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return ['journey','castle','fix','cook','silly','balloon','train','line'].concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['pscene','scene','absurd'];
   if(st==='syl')return ['bubbles','tower','eggs','monster','frog','balloon','train','wheel'];
-  if(st==='phr')return ['silly','balloon','train','line','memory','wheel'];
-  if(st==='words')return ['puzzle','fishing','balloon','train','line','memory','wheel'];
+  if(st==='phr')return ['kite','silly','balloon','train','line','memory','wheel'];
+  if(st==='words')return ['puzzle','fishing','treasure','balloon','train','line','memory','wheel'];
   if(st==='pair'||st==='vocab')return ['balloon','train','line','memory','wheel'];
   if(st==='short')return ['shop','dragon','fix','cook','silly','balloon','train','line'];
   if(st==='long')return ['fix','cook','silly','balloon','train','line'];
@@ -2100,12 +2132,14 @@ function startAct(act,from){
   if(act==='bubbles'){d.items=items().slice(0,8);d.popped=[]}
   if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];d.pic='kingdom-bg.jpg?v=2'}
   if(act==='shop'){/* only things a child could buy in a shop */
-    const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
     let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<4)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));
     d.items=w.slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
+  if(act==='kite'){d.items=items().slice(0,6);d.n=0}
+  if(act==='treasure'){const w=items();d.items=Array.from({length:8},(x,i)=>w[i%w.length]);d.dug=[];d.gem=Math.floor(Math.random()*8)}
+  if(act==='castle'){d.items=items().slice(0,6);d.n=0}
   if(act==='tower'){d.items=items().slice(0,8);d.k=0}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
-  if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' '))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
+  if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
   if(act==='journey'){const it=items();d.items=it.length?it:[['',''] ];d.k=0;d.pos=0;d.rolling=false;d.die=''}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
@@ -2133,7 +2167,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים מגדל',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -2418,6 +2452,38 @@ function renderAct(){
       <div class="bag" id="bag"><span class="bagic">🛍️</span><span class="bagin">${d.bought.map(ix=>`<span>${d.items[ix][1]}</span>`).join('')}</span></div></div></div>`);
     app.querySelectorAll('.sitem2').forEach(b=>b.onclick=()=>{if(S.overlay)return;const ix=+b.dataset.ix;SFX.blip();
       sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
+    return;
+  }
+  if(S.act==='kite'){
+    /* phrases: a kite on a string; every phrase said lifts it higher, until it flies above the clouds */
+    const N=d.items.length,h=d.n/N;
+    shell(`<div class="card stage"><p class="muted">${d.n>=N?'העפיפון בשמיים! 🎉':'נוגעים בקלף, אומרים, והעפיפון עולה למעלה 🪁'}</p><div class="progress">${d.n} / ${N}</div>
+      <div class="kitesky"><i class="kc c1">☁️</i><i class="kc c2">☁️</i><i class="kc c3">☁️</i>
+        <div class="kite" style="bottom:${(8+h*72).toFixed(1)}%;left:${(46+Math.sin(d.n*1.3)*12).toFixed(1)}%"><span class="kbody">🪁</span></div>
+        <svg class="kstring" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,100 Q${(40+h*20).toFixed(0)},${(70-h*30).toFixed(0)} ${(48+Math.sin(d.n*1.3)*12).toFixed(1)},${(92-(8+h*72)).toFixed(1)}" fill="none" stroke="#fff" stroke-width=".6"/></svg>
+        <span class="kid">${kidG()==='g'?'👧':'👦'}</span></div>
+      ${d.n<N?`<div class="kcards">${d.items.map((it,ix)=>ix<d.n?'':`<button class="sitem2 kcard ${ix===d.n?'next':''}" data-ix="${ix}" type="button" ${ix===d.n?'':'disabled'}><span class="spic2">${it[1]}</span></button>`).join('')}</div>`:''}</div>`);
+    const nb=app.querySelector('.kcard.next');if(nb)nb.onclick=()=>{if(S.overlay)return;SFX.blip();
+      sayIt(d.items[d.n],()=>{d.n++;SFX.whoosh();render();if(d.n>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2000))}})};
+    return;
+  }
+  if(S.act==='treasure'){
+    /* words: sand mounds on a beach; digging one finds a picture to say; one of them hides the treasure chest */
+    const N=d.items.length;
+    shell(`<div class="card stage"><p class="muted">חופרים בחול, ומה שמוצאים אומרים בקול. איפה האוצר? 💎</p><div class="progress">${d.dug.length} / ${N}</div>
+      <div class="beach">${d.items.map((it,ix)=>{const o=d.dug.includes(ix);return `<button class="mound ${o?'dug':''}" data-ix="${ix}" type="button" ${o?'disabled':''}>${o?`<span class="found">${it[1]}</span>${ix===d.gem?'<span class="chest">💰</span>':''}`:'<span class="sand"></span><span class="shovel">⛏️</span>'}</button>`}).join('')}</div></div>`);
+    app.querySelectorAll('.mound:not(.dug)').forEach(b=>b.onclick=()=>{if(S.overlay||b.classList.contains('digging'))return;const ix=+b.dataset.ix;b.classList.add('digging');SFX.roll();
+      TIMERS.push(setTimeout(()=>sayIt(d.items[ix],()=>{d.dug.push(ix);if(ix===d.gem)SFX.whistle();render();if(d.dug.length>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,1600))}}),700))});
+    return;
+  }
+  if(S.act==='castle'){
+    /* long sentences: a castle is built floor by floor, every sentence adds a part; at the end the flags go up */
+    const N=d.items.length,p=d.n/N;
+    shell(`<div class="card stage"><p class="muted">${d.n>=N?'הטירה מוכנה! 🎉':'כל משפט בונה עוד חלק בטירה 🏰'}</p><div class="progress">${d.n} / ${N}</div>
+      <div class="cbuild"><span class="cfull" style="clip-path:inset(${((1-p)*100).toFixed(0)}% 0 0 0)">🏰</span><span class="cghost">🏰</span>${d.n>=N?'<span class="cflags">🚩✨🚩</span>':''}</div>
+      ${d.n<N?`<button class="sitem2 cnext" id="cnext" type="button"><span class="spic2">${d.items[d.n][1]}</span></button>`:''}</div>`);
+    const nb=document.getElementById('cnext');if(nb)nb.onclick=()=>{if(S.overlay)return;SFX.blip();
+      sayIt(d.items[d.n],()=>{d.n++;SFX.thud();render();if(d.n>=N){SFX.fanfare();TIMERS.push(setTimeout(finish,2000))}})};
     return;
   }
   if(S.act==='tower'){
