@@ -1786,7 +1786,7 @@ function logEv(ev,game,stars){if(!LOG_URL||!S.code)return;try{const s=SOUNDS[S.s
   logSend({code:fmtCode(S.code),ev,game:game||'',target,stars:stars==null?'':stars})}catch(e){}}
 /* the therapist screen sends "קוד חדש" with the patient's name (from Daniela's own device) when she creates a code;
    in her sheet a formula shows that name on every row with the same code. Children's devices never send a name. */
-function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code),ev:'קוד חדש',name:name||''})}
+function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code),ev:'קוד חדש',name:name||'',target:describe(decode(code)||0,code)})}
 function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
 /* when Daniela opens new levels or games (a new code replaced the old one), the family sees it on the next visit */
 function newLevelsNote(bits){try{const prev=store.get('kid-lastbits'),pg=store.get('kid-lastmg'),mg=String(myAssigned(S.code).map(g=>g.id).sort());store.set('kid-lastbits',String(bits));store.set('kid-lastmg',mg);
@@ -3769,15 +3769,17 @@ function finish(){
 
 /* ---------- therapist screen ---------- */
 function savedList(){try{return JSON.parse(store.get('th-codes')||'[]')}catch(e){return []}}
-function describe(bits){
+/* everything a code opens, in words (shown in the therapist screen and saved to Daniela's sheet) */
+const VSTEPS=['הגרון המזמזם','רועש או שקט?','ממיינים מילים 1','ממיינים מילים 2','זוגות מילים','הכל'];
+function describe(bits,code){
   const parts=[];SOUNDS.forEach((s,i)=>{if(has(bits,i))parts.push(s.name)});
   let t=parts.length?'היגוי: '+parts.join(', '):'';
   if(parts.length){const p=POS.filter((x,i)=>has(bits,POSBIT[i])).map(x=>x[1]);t+=' ('+(p.length?p.join(', '):'תחילה, אמצע וסוף')+'; עד שלב '+maxStage(bits)+': '+STAGES[maxStage(bits)-1][2]+')'}
   const l=GOAL_LANG.filter(g=>has(bits,g.bit)).map(g=>g.name);
-  const v=VOICING.filter(x=>has(bits,x.bit)).map(x=>x.name);
-  return [t,v.length?'קולי/בלתי קולי: '+v.join(', '):'',l.length?'שפה: '+l.join(', '):''].filter(Boolean).join(' · ');
-}
-const SITE_URL='https://danielagottlib.github.io/tirgul/';
+  const v=VOICING.filter(x=>has(bits,x.bit)).map(x=>x.name),vv=(bits>>>23)&7,vs=vv&&vv<6?vv:(parts.length?maxStage(bits):6);
+  const mg=code?myAssigned(code).map(g=>g.name):[];
+  return [t,v.length?'קולי/בלתי קולי: '+v.join(', ')+' ('+(vs>=6?'הכל פתוח':'עד '+VSTEPS[vs-1])+')':'',l.length?'שפה: '+l.join(', '):'',mg.length?'משחקים אישיים: '+mg.join(', '):''].filter(Boolean).join(' · ');
+}const SITE_URL='https://danielagottlib.github.io/tirgul/';
 function renderTherapist(){
   const list=savedList();const link=store.get('th-link')||'';
   app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div><div class="top"><h1>מסך המטפלת</h1></div>
@@ -3847,9 +3849,10 @@ function renderTherapist(){
     <div class="row" style="justify-content:flex-start"><input class="txt" id="chk" dir="ltr" style="max-width:200px" placeholder="ABCD-1234"><button class="btn" id="chkBtn" type="button">מה הקוד פותח?</button></div>
     <p id="chkOut"></p>
   </div>
-  <div class="card"><h2>קודים ששמרת במכשיר הזה</h2>${list.length?`<div style="overflow-x:auto"><table><tr><th>שם המטופל</th><th>קוד</th><th>מטרות</th><th></th></tr>${list.map((r,ix)=>`<tr><td>${esc(r.n||'—')}</td><td class="mono">${esc(r.c)}</td><td>${esc(describe(decode(r.c)||0))}</td><td><div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;white-space:nowrap">${isBlocked(r.c)?'<span class="muted">חסום</span>':replacedBy(r.c)?'<span class="muted">הוחלף</span>':`<button class="ghost" data-end="${ix}">סיום טיפול</button>`} <button class="ghost" data-reset="${ix}" title="מוחק את הכוכבים וההתקדמות של הקוד הזה רק במכשיר הזה">🔄 איפוס במכשיר</button> <button class="ghost" data-rm="${ix}">🗑 הסרה מהרשימה</button></div></td></tr>`).join('')}</table></div>
-    <p class="muted" style="font-size:14px">"איפוס במכשיר" מוחק את הכוכבים, ההתקדמות והשם שנשמרו במכשיר הזה עבור הקוד (למשל אחרי שהתאמנת בעצמך). אצל המטופל בבית זה לא משנה דבר. "הסרה מהרשימה" מוחקת רק את השורה מהטבלה, והקוד עצמו ממשיך לעבוד.</p>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}<div id="endOut"></div></div>`;
+  <div class="card"><h2>קודים ששמרת במכשיר הזה</h2>${list.length?`<div style="overflow-x:auto"><table><tr><th>שם המטופל</th><th>קוד</th><th>מטרות</th><th></th></tr>${list.map((r,ix)=>`<tr><td>${esc(r.n||'—')}</td><td class="mono">${esc(r.c)}</td><td style="white-space:normal;min-width:220px">${esc(describe(decode(r.c)||0,r.c)).split(' · ').join('<br>')}</td><td><div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;white-space:nowrap">${isBlocked(r.c)?'<span class="muted">חסום</span>':replacedBy(r.c)?'<span class="muted">הוחלף</span>':`<button class="ghost" data-end="${ix}">סיום טיפול</button>`} <button class="ghost" data-reset="${ix}" title="מוחק את הכוכבים וההתקדמות של הקוד הזה רק במכשיר הזה">🔄 איפוס במכשיר</button> <button class="ghost" data-rm="${ix}">🗑 הסרה מהרשימה</button></div></td></tr>`).join('')}</table></div>
+    <p class="muted" style="font-size:14px">"איפוס במכשיר" מוחק את הכוכבים, ההתקדמות והשם שנשמרו במכשיר הזה עבור הקוד (למשל אחרי שהתאמנת בעצמך). אצל המטופל בבית זה לא משנה דבר. "הסרה מהרשימה" מוחקת רק את השורה מהטבלה, והקוד עצמו ממשיך לעבוד.</p>`:'<p class="muted">עדיין אין קודים שמורים.</p>'}${list.length?'<button class="ghost" id="goalsToSheet" type="button">📤 לשמור בגיליון המעקב את המטרות של כל הקודים</button><p class="muted" id="goalsStat" style="font-size:14px">כך אפשר לראות בגיליון, מכל מכשיר, מה פתוח לכל ילד (בעמודת היעד, בשורות &quot;מטרות&quot;).</p>':''}<div id="endOut"></div></div>`;
 
+  {const gs=document.getElementById('goalsToSheet');if(gs)gs.onclick=()=>{const seen=new Set();let n=0;savedList().forEach(r=>{const c=fmtCode(r.c);if(seen.has(c)||isBlocked(r.c)||replacedBy(r.c))return;seen.add(c);logSend({code:c,ev:'מטרות',name:r.n||'',target:describe(decode(r.c)||0,r.c)});n++});gs.disabled=true;document.getElementById('goalsStat').textContent='✓ נשלחו '+n+' קודים לגיליון. מעכשיו גם כל קוד חדש נשמר שם עם המטרות שלו.'}}
   document.getElementById('tf').onsubmit=e=>{
     e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const anyS=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked}),anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});
     const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value;if(anyS&&ss<6)bits|=ss<<18;const vLong=anyV&&vs<6;
@@ -3867,7 +3870,7 @@ function renderTherapist(){
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));logName(code,nick);
     const msg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n• לצורך מעקב אחר ההתקדמות, האתר מעדכן אותי אילו פעילויות בוצעו ומתי. ההקלטות של הילד נשמרות רק במכשיר שלכם ואינן נשלחות אליי. המידע משמש אותי לצורך הטיפול בלבד.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
-    document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
+    document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(decode(code)||bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
       <textarea class="txt" id="msg" rows="14" readonly>${esc(msg)}</textarea>
       <div class="row"><button class="btn sun" id="copy" type="button">העתקת ההודעה</button></div><p class="muted" id="copied"></p>
       <p class="muted" style="font-size:15px">הקוד נשמר בטבלה למטה רק במכשיר הזה. כדי לשנות מטרות, יוצרים קוד חדש ושולחים אותו.</p></div>`;
@@ -3896,7 +3899,7 @@ function renderTherapist(){
       try{await saveAssign(mp.value,boxes.filter(b=>b.checked).map(b=>b.value));st.textContent='✓ נשמר. המטופל יראה את השינוי תוך דקה-שתיים.'}
       catch(e){st.textContent=e.message==='nokey'?'צריך קודם לחבר את המכשיר ל-GitHub (בכרטיס "חיבור ל-GitHub").':'השמירה לא הצליחה ('+e.message+'). נסי שוב.'}
       sv.disabled=false}}
-  document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b)};
+  document.getElementById('chkBtn').onclick=()=>{const b=decode(document.getElementById('chk').value);document.getElementById('chkOut').textContent=b===null?'הקוד לא תקין.':'הקוד פותח: '+describe(b,document.getElementById('chk').value)};
   /* two-step buttons: the first press asks, the second press does it */
   const twoStep=(b,ask,act)=>b.onclick=()=>{if(b.dataset.armed){act();return}b.dataset.armed='1';const t=b.textContent;b.textContent=ask;b.classList.add('armed');setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=t;b.classList.remove('armed')}},4000)};
   const tr=document.getElementById('testReset');if(tr)twoStep(tr,'לאפס? לחצי שוב',()=>{['stars-','prog-','name-','g-'].forEach(k=>store.del(k+TEST_CODE));if(isTestCode(store.get('kid-code')||''))store.del('kid-code');tr.textContent='✓ אופס';tr.disabled=true});
