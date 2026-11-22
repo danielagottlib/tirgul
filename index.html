@@ -1248,7 +1248,7 @@ body{background:#5E8F55}
 .rk-sky{position:relative;min-height:460px;border-radius:24px;overflow:hidden;background:radial-gradient(ellipse at 50% 115%,#4b2f93 0%,#1d1d55 45%,#060a22 100%);box-shadow:inset 0 0 50px rgba(0,0,0,.65),0 12px 30px rgba(20,20,60,.35);border:4px solid #d9b45a}
 .rk-sky b{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:rkTw 2.4s ease-in-out infinite}
 @keyframes rkTw{50%{opacity:.2;transform:scale(.5)}}
-.rk-sky.fly b{width:3px;height:26px;border-radius:3px;animation:rkStream .45s linear infinite}
+.rk-sky.rkfly b{width:3px;height:26px;border-radius:3px;animation:rkStream .45s linear infinite}
 @keyframes rkStream{from{transform:translateY(-120px)}to{transform:translateY(520px)}}
 .rk-moon{position:absolute;top:16px;left:20px;font-size:58px;filter:drop-shadow(0 0 16px #ffe9a0)}
 .rk-pad{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center}
@@ -1279,9 +1279,10 @@ body{background:#5E8F55}
 .rk-cap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px 18px;border-radius:28px;background:linear-gradient(160deg,#fffdf5,#ffeec7);border:4px solid #e2b647;box-shadow:0 14px 30px rgba(150,100,0,.25),inset 0 0 0 7px rgba(255,255,255,.75);animation:rkIn .65s cubic-bezier(.2,1.4,.4,1);transition:transform .85s ease-in,opacity .85s ease-in;min-width:0}
 @keyframes rkIn{from{transform:scale(.35) rotate(-7deg);opacity:0}}
 .rk-cap.open{animation:rkOpen .7s ease-out}
+.rk-cap.still{animation:none}
 @keyframes rkOpen{0%{transform:scale(.85)}60%{transform:scale(1.07)}}
-.rk-cap.fly{transform:translateX(75%) scale(.1) rotate(30deg);opacity:0}
-@media(max-width:760px){.rk-cap.fly{transform:translateY(-80%) scale(.1)}.rk-sky{min-height:380px}}
+.rk-cap.rkgo{transform:translateX(75%) scale(.1) rotate(30deg);opacity:0}
+@media(max-width:760px){.rk-cap.rkgo{transform:translateY(-80%) scale(.1)}.rk-sky{min-height:380px}}
 .rk-pics{display:flex;align-items:center;gap:16px}
 .rk-p{font-size:100px;line-height:1;animation:rkBob 2.2s ease-in-out infinite}
 .rk-p:last-child{animation-delay:1.1s}
@@ -1341,7 +1342,7 @@ body{background:#5E8F55}
 .s2sent{font-size:clamp(24px,3.6vw,38px)!important;margin:6px 0 10px}
 .coins2{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:6px 0 12px}
 .coin2{width:68px;height:68px;padding:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF6C4,#F5C542 45%,#C8961E);border:3px solid #A87B12;box-shadow:0 5px 0 #8A6410,0 9px 16px rgba(0,0,0,.25);color:#6B4A00;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s}
-.coin2.big{background:radial-gradient(circle at 35% 30%,#FFF6C4,#F5C542 32%,#C8961E 44%,#E7E9EE 47%,#B9BEC9 80%,#8E94A1);border-color:#7D838F;box-shadow:0 5px 0 #646A75,0 9px 16px rgba(0,0,0,.25)}
+.coin2.cbig{background:radial-gradient(circle at 35% 30%,#FFF6C4,#F5C542 32%,#C8961E 44%,#E7E9EE 47%,#B9BEC9 80%,#8E94A1);border-color:#7D838F;box-shadow:0 5px 0 #646A75,0 9px 16px rgba(0,0,0,.25)}
 .coin2 b{font-size:25px;line-height:1;font-weight:900}
 .coin2 small{font-size:12px;font-weight:800}
 .coin2:not([disabled]):hover{transform:translateY(-4px) rotate(-6deg)}
@@ -1355,7 +1356,7 @@ body{background:#5E8F55}
 .s2e img.wimg{width:80px;height:80px;object-fit:contain}
 @keyframes s2wait{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-16px) rotate(5deg) scale(1.07)}}
 @keyframes s2spark{50%{opacity:0;transform:scale(.4)}}
-.s2b.drop{animation:s2drop .75s cubic-bezier(.3,1.6,.5,1),s2wait 1.1s .75s ease-in-out infinite}
+.s2b.s2drop{animation:s2drop .75s cubic-bezier(.3,1.6,.5,1),s2wait 1.1s .75s ease-in-out infinite}
 @keyframes s2drop{from{transform:translateY(-280px) scale(1.7);opacity:0}}
 .s2.fin .s2shelf{min-height:200px}
 .s2.fin .s2b{animation:s2dance .55s var(--dl,0s) ease-in-out infinite alternate}
@@ -1413,7 +1414,7 @@ body{background:#5E8F55}
 .mcard.ok{opacity:.35;filter:grayscale(.6);cursor:default}
 .mcard.no{animation:jno .35s}
 .mpic{font-size:64px;line-height:1}.mpic img.wimg{width:86px;height:86px;object-fit:contain}
-.mword{font-size:clamp(22px,2.6vw,30px);font-weight:800}
+.mword{font-size:clamp(22px,2.6vw,30px);font-weight:800;color:#3a2a10}
 .mfound{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
 .mchip{padding:6px 14px;border-radius:999px;background:#FFF8DB;border:2px solid #FFC43D;font-weight:800;font-size:18px;animation:popin .3s}
 .mrec{display:flex;gap:18px;justify-content:center;font-size:80px;margin-bottom:6px}
@@ -3994,7 +3995,7 @@ function renderAct(){
     app.querySelectorAll('.mcard:not(.ok)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const k=+b.dataset.k,side=b.dataset.side,p=R.find(x=>x[0]===k);sayW(p,side);
       if(!d.sel||d.sel[1]===side){d.sel=[k,side];SFX.blip();render();return}
       if(d.sel[0]===k){d.sel=null;d.found.push(k);d.done.push(p);SFX.good();render();
-        TIMERS.push(setTimeout(()=>{saySeq([p[3],p[6]]);recOverlay(`<div class="mrec"><span>${p[2]}</span><span>${p[5]}</span></div>${rhl(p[1]+' – '+p[4])}`,()=>{addStar();voice('cheer');
+        TIMERS.push(setTimeout(()=>{saySeq([p[3],p[6]]);sayIt([p[1]+' – '+p[4],`<span class="mrec"><span>${p[2]}</span><span>${p[5]}</span></span>`],()=>{
           if(R.every(x=>d.found.includes(x[0]))){d.r++;d.found=[];d.left=[];d.right=[];if(d.r<d.rounds.length){const n=d.rounds[d.r];d.left=shuffle(n.slice());d.right=shuffle(n.slice())}else{SFX.fanfare();TIMERS.push(setTimeout(finish,4500))}}
           render()})},500));return}
       SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');d.sel=null;TIMERS.push(setTimeout(render,450))});
@@ -4006,7 +4007,7 @@ function renderAct(){
     const N=d.items.length,it=d.items[d.k%N];
     const stars=d.starHtml||(d.starHtml=Array.from({length:34},()=>`<b style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*92).toFixed(1)}%;animation-delay:${(Math.random()*3).toFixed(2)}s"></b>`).join(''));
     const fly=d.phase==='fly'||d.phase==='land';
-    const sky=`<div class="rk-sky ${fly?'fly':''}">${stars}<div class="rk-moon">🌙</div>${d.phase==='land'?'<div class="rk-planet">🪐</div>':''}
+    const sky=`<div class="rk-sky ${fly?'rkfly':''}">${stars}<div class="rk-moon">🌙</div>${d.phase==='land'?'<div class="rk-planet">🪐</div>':''}
       <div class="rk-pad"><div class="rk-ship ${d.phase==='fly'?'go':''} ${d.phase==='land'?'gone':''} ${d.phase==='count'?'prep':''} ${d.bump?'bump':''}"><span class="rk-emo">🚀</span><span class="rk-fire">🔥</span></div><div class="rk-base"></div></div>
       <div class="rk-tank" aria-label="דלק">${Array.from({length:N},(x,i)=>`<i class="${i<d.fuel?'on':''}"></i>`).join('')}<span>⛽</span></div>${d.cd!=null?`<div class="rk-cd" key="${d.cd}">${d.cd}</div>`:''}</div>`;
     let panel='';
@@ -4015,7 +4016,7 @@ function renderAct(){
         <p class="muted">${d.phase==='phr'?'קפסולת דלק חדשה! אומרים את הצירוף 🗣️':'הקפסולה נפתחה! עכשיו המשפט הארוך 🗣️'}</p>
         <div class="rk-text ${d.phase==='sent'?'long':''}">${rhl(t)}</div>
         <div class="row"><button class="btn ghost" id="rkHear" type="button">🔊 שומעים שוב</button></div><div id="rkRec"></div></div>`}
-    else if(d.phase==='count')panel=`<div class="rk-cap"><div class="rk-text">סופרים יחד לאחור! 🔢</div><p class="muted">אומרים בקול רם: שָׁלוֹשׁ, שְׁתַּיִם, אַחַת, שִׁגּוּר!</p></div>`;
+    else if(d.phase==='count')panel=`<div class="rk-cap still"><div class="rk-text">סופרים יחד לאחור! 🔢</div><p class="muted">אומרים בקול רם: שָׁלוֹשׁ, שְׁתַּיִם, אַחַת, שִׁגּוּר!</p></div>`;
     else panel=`<div class="rk-cap"><div class="rk-text">${d.phase==='land'?'הגענו לכוכב של שוקו וסוכר! 🎉':'ממריאים!!! 🚀'}</div></div>`;
     shell(`<div class="card stage rk"><p class="muted">ממלאים את החללית בדלק של משפטים עם <b class="hsh">ש</b> ועם <b class="hss">ס / שׂ</b> · ⛽ ${d.fuel} / ${N}</p><div class="rk-wrap">${sky}${panel}</div></div>`);
     /* the voice always calls back, even if a sound fails */
@@ -4030,7 +4031,7 @@ function renderAct(){
       if(!d.played){d.played=1;TIMERS.push(setTimeout(()=>say(v),550))}
       const ok=()=>{addStar();voice('cheer');d.played=0;
         if(d.phase==='phr'){d.phase='sent';render();return}
-        const cap=document.getElementById('cap');if(cap)cap.classList.add('fly');SFX.zip();
+        const cap=document.getElementById('cap');if(cap)cap.classList.add('rkgo');SFX.zip();
         TIMERS.push(setTimeout(()=>{d.fuel++;d.k++;d.bump=1;d.phase='wait';render();
           TIMERS.push(setTimeout(()=>{d.bump=0;if(d.fuel>=N){d.phase='count';render();countdown()}else{d.phase='phr';render()}},1000))},850))};
       const host=document.getElementById('rkRec');
@@ -4094,14 +4095,14 @@ function shopGame(d,kind,shell){
   const mark=t=>kind==='shs'?rhl(t):hl(t,SOUNDS[S.sound].hl);
   const sent=it?(kind==='shs'?`אני ${g?'משלמת':'משלם'} ${SHEK[pr-1][0]} בשביל לקנות ${it[0]}`:`אני ${g?'משלמת':'משלם'} על ${it[0]} ${SHEK[pr-1][0]}`):'';
   const tag=p=>`<span class="ptag"><b>${p}</b> ₪</span>`;
-  const shelf=`<div class="s2shelf"><span class="s2bag">🛍️</span>${d.bought.length?d.bought.map((k,i)=>`<span class="s2b ${i===d.bought.length-1&&d.justBought?'drop':''}" style="--dl:${(i*.17).toFixed(2)}s"><span class="s2e">${shopPic(d.items[k])}</span></span>`).join(''):'<span class="s2empty">כאן יחכו כל הדברים שנקנה</span>'}</div>`;
+  const shelf=`<div class="s2shelf"><span class="s2bag">🛍️</span>${d.bought.length?d.bought.map((k,i)=>`<span class="s2b ${i===d.bought.length-1&&d.justBought?'s2drop':''}" style="--dl:${(i*.17).toFixed(2)}s"><span class="s2e">${shopPic(d.items[k])}</span></span>`).join(''):'<span class="s2empty">כאן יחכו כל הדברים שנקנה</span>'}</div>`;
   let main='';
   if(done)main='';
   else if(d.phase==='browse')main=`<div class="shopwall">${d.items.map((x,k)=>d.bought.includes(k)?'<span class="shitem gone"></span>':`<button class="shitem" data-k="${k}" type="button"><span class="shpic">${shopPic(x)}</span>${tag(d.price[k])}<span class="shname">${esc(x[0])}</span></button>`).join('')}</div>`;
   else main=`<div class="s2top"><div class="register ${d.ding?'ding':''}" id="register"><div class="rscreen">₪ ${d.total}</div><div class="rslot"></div><div class="rkeys">${'<i></i>'.repeat(6)}</div><div class="rdrawer"></div></div>
       <div class="s2item" id="s2item"><span class="s2pic">${shopPic(it)}</span>${tag(pr)}<span class="s2name">${mark(it[0])}</span></div>
-      <div class="s2slots ${d.bad?'bad':''}">${[0,1].map(k=>d.pick[k]!=null?`<button class="coin2 in ${d.pick[k]>=5?'big':''}" data-k="${k}" type="button"><b>${d.pick[k]}</b><small>₪</small></button>`:'<span class="s2slot"></span>').join('<span class="s2op">+</span>')}<span class="s2op">=</span><span class="s2sum">${sum?sum+' ₪':'?'}</span></div></div>
-    ${d.phase==='say'?`<div class="sentence s2sent">${mark(sent)}</div><div id="s2rec"></div>`:`${d.hint?`<p class="s2hint">${d.hint}</p>`:''}<div class="coins2">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="coin2 ${v>=5?'big':''}" data-v="${v}" type="button" ${d.pick.length>=2?'disabled':''}><b>${v}</b><small>₪</small></button>`).join('')}</div>
+      <div class="s2slots ${d.bad?'bad':''}">${[0,1].map(k=>d.pick[k]!=null?`<button class="coin2 in ${d.pick[k]>=5?'cbig':''}" data-k="${k}" type="button"><b>${d.pick[k]}</b><small>₪</small></button>`:'<span class="s2slot"></span>').join('<span class="s2op">+</span>')}<span class="s2op">=</span><span class="s2sum">${sum?sum+' ₪':'?'}</span></div></div>
+    ${d.phase==='say'?`<div class="sentence s2sent">${mark(sent)}</div><div id="s2rec"></div>`:`${d.hint?`<p class="s2hint">${d.hint}</p>`:''}<div class="coins2">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="coin2 ${v>=5?'cbig':''}" data-v="${v}" type="button" ${d.pick.length>=2?'disabled':''}><b>${v}</b><small>₪</small></button>`).join('')}</div>
       <div class="row"><button class="btn ghost" id="sback" type="button">↩️ בוחרים משהו אחר</button></div>`}`;
   const msg=done?'קנינו הכל! איזה כיף! 🎉':d.phase==='browse'?`מה קונים? בוחרים משהו מהמדפים 🛒 (${d.bought.length+1} / ${d.goal})`:d.phase==='pay'?`זה עולה ${pr} ₪. משלמים בדיוק – מטבע אחד או שניים 🪙`:'אומרים את המשפט 🗣️';
   shell(`<div class="card stage s2 shop ${done?'fin':''}"><p class="jmsg">${msg}</p>${main}${shelf}</div>`);
