@@ -1213,6 +1213,35 @@ body{background:#5E8F55}
 .kimwho .kpic img.kimimg{width:1.25em;height:1.25em;object-fit:contain}.kimwin img.kimimg{width:1.3em;height:1.3em;object-fit:contain}
 .spheard{min-height:40px;font-size:26px;font-weight:800;background:#FFF8E8;border:2px solid #E39A2D;border-radius:14px;padding:6px 14px;margin:6px auto;max-width:600px}.spheard.bad{border-color:#E5484D}
 .sphint{display:inline-flex;flex-direction:column;align-items:center;font-size:34px;line-height:1;background:#fff;border-radius:12px;padding:4px 8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}.sphint small{font-size:13px;margin-top:2px}.sphint img{width:1.2em;height:1.2em;object-fit:contain}
+/* ===== "wow" layer (Nov 2026): the game screens fill the window, with a rich gold-and-wood frame, depth and glow,
+   so the inside of the site matches the cinematic kingdom background. Overrides the older looks above. ===== */
+.wrap{max-width:min(1240px,97vw);padding:10px 14px 28px;gap:12px}
+.top{background:linear-gradient(180deg,#FFF8E6,#F3E2B8);border:2px solid #fff;box-shadow:0 0 0 3px #C98A2B,0 14px 26px -14px rgba(60,30,0,.7);border-radius:22px;padding:6px 12px}
+.top h1{font-size:clamp(22px,2.4vw,32px);color:#5A3300;text-shadow:0 2px 0 #fff,0 0 14px rgba(255,214,120,.8);letter-spacing:.01em}
+.card{border-radius:30px}
+.card.stage{position:relative;padding:20px 26px 26px;min-height:calc(100dvh - 118px);justify-content:flex-start;
+  background:radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.98),rgba(255,248,230,.95) 55%,rgba(247,233,200,.94));
+  border:0;box-shadow:inset 0 0 0 3px #fff,inset 0 0 40px rgba(227,154,45,.18),0 0 0 6px #D9A441,0 0 0 9px #8C5A1C,0 0 0 12px rgba(255,236,190,.85),0 34px 70px -24px rgba(8,30,20,.75)}
+.card.stage::before,.card.stage::after{content:"";position:absolute;width:30px;height:30px;top:-12px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 35% 30%,#FFF6C8,#F4C04A 40%,#B8781A 75%,#7A4A0E);box-shadow:0 3px 6px rgba(0,0,0,.35),0 0 12px rgba(255,214,90,.8)}
+.card.stage::before{right:-12px}.card.stage::after{left:-12px}
+.overlay .card.stage,.cardzoom .card.stage{min-height:0}
+.drag-hint{font-size:clamp(21px,2.2vw,30px);text-shadow:0 2px 0 #fff;color:#B2441C}
+.card.stage>.muted:first-child{font-size:clamp(18px,1.8vw,24px);color:#4A3A20}
+.progress{display:inline-block;background:linear-gradient(180deg,#FFF4D6,#F6DE9E);border:2px solid #fff;box-shadow:0 0 0 2px #D9A441,0 4px 8px -4px rgba(0,0,0,.3);border-radius:999px;padding:2px 16px;color:#5A3300;font-weight:700}
+.btn{font-size:clamp(20px,1.9vw,26px);padding:14px 30px;border:2px solid rgba(255,255,255,.75);box-shadow:0 5px 0 rgba(0,0,0,.25),0 12px 20px -10px rgba(0,0,0,.45);text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.tile{border-radius:24px;border:3px solid #fff;box-shadow:0 0 0 3px #D9A441,0 16px 26px -14px rgba(60,30,0,.6);background:linear-gradient(180deg,#FFFDF6,#F8ECCF);transition:transform .18s}
+.tile:hover{transform:translateY(-4px) scale(1.02)}
+.grid{gap:18px}
+/* bigger game boards on wide screens */
+@media (min-width:1000px){
+  .bog,.dstage,.eggs,.bubbles,.spscene,.kimscene,.ptboard,.dmine,.scenebox,.cscene,.mplay,.mbox,.jboard2,.kitesky2{max-width:none}
+  .scenebox{max-width:calc((100dvh - 230px)*4/3)}
+  .spscene,.ptboard{width:min(100%,calc((100dvh - 330px)*16/9))}
+  .kimscene{width:min(100%,980px);min-height:min(56dvh,520px)}
+  .eggs{max-width:min(760px,calc(100dvh - 200px))}
+  .q4row{width:min(100%,900px)}.sslots{gap:18px}
+}
 </style>
 </head>
 <body>
