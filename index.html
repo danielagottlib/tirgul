@@ -1249,7 +1249,7 @@ body{background:#5E8F55}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=3"></script><script src="mygames.js?v=7"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="tts.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=3"></script><script src="mygames.js?v=7"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1687,10 +1687,10 @@ function saySeq(arr,onDone){if(SFX.muted){onDone&&onDone();return}const me=(wind
   const next=()=>{if(me!==window._seqId)return;if(k>=arr.length){onDone&&onDone();return}const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
     try{if(window._sylA)window._sylA.pause();const a=new Audio(ttsUrl(t));window._sylA=a;
       a.onended=go;const bad=()=>{if(me!==window._seqId)return;femaleSay(t);setTimeout(go,1200)};a.onerror=bad;a.play().catch(e=>{if(e&&e.name==='AbortError')return;bad()})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
-/* words the site says are kept as sound files on the site (tts/<hash>.mp3, list in tts.js), made once from Google's Hebrew voice;
+/* words the site says are kept as sound files on the site (tts-a.js, tts-b.js), made once from Google's Hebrew voice;
    Google itself refuses some requests when many are sent, so it is only used for words that have no file yet */
 function ttsHash(t){let h=5381;for(let i=0;i<t.length;i++)h=(Math.imul(h,33)^t.charCodeAt(i))>>>0;return h.toString(16)}
-function ttsUrl(t){t=String(t||'').trim();const h=ttsHash(t);return (window.TTS_HAVE&&TTS_HAVE.has(h))?'tts/'+h+'.mp3':'https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t)}function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
+function ttsUrl(t){t=String(t||'').trim();const h=ttsHash(t);return (window.TTS_DATA&&TTS_DATA[h])||'https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t)}function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
   try{if(window._sylA)window._sylA.pause();const a=new Audio(ttsUrl(t));window._sylA=a;
     a.onerror=()=>{if(window._sylA===a)fb()};a.play().then(()=>{done=true}).catch(e=>{if(e&&e.name==='AbortError')return;if(window._sylA===a)fb()})}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
@@ -3946,6 +3946,8 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
     if(T[v]&&okImg(T[v])){b.dataset.tiled='1';b.innerHTML=`<img class="ticon" src="${T[v]}" alt="">`}})}
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
 loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
+/* the practice-word sound files load quietly in the background */
+setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{})},1500);
 try{applyTints()}catch(e){}
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
