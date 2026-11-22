@@ -1403,24 +1403,24 @@ body{background:#5E8F55}
 .s2slots.bad{animation:jno .35s 2}
 .s2hint{font-size:20px;font-weight:800;color:#E8590C;margin:4px 0}
 .s2bag{font-size:40px;align-self:center;margin-inline-end:6px}/* ---- ש / ס rhyme pairs ---- */
-.mboard{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);gap:14px;align-items:center}
-.mcol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.mmid{font-size:44px;text-align:center;animation:rkBob 2s infinite}
-.mcard{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:22px;background:#fff;border:4px solid;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.12);transition:transform .15s}
-.mcard.s{border-color:#FFA94D;background:linear-gradient(160deg,#fff,#FFF0E0)}
-.mcard.sh{border-color:#4DABF7;background:linear-gradient(160deg,#fff,#E3F2FF)}
-.mcard:hover{transform:translateY(-4px)}
-.mcard.sel{transform:scale(1.07);box-shadow:0 0 0 6px #FFD43B,0 12px 26px rgba(0,0,0,.2)}
-.mcard.ok{opacity:.35;filter:grayscale(.6);cursor:default}
-.mcard.no{animation:jno .35s}
-.mpic{font-size:64px;line-height:1}.mpic img.wimg{width:86px;height:86px;object-fit:contain}
-.mword{font-size:clamp(22px,2.6vw,30px);font-weight:800;color:#3a2a10}
-.mfound{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
-.mchip{padding:6px 14px;border-radius:999px;background:#FFF8DB;border:2px solid #FFC43D;font-weight:800;font-size:18px;animation:popin .3s}
-.mrec{display:flex;gap:18px;justify-content:center;font-size:80px;margin-bottom:6px}
-.mpairs{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
-.mpair{display:flex;gap:4px;font-size:46px;padding:8px 12px;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.12);animation:s2dance .6s ease-in-out infinite alternate}
-@media(max-width:700px){.mboard{grid-template-columns:1fr}.mmid{display:none}}
+.rhboard{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);gap:14px;align-items:center}
+.rhcol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rhmid{font-size:44px;text-align:center;animation:rkBob 2s infinite}
+.rhcard{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:22px;background:#fff;border:4px solid;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.12);transition:transform .15s}
+.rhcard.s{border-color:#FFA94D;background:linear-gradient(160deg,#fff,#FFF0E0)}
+.rhcard.sh{border-color:#4DABF7;background:linear-gradient(160deg,#fff,#E3F2FF)}
+.rhcard:hover{transform:translateY(-4px)}
+.rhcard.sel{transform:scale(1.07);box-shadow:0 0 0 6px #FFD43B,0 12px 26px rgba(0,0,0,.2)}
+.rhcard.ok{opacity:.35;filter:grayscale(.6);cursor:default}
+.rhcard.no{animation:jno .35s}
+.rhpic{font-size:64px;line-height:1}.rhpic img.wimg{width:86px;height:86px;object-fit:contain}
+.rhword{font-size:clamp(22px,2.6vw,30px);font-weight:800;color:#3a2a10}
+.rhfound{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.rhchip{padding:6px 14px;border-radius:999px;background:#FFF8DB;border:2px solid #FFC43D;font-weight:800;font-size:18px;animation:popin .3s}
+.rhrec{display:flex;gap:18px;justify-content:center;font-size:80px;margin-bottom:6px}
+.rhpairs{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.rhpair{display:flex;gap:4px;font-size:46px;padding:8px 12px;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.12);animation:s2dance .6s ease-in-out infinite alternate}
+@media(max-width:700px){.rhboard{grid-template-columns:1fr}.rhmid{display:none}}
 .shpic img.simg,.s2pic img.simg,.s2e img.simg{filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
 /* castle: the part waits on the tractor until the child drags it */
 .cslot2.target{box-shadow:inset 0 0 0 4px #FFC43D,0 0 26px #FFB627;background:rgba(255,236,150,.45);animation:jflash2 .6s ease-in-out infinite alternate;z-index:3}
@@ -2142,8 +2142,14 @@ function header(title,back){
 }
 
 
-function render(){
-  if(isAdmin()){S.view='therapist';return renderTherapist()}
+/* on a computer the game must fit the screen without scrolling: if the game card is taller than the window,
+   it is shrunk evenly (CSS zoom) just enough to fit; checked again after pictures load and when the window changes */
+function fitStage(again){const c=app.querySelector('.card.stage');if(!c)return;c.style.zoom='';
+  if(innerWidth>=900&&innerHeight>=500){const over=document.documentElement.scrollHeight-innerHeight;
+    if(over>2){const h=c.getBoundingClientRect().height;if(h>0)c.style.zoom=Math.max(.6,(h-over-6)/h).toFixed(3)}}
+  if(!again){clearTimeout(fitStage.t1);clearTimeout(fitStage.t2);fitStage.t1=setTimeout(()=>fitStage(1),350);fitStage.t2=setTimeout(()=>fitStage(1),1300)}}
+addEventListener('resize',()=>{clearTimeout(fitStage.r);fitStage.r=setTimeout(()=>{if(S.view==='act')fitStage()},200)});
+function render(){  if(isAdmin()){S.view='therapist';return renderTherapist()}
   if(S.view==='therapist')S.view=S.bits===null?'login':'home';
   if(S.view==='login')return renderLogin();
   if(S.view==='name')return renderName();
@@ -2155,7 +2161,7 @@ function render(){
   if(S.view==='pair')return renderPair();
   if(S.view==='games')return renderGames();
   if(S.view==='mine')return renderMine();
-  if(S.view==='act')return renderAct();
+  if(S.view==='act'){renderAct();fitStage();return}
   if(S.view==='album')return renderAlbum();
   if(S.view==='board')return renderBoard();
 }
@@ -3987,17 +3993,17 @@ function renderAct(){
        that rhymes with it on the other side. A pair found flies together, and the child records both words ("סיר – שיר") */
     const R=d.rounds[d.r]||[],fin=d.r>=d.rounds.length,L=d.left,Rt=d.right;
     const card=(p,side)=>{const k=p[0],matched=d.found.includes(k),w=side==='s'?[p[1],p[2]]:[p[4],p[5]];
-      return `<button class="mcard ${side} ${matched?'ok':''} ${d.sel&&d.sel[0]===k&&d.sel[1]===side?'sel':''}" data-k="${k}" data-side="${side}" type="button" ${matched?'disabled':''}><span class="mpic">${w[1]}</span><span class="mword">${rhl(w[0])}</span></button>`};
+      return `<button class="rhcard ${side} ${matched?'ok':''} ${d.sel&&d.sel[0]===k&&d.sel[1]===side?'sel':''}" data-k="${k}" data-side="${side}" type="button" ${matched?'disabled':''}><span class="rhpic">${w[1]}</span><span class="rhword">${rhl(w[0])}</span></button>`};
     shell(`<div class="card stage shmin"><p class="jmsg">${fin?'מצאנו את כל החרוזים! 🎉':'מוצאים זוגות שמתחרזים: מילה עם <b class="hss">ס</b> ומילה עם <b class="hsh">ש</b> 🎶'}</p>${fin?'':`<div class="progress">${d.r+1} / ${d.rounds.length}</div>`}
-      ${fin?`<div class="mpairs">${d.all.map(p=>`<span class="mpair"><span>${p[2]}</span><span>${p[5]}</span></span>`).join('')}</div>`:`<div class="mboard"><div class="mcol">${L.map(p=>card(p,'s')).join('')}</div><div class="mmid">🎶</div><div class="mcol">${Rt.map(p=>card(p,'sh')).join('')}</div></div>`}
-      ${d.done.length?`<div class="mfound">${d.done.map(p=>`<span class="mchip">${rhl(p[1]+' – '+p[4])}</span>`).join('')}</div>`:''}</div>`);
+      ${fin?`<div class="rhpairs">${d.all.map(p=>`<span class="rhpair"><span>${p[2]}</span><span>${p[5]}</span></span>`).join('')}</div>`:`<div class="rhboard"><div class="rhcol">${L.map(p=>card(p,'s')).join('')}</div><div class="rhmid">🎶</div><div class="rhcol">${Rt.map(p=>card(p,'sh')).join('')}</div></div>`}
+      ${d.done.length?`<div class="rhfound">${d.done.map(p=>`<span class="rhchip">${rhl(p[1]+' – '+p[4])}</span>`).join('')}</div>`:''}</div>`);
     swapPics(app);
     if(fin)return;
     const sayW=(p,side)=>saySeq([side==='s'?p[3]:p[6]]);
-    app.querySelectorAll('.mcard:not(.ok)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const k=+b.dataset.k,side=b.dataset.side,p=R.find(x=>x[0]===k);sayW(p,side);
+    app.querySelectorAll('.rhcard:not(.ok)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const k=+b.dataset.k,side=b.dataset.side,p=R.find(x=>x[0]===k);sayW(p,side);
       if(!d.sel||d.sel[1]===side){d.sel=[k,side];SFX.blip();render();return}
       if(d.sel[0]===k){d.sel=null;d.found.push(k);d.done.push(p);SFX.good();render();
-        TIMERS.push(setTimeout(()=>{saySeq([p[3],p[6]]);sayIt([p[1]+' – '+p[4],`<span class="mrec"><span>${p[2]}</span><span>${p[5]}</span></span>`],()=>{
+        TIMERS.push(setTimeout(()=>{saySeq([p[3],p[6]]);sayIt([p[1]+' – '+p[4],`<span class="rhrec"><span>${p[2]}</span><span>${p[5]}</span></span>`],()=>{
           if(R.every(x=>d.found.includes(x[0]))){d.r++;d.found=[];d.left=[];d.right=[];if(d.r<d.rounds.length){const n=d.rounds[d.r];d.left=shuffle(n.slice());d.right=shuffle(n.slice())}else{SFX.fanfare();TIMERS.push(setTimeout(finish,4500))}}
           render()})},500));return}
       SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');d.sel=null;TIMERS.push(setTimeout(render,450))});
