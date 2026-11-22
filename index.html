@@ -1260,7 +1260,11 @@ body{background:#5E8F55}
 .rk-fire img.wimg{width:70px;height:70px}
 .rk-ship.bump{animation:rkShake .1s 9}
 .rk-ship.bump .rk-fire,.rk-ship.go .rk-fire{opacity:1;animation:rkFl .12s infinite alternate}
-.rk-ship.go{transform:translateY(-760px)}
+.rk-ship.go{animation:rkLaunch 3s cubic-bezier(.5,0,.85,.4) forwards}
+@keyframes rkLaunch{0%{transform:translate(0,0)}6%{transform:translate(-4px,4px)}12%{transform:translate(4px,0)}18%{transform:translate(-3px,-6px)}100%{transform:translate(0,-130vh)}}
+.rk-ship.prep{animation:rkShake .09s infinite}
+.rk-ship.prep .rk-fire{opacity:.85;font-size:44px;animation:rkFl .12s infinite alternate}
+.rk-ship.gone{visibility:hidden}
 .rk-ship.go .rk-fire{font-size:96px;bottom:-78px}
 @keyframes rkFl{to{transform:translateX(-50%) rotate(180deg) scale(1.3)}}
 @keyframes rkShake{25%{translate:-5px 0}75%{translate:5px 0}}
@@ -1385,12 +1389,12 @@ body{background:#5E8F55}
 @media(max-width:720px){.jgame{grid-template-columns:1fr}.jside{flex-direction:row;flex-wrap:wrap;justify-content:center}.dice3{width:120px;height:120px}.dice3 .cube{transform-origin:center;scale:.8}}/* ---- shop: wooden shelves, price cards ---- */
 .shopwall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:14px 14px 0;border-radius:22px;background:linear-gradient(180deg,#F6E7CC,#EBD3A8);box-shadow:inset 0 0 0 6px #A86B32,inset 0 0 0 10px #C98A4B,0 12px 26px rgba(90,50,10,.3)}
 @media(max-width:700px){.shopwall{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.sitem{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-height:170px;padding:10px 6px 22px;border:0;background:none;cursor:pointer;border-bottom:16px solid #9C5F28;box-shadow:0 10px 0 -2px #7A4519;margin-bottom:14px;transition:transform .15s}
-.sitem:hover{transform:translateY(-6px)}
-.sitem.gone{border-bottom:16px solid #9C5F28;box-shadow:0 10px 0 -2px #7A4519;min-height:170px;margin-bottom:14px}
-.spic{font-size:84px;line-height:1;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
-.spic img.wimg{width:118px;height:118px;object-fit:contain}
-.sname{font-size:16px;font-weight:800;color:#5a3a12}
+.shitem{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-height:170px;padding:10px 6px 22px;border:0;background:none;cursor:pointer;border-bottom:16px solid #9C5F28;box-shadow:0 10px 0 -2px #7A4519;margin-bottom:14px;transition:transform .15s}
+.shitem:hover{transform:translateY(-6px)}
+.shitem.gone{border-bottom:16px solid #9C5F28;box-shadow:0 10px 0 -2px #7A4519;min-height:170px;margin-bottom:14px}
+.shpic{font-size:84px;line-height:1;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
+.shpic img.wimg{width:118px;height:118px;object-fit:contain}
+.shname{font-size:16px;font-weight:800;color:#5a3a12}
 .ptag{position:absolute;top:8px;left:8px;display:inline-flex;align-items:baseline;gap:2px;padding:3px 10px 4px;border-radius:8px;background:#fff;border:3px solid #E03131;color:#C92A2A;font-weight:900;font-size:16px;transform:rotate(-8deg);box-shadow:0 4px 8px rgba(0,0,0,.2)}
 .ptag b{font-size:24px}
 .ptag::before{content:'';position:absolute;top:-7px;left:50%;width:8px;height:8px;border-radius:50%;background:#E03131;translate:-50% 0}
@@ -1416,7 +1420,7 @@ body{background:#5E8F55}
 .mpairs{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
 .mpair{display:flex;gap:4px;font-size:46px;padding:8px 12px;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.12);animation:s2dance .6s ease-in-out infinite alternate}
 @media(max-width:700px){.mboard{grid-template-columns:1fr}.mmid{display:none}}
-.spic img.simg,.s2pic img.simg,.s2e img.simg{filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
+.shpic img.simg,.s2pic img.simg,.s2e img.simg{filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
 /* castle: the part waits on the tractor until the child drags it */
 .cslot2.target{box-shadow:inset 0 0 0 4px #FFC43D,0 0 26px #FFB627;background:rgba(255,236,150,.45);animation:jflash2 .6s ease-in-out infinite alternate;z-index:3}
 .tractor .tload.grab{cursor:grab;touch-action:none;animation:jhint 1s ease-in-out infinite;filter:drop-shadow(0 0 10px #FFD43B)}
@@ -4003,7 +4007,7 @@ function renderAct(){
     const stars=d.starHtml||(d.starHtml=Array.from({length:34},()=>`<b style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*92).toFixed(1)}%;animation-delay:${(Math.random()*3).toFixed(2)}s"></b>`).join(''));
     const fly=d.phase==='fly'||d.phase==='land';
     const sky=`<div class="rk-sky ${fly?'fly':''}">${stars}<div class="rk-moon">🌙</div>${d.phase==='land'?'<div class="rk-planet">🪐</div>':''}
-      <div class="rk-pad"><div class="rk-ship ${d.phase==='fly'||d.phase==='land'?'go':''} ${d.bump?'bump':''}"><span class="rk-emo">🚀</span><span class="rk-fire">🔥</span></div><div class="rk-base"></div></div>
+      <div class="rk-pad"><div class="rk-ship ${d.phase==='fly'?'go':''} ${d.phase==='land'?'gone':''} ${d.phase==='count'?'prep':''} ${d.bump?'bump':''}"><span class="rk-emo">🚀</span><span class="rk-fire">🔥</span></div><div class="rk-base"></div></div>
       <div class="rk-tank" aria-label="דלק">${Array.from({length:N},(x,i)=>`<i class="${i<d.fuel?'on':''}"></i>`).join('')}<span>⛽</span></div>${d.cd!=null?`<div class="rk-cd" key="${d.cd}">${d.cd}</div>`:''}</div>`;
     let panel='';
     if(d.phase==='phr'||d.phase==='sent'){const t=d.phase==='phr'?it[0]:it[2];
@@ -4093,7 +4097,7 @@ function shopGame(d,kind,shell){
   const shelf=`<div class="s2shelf"><span class="s2bag">🛍️</span>${d.bought.length?d.bought.map((k,i)=>`<span class="s2b ${i===d.bought.length-1&&d.justBought?'drop':''}" style="--dl:${(i*.17).toFixed(2)}s"><span class="s2e">${shopPic(d.items[k])}</span></span>`).join(''):'<span class="s2empty">כאן יחכו כל הדברים שנקנה</span>'}</div>`;
   let main='';
   if(done)main='';
-  else if(d.phase==='browse')main=`<div class="shopwall">${d.items.map((x,k)=>d.bought.includes(k)?'<span class="sitem gone"></span>':`<button class="sitem" data-k="${k}" type="button"><span class="spic">${shopPic(x)}</span>${tag(d.price[k])}<span class="sname">${esc(x[0])}</span></button>`).join('')}</div>`;
+  else if(d.phase==='browse')main=`<div class="shopwall">${d.items.map((x,k)=>d.bought.includes(k)?'<span class="shitem gone"></span>':`<button class="shitem" data-k="${k}" type="button"><span class="shpic">${shopPic(x)}</span>${tag(d.price[k])}<span class="shname">${esc(x[0])}</span></button>`).join('')}</div>`;
   else main=`<div class="s2top"><div class="register ${d.ding?'ding':''}" id="register"><div class="rscreen">₪ ${d.total}</div><div class="rslot"></div><div class="rkeys">${'<i></i>'.repeat(6)}</div><div class="rdrawer"></div></div>
       <div class="s2item" id="s2item"><span class="s2pic">${shopPic(it)}</span>${tag(pr)}<span class="s2name">${mark(it[0])}</span></div>
       <div class="s2slots ${d.bad?'bad':''}">${[0,1].map(k=>d.pick[k]!=null?`<button class="coin2 in ${d.pick[k]>=5?'big':''}" data-k="${k}" type="button"><b>${d.pick[k]}</b><small>₪</small></button>`:'<span class="s2slot"></span>').join('<span class="s2op">+</span>')}<span class="s2op">=</span><span class="s2sum">${sum?sum+' ₪':'?'}</span></div></div>
@@ -4103,7 +4107,7 @@ function shopGame(d,kind,shell){
   shell(`<div class="card stage s2 shop ${done?'fin':''}"><p class="jmsg">${msg}</p>${main}${shelf}</div>`);
   d.ding=false;d.justBought=false;d.bad=false;
   if(done)return;
-  if(d.phase==='browse'){app.querySelectorAll('.sitem[data-k]').forEach(b=>b.onclick=()=>{d.cur=+b.dataset.k;d.pick=[];d.hint='';d.miss=0;d.phase='pay';SFX.blip();render()});return}
+  if(d.phase==='browse'){app.querySelectorAll('.shitem[data-k]').forEach(b=>b.onclick=()=>{d.cur=+b.dataset.k;d.pick=[];d.hint='';d.miss=0;d.phase='pay';SFX.blip();render()});return}
   if(d.phase==='pay'){
     document.getElementById('sback').onclick=()=>{d.cur=null;d.pick=[];d.phase='browse';SFX.blip();render()};
     app.querySelectorAll('.s2slots .coin2').forEach(b=>b.onclick=()=>{d.pick.splice(+b.dataset.k,1);SFX.blip();render()});
