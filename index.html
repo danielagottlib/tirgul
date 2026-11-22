@@ -3219,7 +3219,7 @@ function renderAct(){
       sayIt(d.items[ix],()=>{flyTo(b,document.getElementById('bag'),()=>{d.bought.push(ix);SFX.load();if(d.bought.length>=N){render();TIMERS.push(setTimeout(finish,900))}else render()})})});
     return;
   }
-  if(S.act==='cashier'){shopGame(d,'snd');return}
+  if(S.act==='cashier'){shopGame(d,'snd',shell);return}
   if(S.act==='seq'||S.act==='director'){
     /* story level. seq: three cards of a picture story are mixed up; the child puts them in order (first, then, at the end) and tells the story.
        director: the first two pictures are shown, the child invents the ending, then the real ending is revealed */
@@ -3952,7 +3952,7 @@ function renderAct(){
     shell(`<div class="card stage"><p class="muted">${cur?`צובעים ב${cur[0]} – נוגעים בכמה חלקים שרוצים 🖌️ רוצים צבע אחר? בוחרים ואומרים את המשפט`:'בוחרים צבע ואומרים את המשפט 🎨'} · ⭐ ${d.n}</p>
       <div class="palette">${CCOLORS.map((c,i)=>`<button class="pcol ${cur&&d.ci===i?'on':''}" data-c="${i}" style="background:${c[1]}" aria-label="${c[0]}"><span>${c[0]}</span></button>`).join('')}</div>
       <div class="cwrap ${cur?'armed':''} ${d.zoom?'zoom':''}"><canvas id="cv" width="900" height="900"></canvas></div>
-      <div class="row"><button class="btn ghost" id="czoom" type="button">${d.zoom?'🔍 חזרה לגודל רגיל':'🔍 הגדלה לפרטים קטנים'}</button><button class="btn" id="nextpg">📄 דף אחר</button><button class="btn sun" id="cdone">✔️ סיימתי לצבוע</button></div></div>`);
+      <div class="row"><button class="btn ghost" id="czoom" type="button">${d.zoom?'🔍 חזרה לגודל רגיל':'🔍 הגדלה לפרטים קטנים'}</button><button class="btn" id="nextpg">📄 דף אחר</button><button class="btn" id="csave" type="button">💾 שומרים את הציור במחשב</button><button class="btn sun" id="cdone">✔️ סיימתי לצבוע</button></div></div>`);
     const cv=document.getElementById('cv'),cx=cv.getContext('2d');
     const paint=()=>{const im=cx.createImageData(900,900);im.data.set(d.pix);cx.putImageData(im,0,0)};
     if(d.pix&&d.pixPg===d.pg)paint();
@@ -3969,10 +3969,12 @@ function renderAct(){
     {const w=document.querySelector('.cwrap');if(w&&d.sc){w.scrollLeft=d.sc[0];w.scrollTop=d.sc[1]}}
     document.getElementById('czoom').onclick=()=>{SFX.blip();d.zoom=!d.zoom;d.sc=null;render()};
     document.getElementById('nextpg').onclick=()=>{SFX.blip();d.pg=(d.pg+1)%pages.length;d.pix=null;render()};
+    /* save the painted page as a picture file */
+    document.getElementById('csave').onclick=()=>{SFX.blip();const c=document.getElementById('cv');if(!c)return;try{const a=document.createElement('a');a.download='הציור שלי.png';a.href=c.toDataURL('image/png');document.body.appendChild(a);a.click();a.remove()}catch(e){}};
     document.getElementById('cdone').onclick=()=>finish();
     return;
   }
-  if(S.act==='shop2'){shopGame(d,'shs');return}
+  if(S.act==='shop2'){shopGame(d,'shs',shell);return}
   if(S.act==='shmin'){
     /* ש / ס minimal pairs: ס words on one side, ש words on the other, mixed. The child taps a card (hears it), then the card
        that rhymes with it on the other side. A pair found flies together, and the child records both words ("סיר – שיר") */
@@ -4081,8 +4083,9 @@ function colorFill(d,x,y,hex,rad){const W=900,H=900,lum=d.lum,pix=d.pix,T=120;if
    The child picks a thing, pays the exact price with one or two coins (13 ₪ = 10 + 3), says the sentence,
    the coins fly into the register and the thing hops down to the bag shelf at the bottom, where all bought things wait excitedly ---------- */
 function shopPic(x){return window.SHOP_IMG&&SHOP_IMG[x[0]]?`<img class="wimg simg" src="${SHOP_IMG[x[0]]}" alt="">`:x[1]}
-function shopInit(d,items){loadScriptOnce('shop-img.js?v=1',()=>{if(S.data===d)render()});d.items=items.slice(0,12);d.price=d.items.map(()=>2+Math.floor(Math.random()*19));d.bought=[];d.cur=null;d.pick=[];d.phase='browse';d.total=0;d.goal=Math.min(6,d.items.length);d.miss=0}
-function shopGame(d,kind){
+function shopInit(d,items){d.items=items.slice(0,12);d.price=d.items.map(()=>2+Math.floor(Math.random()*19));d.bought=[];d.cur=null;d.pick=[];d.phase='browse';d.total=0;d.goal=Math.min(6,d.items.length);d.miss=0;
+  if(!window.SHOP_IMG)setTimeout(()=>loadScriptOnce('shop-img.js?v=1',()=>{if(S.data===d)render()}),0)}
+function shopGame(d,kind,shell){
   const g=kidG()==='g',done=d.bought.length>=d.goal,it=d.cur!=null?d.items[d.cur]:null,pr=it?d.price[d.cur]:0,sum=d.pick.reduce((a,b)=>a+b,0);
   const mark=t=>kind==='shs'?rhl(t):hl(t,SOUNDS[S.sound].hl);
   const sent=it?(kind==='shs'?`אני ${g?'משלמת':'משלם'} ${SHEK[pr-1][0]} בשביל לקנות ${it[0]}`:`אני ${g?'משלמת':'משלם'} על ${it[0]} ${SHEK[pr-1][0]}`):'';
