@@ -1291,7 +1291,74 @@ body{background:#5E8F55}
 /* coloring: zoom for small details */
 .cwrap.zoom{width:100%;overflow:auto;max-height:78vh;-webkit-overflow-scrolling:touch}
 .cwrap.zoom canvas{width:220%!important;max-width:none!important;height:auto}
-</style>
+/* ---- journey: board 1-30, 3D dice, step-by-step walking ---- */
+.jgame{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:16px;align-items:center}
+@media(max-width:720px){.jgame{grid-template-columns:1fr}}
+.jboard3{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,auto);gap:6px;width:100%;max-width:640px;margin:0 auto;padding:10px;border-radius:22px;background:linear-gradient(180deg,#CFE9D6,#A9D3B4);box-shadow:inset 0 0 0 4px rgba(255,255,255,.5),0 10px 24px rgba(40,90,50,.25)}
+.jboard3 .jnum{font-size:14px;color:#6f6247;top:3px;right:6px}
+.jcell.flash{animation:jflash .55s ease-in-out infinite alternate;z-index:3}
+@keyframes jflash{from{box-shadow:0 0 0 3px #FFC43D;background:#FFF6C9}to{box-shadow:0 0 0 7px #FF8A00,0 0 22px #FFB627;background:#FFE07A}}
+.jcell.no{animation:jno .35s}
+@keyframes jno{25%{translate:-5px 0}75%{translate:5px 0}}
+.jside{display:flex;flex-direction:column;align-items:center;gap:16px}
+.jstart{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:70px;padding:8px 14px;border-radius:16px;background:#FFFBF2;border:2px dashed #D9C79E;font-weight:700;color:#7a6a48;cursor:pointer}
+.jstart .jpawn.s{position:relative;inset:auto;transform:none;width:52px;height:52px}
+.jbig{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:50%;background:linear-gradient(160deg,#FFD84D,#FF9F1C);color:#fff;font-weight:900;text-shadow:0 3px 0 #C56A00;box-shadow:0 8px 18px rgba(200,110,0,.35)}
+.dice3{width:118px;height:118px;padding:0;border:0;background:none;perspective:520px;cursor:pointer}
+.dice3[disabled]{cursor:default;opacity:.55;filter:grayscale(.4)}
+.dice3.can:not(.spin){animation:jhint 1.4s ease-in-out infinite}
+@keyframes jhint{50%{transform:translateY(-8px) scale(1.04)}}
+.dice3 .cube{position:relative;width:90px;height:90px;margin:14px auto;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,1.5,.4,1)}
+.dice3.spin .cube{animation:jroll .45s linear infinite;transition:none}
+@keyframes jroll{from{transform:rotateX(0) rotateY(0) rotateZ(0)}to{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg)}}
+.dice3 .df{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:11px;border-radius:16px;background:radial-gradient(circle at 30% 25%,#fff,#f1ece2 70%,#ddd3c0);box-shadow:inset 0 0 0 2px #d8ccb4,inset 0 -6px 12px rgba(0,0,0,.12)}
+.dice3 .df i{margin:auto;width:15px;height:15px;border-radius:50%}
+.dice3 .df i.on{background:radial-gradient(circle at 35% 35%,#5a4a7a,#1d1430);box-shadow:inset 0 2px 2px rgba(0,0,0,.5)}
+.dice3 .f1 i.on{background:radial-gradient(circle at 35% 35%,#ff6b6b,#b3121f);width:20px;height:20px}
+.dice3 .f1{transform:translateZ(45px)}
+.dice3 .f6{transform:rotateY(180deg) translateZ(45px)}
+.dice3 .f2{transform:rotateY(90deg) translateZ(45px)}
+.dice3 .f5{transform:rotateY(-90deg) translateZ(45px)}
+.dice3 .f3{transform:rotateX(90deg) translateZ(45px)}
+.dice3 .f4{transform:rotateX(-90deg) translateZ(45px)}
+.jmsg{font-size:19px;font-weight:700;color:var(--ink)}/* ---- the ש-with-ס cashier ---- */
+.s2top{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;margin:8px 0 12px}
+@media(max-width:760px){.s2top{grid-template-columns:1fr;justify-items:center}}
+.s2item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.s2item.jump{animation:s2jump .7s ease-in forwards}
+@keyframes s2jump{to{transform:translateY(340px) scale(.35);opacity:0}}
+.s2pic{font-size:120px;line-height:1;animation:rkBob 2.4s ease-in-out infinite}
+.s2pic img.wimg{width:160px;height:160px;object-fit:contain}
+.s2name{font-size:32px;font-weight:800}
+.s2slots{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:20px;background:#FFF7E6;border:3px dashed #E2B647}
+.s2slot{width:66px;height:66px;border-radius:50%;border:3px dashed #D9C79E;background:rgba(255,255,255,.6)}
+.s2op{font-size:32px;font-weight:900;color:#C98A00}
+.s2sum{font-size:36px;font-weight:900;color:#E8590C;min-width:78px;text-align:center}
+.s2sent{font-size:clamp(24px,3.6vw,38px)!important;margin:6px 0 10px}
+.coins2{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:6px 0 12px}
+.coin2{width:68px;height:68px;padding:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF6C4,#F5C542 45%,#C8961E);border:3px solid #A87B12;box-shadow:0 5px 0 #8A6410,0 9px 16px rgba(0,0,0,.25);color:#6B4A00;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s}
+.coin2.big{background:radial-gradient(circle at 35% 30%,#FFF6C4,#F5C542 32%,#C8961E 44%,#E7E9EE 47%,#B9BEC9 80%,#8E94A1);border-color:#7D838F;box-shadow:0 5px 0 #646A75,0 9px 16px rgba(0,0,0,.25)}
+.coin2 b{font-size:25px;line-height:1;font-weight:900}
+.coin2 small{font-size:12px;font-weight:800}
+.coin2:not([disabled]):hover{transform:translateY(-4px) rotate(-6deg)}
+.coin2[disabled]{opacity:.45;cursor:default}
+.coin2.in{animation:popin .3s ease-out}
+.s2shelf{margin-top:18px;min-height:118px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:14px;padding:14px 12px 26px;border-radius:18px;background:linear-gradient(#F8E7C2,#E9C98C);box-shadow:inset 0 -16px 0 #B9874A,0 6px 14px rgba(120,80,20,.25)}
+.s2empty{align-self:center;color:#8a6a3a;font-weight:700}
+.s2b{position:relative;display:inline-block;animation:s2wait 1.1s var(--dl,0s) ease-in-out infinite}
+.s2b::after{content:'✨';position:absolute;top:-12px;left:-8px;font-size:18px;animation:s2spark 1.1s var(--dl,0s) infinite}
+.s2e{font-size:58px;line-height:1}
+.s2e img.wimg{width:80px;height:80px;object-fit:contain}
+@keyframes s2wait{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-16px) rotate(5deg) scale(1.07)}}
+@keyframes s2spark{50%{opacity:0;transform:scale(.4)}}
+.s2b.drop{animation:s2drop .75s cubic-bezier(.3,1.6,.5,1),s2wait 1.1s .75s ease-in-out infinite}
+@keyframes s2drop{from{transform:translateY(-280px) scale(1.7);opacity:0}}
+.s2.fin .s2shelf{min-height:200px}
+.s2.fin .s2b{animation:s2dance .55s var(--dl,0s) ease-in-out infinite alternate}
+.s2.fin .s2e{font-size:84px}
+.s2.fin .s2e img.wimg{width:110px;height:110px}
+@keyframes s2dance{from{transform:translateY(0) rotate(-12deg)}to{transform:translateY(-26px) rotate(12deg) scale(1.15)}}
+.step.shs{border-color:#7b61ff;background:linear-gradient(90deg,#f1edff,#fff)}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1563,7 +1630,7 @@ const CARDS={
  l:[['l_s1','הכלב עף'],['l_s2','הפיל יושב על כיסא קטן'],['l_s3','החתול נוהג באוטובוס'],['l_s4','הגמל בבריכה'],['l_l1','הכלב יושב על הפיל'],['l_l2','החתול אופה לחם'],['l_l3','הפיל לובש כובע'],['l_l4','השבלול נוהג בלימון']]
 };
 /* words where ש is a sin (sounds like S), not a shin: they are not ש-words for practice */
-const SIN=new Set('כבשה כבשים משאית משאיות שמיכה שמלה שמח שמחה שמחים שמחות שיער שדה לשים שק שקית לשחק משחק משחקים עשב עשר עשרה שמאל שפה שפם שיחה ישראל'.split(' '));
+const SIN=new Set('עשרים כבשה כבשים משאית משאיות שמיכה שמלה שמח שמחה שמחים שמחות שיער שדה לשים שק שקית לשחק משחק משחקים עשב עשר עשרה שמאל שפה שפם שיחה ישראל'.split(' '));
 function isSin(tok){const t=String(tok).replace(/[,.!?:]/g,'');const P='הובלמשכ';return SIN.has(t)||(t.length>2&&P.includes(t[0])&&SIN.has(t.slice(1)))||(t.length>3&&P.includes(t[0])&&P.includes(t[1])&&SIN.has(t.slice(2)))}
 function hl(word,letters){
   if(letters==='ש'){return String(word).split(' ').map(tok=>isSin(tok)?tok:[...tok].map(ch=>ch==='ש'?'<span class="hl">'+ch+'</span>':ch).join('')).join(' ')}
@@ -1738,7 +1805,7 @@ const niq=t=>String(t).replace(/[א-ת][א-ת']*/g,w=>NIQ[w]||w);
 /* if Google cannot be reached: only a woman's device voice (Hila / Carmit / Google), never the man's voice (Asaf) */
 function femaleSay(t){try{const v=speechSynthesis.getVoices().filter(x=>/^(he|iw)/i.test(x.lang)).find(x=>/hila|carmit|google/i.test(x.name));if(!v)return false;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.voice=v;u.lang=v.lang;u.rate=.85;speechSynthesis.speak(u);return true}catch(e){return false}}
 function gChunks(t){const out=[];let cur='';String(t).split(/\s+/).forEach(w=>{if((cur+' '+w).trim().length>180){if(cur)out.push(cur);cur=w}else cur=(cur+' '+w).trim()});if(cur)out.push(cur);return out}
-function sayWord(w){if(SFX.muted||!String(w||'').trim())return;saySeq(gChunks(niq(String(w).trim())))}
+function sayWord(w){if(SFX.muted||!String(w||'').trim())return;{const v=window.SHS_VOC&&SHS_VOC[String(w).trim()];if(v){saySeq([v]);return}}saySeq(gChunks(niq(String(w).trim())))}
 /* ---------- Daniela's own recorded voice: put the files in the audio/ folder; a missing file falls back quietly ---------- */
 /* recordings are made by Daniela from the therapist screen and saved to audio/<key>.webm */
 const VREC=[['done2','בסוף פעילות','כל הכבוד!'],['byeB','פרידה מבן','להתראות, היית מעולה!'],['byeG','פרידה מבת','להתראות, היית מעולה!'],['cheer1','עידוד 1','מצוין!'],['cheer2','עידוד 2','איזה יופי!'],['cheer3','עידוד 3','נהדר!'],
@@ -2167,7 +2234,7 @@ function renderSound(){
   const s=SOUNDS[S.sound],mx=maxStage(S.bits),p=prog();
   const st=STAGES.slice(0,mx).map(a=>[a,p.ctx['snd'+S.sound+':'+a[0]]||0]);
   const nx=st.findIndex(x=>x[1]<MASTER);
-  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail"><button class="step" data-disc="1"><span class="num" aria-hidden="true">👂</span><span class="st"><b>אבחנה שמיעתית</b><span>יש את ההגה במילה, או אין?</span></span><span class="sstars">${p.ctx['snd'+S.sound+':disc']?'⭐ '+p.ctx['snd'+S.sound+':disc']:''}</span></button>${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}</div>`;
+  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail"><button class="step" data-disc="1"><span class="num" aria-hidden="true">👂</span><span class="st"><b>אבחנה שמיעתית</b><span>יש את ההגה במילה, או אין?</span></span><span class="sstars">${p.ctx['snd'+S.sound+':disc']?'⭐ '+p.ctx['snd'+S.sound+':disc']:''}</span></button>${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>`).join('')}${s.id==='sh'&&mx>=5?`<button class="step shs" data-stage="shs"><span class="num" aria-hidden="true">🚀</span><span class="st"><b>ש עם ס</b><span>משפטים שמשלבים ש עם ס / שׂ</span></span><span class="sstars">${p.ctx['snd'+S.sound+':shs']?'⭐ '+p.ctx['snd'+S.sound+':shs']:''}</span></button>`:''}</div>`;
   bindCommon();
   app.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const st=b.dataset.stage;go('games',{stage:st,gback:'sound'})});
   const dz=app.querySelector('[data-disc]');if(dz)dz.onclick=()=>{S.stage='disc';S.gback='sound';startAct('disc','sound')};
@@ -2209,6 +2276,7 @@ const posOr=l=>{const f=byPos(l);return f.length>=3?f:shuffle(soundWords())};
 function byPos(list,key){const k=key==null?0:key;return list.filter(x=>okPos(Array.isArray(x)?x[k]:x))}
 function stageItems(st,act){
   const s=SOUNDS[S.sound];
+  if(st==='shs')return shuffle(ROCKET.flatMap(r=>[[r[0],r[4]+r[5]],[r[2],r[4]+r[5]]]));
   if(st==='syl'){const [L,F]=s.L;const cv=[L+'ָ',L+'ֶ',L+'ִי',L+'וֹ',L+'וּ'],vc=['אַ'+F,'אֶ'+F,'אִי'+F,'אוֹ'+F,'אוּ'+F],vcv=['אָ'+L+'ָ','אֶ'+L+'ֶ','אִי'+L+'ִי','אוֹ'+L+'וֹ','אוּ'+L+'וּ'];
     /* only the syllable positions the therapist ticked: start = רָ, middle = אָרָ, end = אַר */
     const A=allowedPos(),sets=[];if(!A.length||A.includes('s'))sets.push(cv);if(A.includes('m'))sets.push(vcv);if(A.includes('e'))sets.push(vc);
@@ -2246,8 +2314,19 @@ const ROCKET=[
  ['עוגת שוקולד לסבא','עוּגַת שׁוֹקוֹלָד לְסַבָּא','סבא אופה עוגת שוקולד לשבת','סַבָּא אוֹפֶה עוּגַת שׁוֹקוֹלָד לְשַׁבָּת','🎂','👴']
 ];
 const ROCKET_COUNT=['שָׁלוֹשׁ','שְׁתַּיִם','אַחַת','שִׁגּוּר!'];
-const ROCKET_LAND='הִגַּעְנוּ לַכּוֹכָב שֶׁל שׁוֹקוֹ וְסוּכָּר!';
+/* journey with ש: "עכשיו הגעתי למספר ___" for every square 1-30 (numbers as said when counting) */
+const JNUMW=[['אחת','אַחַת'],['שתיים','שְׁתַּיִם'],['שלוש','שָׁלוֹשׁ'],['ארבע','אַרְבַּע'],['חמש','חָמֵשׁ'],['שש','שֵׁשׁ'],['שבע','שֶׁבַע'],['שמונה','שְׁמוֹנֶה'],['תשע','תֵּשַׁע'],['עשר','עֶשֶׂר'],
+ ['אחת עשרה','אַחַת עֶשְׂרֵה'],['שתים עשרה','שְׁתֵּים עֶשְׂרֵה'],['שלוש עשרה','שְׁלוֹשׁ עֶשְׂרֵה'],['ארבע עשרה','אַרְבַּע עֶשְׂרֵה'],['חמש עשרה','חֲמֵשׁ עֶשְׂרֵה'],['שש עשרה','שֵׁשׁ עֶשְׂרֵה'],['שבע עשרה','שְׁבַע עֶשְׂרֵה'],['שמונה עשרה','שְׁמוֹנֶה עֶשְׂרֵה'],['תשע עשרה','תְּשַׁע עֶשְׂרֵה'],['עשרים','עֶשְׂרִים'],
+ ['עשרים ואחת','עֶשְׂרִים וְאַחַת'],['עשרים ושתיים','עֶשְׂרִים וּשְׁתַּיִם'],['עשרים ושלוש','עֶשְׂרִים וְשָׁלוֹשׁ'],['עשרים וארבע','עֶשְׂרִים וְאַרְבַּע'],['עשרים וחמש','עֶשְׂרִים וְחָמֵשׁ'],['עשרים ושש','עֶשְׂרִים וְשֵׁשׁ'],['עשרים ושבע','עֶשְׂרִים וְשֶׁבַע'],['עשרים ושמונה','עֶשְׂרִים וּשְׁמוֹנֶה'],['עשרים ותשע','עֶשְׂרִים וְתֵשַׁע'],['שלושים','שְׁלוֹשִׁים']];
+const JNUM=JNUMW.map((w,i)=>['עכשיו הגעתי למספר '+w[0],'<span class="jbig">'+(i+1)+'</span>','עַכְשָׁו הִגַּעְתִּי לְמִסְפָּר '+w[1]]);const ROCKET_LAND='הִגַּעְנוּ לַכּוֹכָב שֶׁל שׁוֹקוֹ וְסוּכָּר!';
 GAMES.rocket=['🚀','החללית של ש ו־ס','ממלאים דלק במשפטים וממריאים!'];
+window.SHS_VOC={};ROCKET.forEach(r=>{SHS_VOC[r[0]]=r[1];SHS_VOC[r[2]]=r[3]});JNUM.forEach(j=>SHS_VOC[j[0]]=j[2]);
+/* the ש-with-ס cashier: things with ס or שׂ [word, picture, niqqud]; amounts 1-20 as said with שקלים */
+const SHOP2=[['סוכרייה','🍬','סוּכָּרִיָּה'],['סל','🧺','סַל'],['ספר','📕','סֵפֶר'],['סבון','🧼','סַבּוֹן'],['סלט','🥗','סָלָט'],['סנדלים','🩴','סַנְדָּלִים'],['ספל','☕','סֵפֶל'],['סיר','🍲','סִיר'],['שמלה','👗','שִׂמְלָה'],['שמיכה','🛏️','שְׂמִיכָה'],['סירה','⛵','סִירָה'],['סופגנייה','🍩','סוּפְגָּנִיָּה']];
+const SHEK=[['שקל אחד','שֶׁקֶל אֶחָד'],['שני שקלים','שְׁנֵי שְׁקָלִים'],['שלושה שקלים','שְׁלוֹשָׁה שְׁקָלִים'],['ארבעה שקלים','אַרְבָּעָה שְׁקָלִים'],['חמישה שקלים','חֲמִשָּׁה שְׁקָלִים'],['שישה שקלים','שִׁשָּׁה שְׁקָלִים'],['שבעה שקלים','שִׁבְעָה שְׁקָלִים'],['שמונה שקלים','שְׁמוֹנָה שְׁקָלִים'],['תשעה שקלים','תִּשְׁעָה שְׁקָלִים'],['עשרה שקלים','עֲשָׂרָה שְׁקָלִים'],
+ ['אחד עשר שקלים','אַחַד עָשָׂר שְׁקָלִים'],['שנים עשר שקלים','שְׁנֵים עָשָׂר שְׁקָלִים'],['שלושה עשר שקלים','שְׁלוֹשָׁה עָשָׂר שְׁקָלִים'],['ארבעה עשר שקלים','אַרְבָּעָה עָשָׂר שְׁקָלִים'],['חמישה עשר שקלים','חֲמִשָּׁה עָשָׂר שְׁקָלִים'],['שישה עשר שקלים','שִׁשָּׁה עָשָׂר שְׁקָלִים'],['שבעה עשר שקלים','שִׁבְעָה עָשָׂר שְׁקָלִים'],['שמונה עשר שקלים','שְׁמוֹנָה עָשָׂר שְׁקָלִים'],['תשעה עשר שקלים','תִּשְׁעָה עָשָׂר שְׁקָלִים'],['עשרים שקלים','עֶשְׂרִים שְׁקָלִים']];
+const SHOP2_PAY={b:'אֲנִי מְשַׁלֵּם',g:'אֲנִי מְשַׁלֶּמֶת'};
+GAMES.shop2=['🪙','הקופה של ש ו־ס','בוחרים מטבעות וקונים'];
 /* ש in blue, ס and the ש of sin words (שׂ) in orange */
 function rhl(t){return String(t).split(' ').map(tok=>{const sin=isSin(tok)||/מחפש/.test(tok);return [...tok].map(ch=>ch==='ש'?'<span class="'+(sin?'hss':'hsh')+'">ש</span>':ch==='ס'?'<span class="hss">ס</span>':ch).join('')}).join(' ')}
 /* new games, one level each, so a child who moves up meets something new (Nov 2026) */
@@ -2307,7 +2386,8 @@ const STORIES=[{name:'הפרח של נועה',k:['s0','s1','s2']},{name:'ארמ�
 /* things that do not make sense to buy or to feed to a dragon (body parts, abstract words, numbers...) */
 const NOBUY=new Set('רגל,רגליים,אור,ירוק,שיר,עיר,ריבוע,ריקוד,רעיון,ראש,רואה,קורא,לב,ליצן,מלך,עלה,שמש,שן,שלג,נשיקה,גשם,קשת,שתיים,שלושה,שמונה,קסם,צהוב,עצים,עץ,ברק,זרוע,אוזן,כביש,ארמון,ירח,תולעת,זקן,זחל,זבוב,עכביש,נחש,לק,גמד,גדי,ספינה'.split(','));
 function gamesFor(st){
-  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return (sid==='sh'||sid==='s'?['rocket']:[]).concat(['journey','castle','cashier','fix','cook','silly','balloon','train','line']).concat(sid==='sh'||sid==='ts'?['color']:[])}
+  if(st==='shs')return ['journey','rocket','shop2','balloon','wheel'];
+  if(st==='long'){const s=SOUNDS[S.sound],sid=s&&s.id;return (sid==='s'?['rocket']:[]).concat(['journey','castle','cashier','fix','cook','silly','balloon','train','line']).concat(sid==='sh'||sid==='ts'?['color']:[])}
   if(st==='story')return ['seqrec','paint','seq','director','pscene','scene','absurd'];
   if(st==='syl')return ['bubbles','tower','eggs','monster','frog','balloon','train','wheel'];
   if(st==='phr')return ['kite','silly','balloon','train','line','memory','wheel'];
@@ -2317,7 +2397,7 @@ function gamesFor(st){
   if(st==='long')return ['fix','cook','silly','balloon','train','line'];
   return ['balloon','train','line'];
 }
-function stageTitle(st){if(st==='pair')return VOICING[S.pair].name;if(st==='vocab')return 'מה זה?';return (STAGES.find(x=>x[0]===st)||['','',''])[2]}
+function stageTitle(st){if(st==='shs')return 'ש עם ס';if(st==='pair')return VOICING[S.pair].name;if(st==='vocab')return 'מה זה?';return (STAGES.find(x=>x[0]===st)||['','',''])[2]}
 function renderGames(){
   const ck=ctxKey(null,'games'),pg=prog().games;const gb=g=>{const r=pg[ck+'|'+g];return r&&r.s?`<span class="tbadge">⭐ ${r.s}</span>`:''};
   app.innerHTML=header(stageTitle(S.stage),S.gback)+`<p class="muted">בוחרים משחק:</p><div class="grid">${gamesFor(S.stage).map(g=>`<button class="tile" data-game="${g}">${gb(g)}<span class="big">${GAMES[g][0]}</span>${GAMES[g][1]}<span class="sub">${GAMES[g][2]}</span></button>`).join('')}</div>`;
@@ -2424,7 +2504,7 @@ function recOverlay(label,done,opts){
 /* ---------- "say it" pop-up ---------- */
 function letters(){return (S.stage&&S.sound!==null&&!['pair','vocab'].includes(S.stage)&&S.stage!=='syl'&&SOUNDS[S.sound])?SOUNDS[S.sound].hl:''}
 function itemHtml(it,big){
-  if(it[2]==='syl')return `<div class="creature"><div class="cpic" style="font-size:${big?110:64}px">${crit(it[1],big?150:84)}</div><div class="sbub">${it[0]}!</div></div>${big?`<p class="cline">${it[3]} ${it[4]?'אומרת':'אומר'}: <b>${it[0]}</b></p>`:''}`;const L=letters();const t=L?hl(it[0],L):it[0];const isSent=it[0].includes(' ')&&S.stage!=='syl';
+  if(it[2]==='syl')return `<div class="creature"><div class="cpic" style="font-size:${big?110:64}px">${crit(it[1],big?150:84)}</div><div class="sbub">${it[0]}!</div></div>${big?`<p class="cline">${it[3]} ${it[4]?'אומרת':'אומר'}: <b>${it[0]}</b></p>`:''}`;const L=letters();const t=S.stage==='shs'?rhl(it[0]):L?hl(it[0],L):it[0];const isSent=it[0].includes(' ')&&S.stage!=='syl';
   return `${it[1]?`<div class="pic" style="font-size:${big?110:56}px">${it[1]}</div>`:''}<div class="${isSent?'sentence':'word'}" ${!it[1]?'style="font-size:60px;color:var(--coral)"':''}>${t}</div>`}
 function sayIt(it,onDone){
   const ov=document.createElement('div');ov.className='overlay';
@@ -2662,13 +2742,14 @@ function startAct(act,from){
   if(act==='tower'){d.items=items();d.k=0;d.ready=false;loadScriptOnce('castle2.js?v=1',()=>{if(S.act==='tower')render()})}
   if(act==='fishing'){d.items=items().slice(0,8);d.caught=[]}
   if(act==='dragon'){d.items=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0]))).slice(0,6).map(w=>['הדרקון אוכל '+w[0],w[1]]);d.fed=[]}
-  if(act==='journey'){const it=items();d.items=it.length?it:[['','']];d.k=0;d.pos=0;d.roll=null;d.phase='roll';d.note='';d.cnt=null;d.hl=null}
+  if(act==='journey'){const it=items();d.items=it.length?it:[['','']];d.k=0;d.pos=0;d.roll=null;d.phase='roll';d.note='';d.cnt=null;d.hl=null;d.rolling=false;d.face=1;d.from0=0;d.wrong=false}
   if(act==='vbuzz'){d.heard={a:0,b:0}}
   if(act==='vquiz'){d.n=0;d.goal=8;d.seq=shuffle([1,1,1,1,0,0,0,0]);d.lock=false}
   if(act==='vsort'||act==='vsortg'){const v=VOICING[S.pair],V=VSORT[S.pair],sy=w=>[w[0],w[1],VSYL[w[0]]||w[0]];
     const A=V?V.a:v.a[1].map(sy),B=V?V.b:v.b[1].map(sy);
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
-  if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=1',()=>{})}
+  if(act==='shop2'){d.items=shuffle(SHOP2).slice(0,6);d.k=0;d.pick=[];d.phase='pick';d.total=0;d.bought=[]}
+  if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=3',()=>{})}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
     loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()})}
   if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
@@ -2692,7 +2773,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',shop2:'הקופה של ש ו־ס',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -3374,31 +3455,47 @@ function renderAct(){
     return;
   }
   if(S.act==='journey'){
-    /* long sentences: a board game through the kingdom (20 squares, ladders and snakes). The child rolls the die (1-4), then
-       counts and taps the square to walk to. A wrong count is corrected: the computer counts the steps with the child.
-       On every landing the child says a sentence; a ladder climbs up, a snake slides down; the last square is the castle */
-    const B=20,LAD={2:8,9:14},SNK={12:5,17:10},pawn=kidG()==='g'?'👸':'🤴',pos=d.pos,F=['⚀','⚁','⚂','⚃'];
-    const RC=i=>{const r=Math.floor(i/5),c=r%2?4-(i%5):i%5;return [4-r,c+1]};
-    const target=d.roll?Math.min(pos+d.roll,B-1):null;
-    const msg=pos>=B-1?'הגענו לטירה! 🏰🎉':d.phase==='move'?`בקובייה יצא ${d.roll}! סופרים ${d.roll} צעדים ונוגעים במשבצת 👆`:d.phase==='count'?'סופרים יחד... 🔢':d.note||'מטילים קובייה ומתקדמים אל הטירה 🎲';
-    shell(`<div class="card stage"><p class="muted">${msg}</p>
-      <div class="jboard2">${Array.from({length:B},(x,i)=>{const [r,c]=RC(i),lad=LAD[i]!=null,snk=SNK[i]!=null;
-        return `<button class="jcell ${i===B-1?'goal':''} ${i===0?'start':''} ${lad?'lad':''} ${snk?'snk':''} ${d.hl===i?'hl':''}" data-i="${i}" type="button" style="grid-row:${r};grid-column:${c}">
-          <span class="jnum">${i===0?'':i}</span>${i===B-1?'<span class="jgoal">🏰</span>':i===0?'<span class="jgoal">🚩</span>':lad?`<span class="jsp">🪜</span><span class="jto">⬆ ${LAD[i]}</span>`:snk?`<span class="jsp">🐍</span><span class="jto">⬇ ${SNK[i]}</span>`:''}
+    /* long sentences: a board game through the kingdom, squares 1-30 with ladders and snakes.
+       The child taps the 3D dice to roll it and taps again to stop it. Then the child walks the pawn himself, one square
+       per tap, and presses "הגעתי!". On a wrong square the right one flashes and the dice stays locked until he gets there.
+       On every landing a sentence (ש: "עכשיו הגעתי למספר ___"); a ladder climbs up, a snake slides down; 30 is the castle */
+    const B=30,LAD={4:12,15:23},SNK={19:9,27:17},pawn=kidG()==='g'?'👸':'🤴',pos=d.pos;
+    const RC=i=>{const r=Math.floor((i-1)/6),c=r%2?5-((i-1)%6):(i-1)%6;return [5-r,c+1]};
+    const target=d.roll?Math.min(d.from0+d.roll,B):null;
+    const msg=pos>=B?'הגענו לטירה! 🏰🎉':d.phase==='roll'?(d.rolling?'הקובייה מתגלגלת! לוחצים עליה כדי לעצור ✋':d.note||'לוחצים על הקובייה כדי להטיל אותה 🎲')
+      :d.phase==='move'?(d.wrong?`אופס! המשבצת הנכונה מהבהבת ✨ ממשיכים לזוז אליה צעד צעד`:`בקובייה יצא ${d.roll}! זזים ${d.roll} צעדים, משבצת אחרי משבצת 👆 ואז לוחצים "הגעתי!"`):'';
+    const pips={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+    const face=n=>`<div class="df f${n}">${[1,2,3,4,5,6,7,8,9].map(k=>`<i class="${pips[n].includes(k)?'on':''}"></i>`).join('')}</div>`;
+    const ROT={1:'rotateX(0deg) rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateX(-90deg)',4:'rotateX(90deg)',5:'rotateY(90deg)',6:'rotateY(180deg)'};
+    const canRoll=d.phase==='roll'&&pos<B;
+    shell(`<div class="card stage"><p class="muted jmsg">${msg}</p>
+      <div class="jgame"><div class="jboard3">${Array.from({length:B},(x,k)=>{const i=k+1,[r,c]=RC(i),lad=LAD[i]!=null,snk=SNK[i]!=null;
+        return `<button class="jcell ${i===B?'goal':''} ${lad?'lad':''} ${snk?'snk':''} ${d.wrong&&i===target?'flash':''}" data-i="${i}" type="button" style="grid-row:${r};grid-column:${c}">
+          <span class="jnum">${i}</span>${i===B?'<span class="jgoal">🏰</span>':lad?`<span class="jsp">🪜</span><span class="jto">⬆ ${LAD[i]}</span>`:snk?`<span class="jsp">🐍</span><span class="jto">⬇ ${SNK[i]}</span>`:''}
           ${i===pos?`<span class="jpawn">${pawn}</span>`:''}${d.cnt&&d.cnt[i]?`<span class="jcount">${d.cnt[i]}</span>`:''}</button>`}).join('')}</div>
-      <div class="row"><button class="btn sun" id="roll" type="button" ${d.phase!=='roll'||pos>=B-1?'disabled':''}>🎲 מטילים קובייה</button><span class="die">${d.roll?F[d.roll-1]:''}</span></div></div>`);
-    if(pos>=B-1)return;
-    const special=()=>{const p=d.pos;if(LAD[p]!=null){d.note='עלינו בסולם! 🪜';SFX.zip();d.pos=LAD[p];render()}else if(SNK[p]!=null){d.note='אוי, נחש! מחליקים למטה 🐍';SFX.bad();d.pos=SNK[p];render()}else d.note=''};
-    const land=()=>{d.roll=null;d.cnt=null;d.hl=null;d.phase='say';render();
-      if(d.pos>=B-1){SFX.fanfare();TIMERS.push(setTimeout(finish,2000));return}
-      const it=d.items[d.k%d.items.length];d.k++;
-      TIMERS.push(setTimeout(()=>sayIt(it,()=>{d.phase='roll';special();render()}),400))};
-    const walk=(count)=>{let s=0;d.cnt={};const step=()=>{if(d.pos<target){d.pos++;s++;if(count){d.cnt[d.pos]=s}SFX.blip();render();TIMERS.push(setTimeout(step,count?650:280))}else TIMERS.push(setTimeout(land,count?600:200))};step()};
-    const rb=document.getElementById('roll');if(rb&&d.phase==='roll')rb.onclick=()=>{rb.disabled=true;let k=0;const t=setInterval(()=>{SFX.tick();app.querySelector('.die').textContent=F[k++%4];
-      if(k>9){clearInterval(t);d.roll=1+Math.floor(Math.random()*4);d.phase='move';render()}},90);TIMERS.push(t)};
-    if(d.phase==='move')app.querySelectorAll('.jcell').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i<=d.pos)return;
-      if(i===target){SFX.good();d.phase='walk';walk(false)}
-      else{SFX.bad();d.phase='count';d.hl=target;render();TIMERS.push(setTimeout(()=>walk(true),700))}});
+        <div class="jside"><div class="jstart">${pos===0?`<span class="jpawn s">${pawn}</span>`:''}<span>🚩 התחלה</span></div>
+          <button class="dice3 ${canRoll?'can':''} ${d.rolling?'spin':''}" id="die" type="button" aria-label="קובייה" ${canRoll?'':'disabled'}><div class="cube" style="transform:rotateX(-20deg) rotateY(24deg) ${ROT[d.face||1]}">${[1,2,3,4,5,6].map(face).join('')}</div></button>
+          ${d.phase==='move'?'<button class="btn sun" id="jdone" type="button">🏁 הגעתי!</button>':''}</div></div></div>`);
+    if(pos>=B)return;
+    const land=()=>{d.phase='say';d.wrong=false;d.cnt=null;render();
+      const n=d.pos,isSh=S.stage==='shs',it=isSh?JNUM[n-1]:d.items[d.k%d.items.length];d.k++;
+      const after=()=>{d.roll=null;
+        if(d.pos>=B){SFX.fanfare();render();TIMERS.push(setTimeout(finish,2200));return}
+        const p=d.pos;if(LAD[p]!=null){d.note='עלינו בסולם! 🪜';SFX.zip();d.pos=LAD[p]}else if(SNK[p]!=null){d.note='אוי, נחש! מחליקים למטה 🐍';SFX.bad();d.pos=SNK[p]}else d.note='';
+        d.phase='roll';render()};
+      TIMERS.push(setTimeout(()=>{if(isSh)saySeq([it[2]]);sayIt(it,after)},450))};
+    const die=document.getElementById('die');
+    if(canRoll)die.onclick=()=>{SFX.unlock&&SFX.unlock();
+      if(!d.rolling){d.rolling=true;render();d.tk=setInterval(()=>SFX.tick(),140);TIMERS.push(d.tk)}
+      else{clearInterval(d.tk);d.rolling=false;d.roll=1+Math.floor(Math.random()*6);d.face=d.roll;d.from0=d.pos;d.cnt={};d.wrong=false;SFX.blip();d.phase='move';d.note='';render()}};
+    if(d.phase==='move'){
+      app.querySelectorAll('.jcell').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+        if(i===d.pos+1&&i<=B){d.pos=i;SFX.blip();d.cnt[i]=i-d.from0;if(d.pos>target)d.wrong=true;render()}
+        else if(i===d.pos-1&&i>=d.from0&&d.pos>d.from0){delete d.cnt[d.pos];d.pos=i;SFX.blip();render()}
+        else if(i!==d.pos){b.classList.remove('no');void b.offsetWidth;b.classList.add('no');SFX.bad()}});
+      document.getElementById('jdone').onclick=()=>{if(d.pos===target){SFX.good();land()}else{d.wrong=true;SFX.bad();render()}};
+      {const s=app.querySelector('.jstart');if(s)s.onclick=()=>{if(d.pos===1&&d.from0===0){delete d.cnt[1];d.pos=0;SFX.blip();render()}}}
+    }
     return;
   }
   if(S.act==='eggs'){
@@ -3827,6 +3924,39 @@ function renderAct(){
     document.getElementById('cdone').onclick=()=>finish();
     return;
   }
+  if(S.act==='shop2'){
+    /* ש with ס: the child chooses one or two coins (1-10); together they make the price, and he says
+       "אני משלם ___ שקלים בשביל לקנות ___". The coins fly into the register and the bought thing jumps down
+       to the shelf at the bottom, where everything bought waits excitedly; at the end they all dance */
+    const N=d.items.length,fin=d.k>=N,it=d.items[Math.min(d.k,N-1)],g=kidG()==='g',sum=d.pick.reduce((a,b)=>a+b,0);
+    const sent=sum?`אני ${g?'משלמת':'משלם'} ${SHEK[sum-1][0]} בשביל לקנות ${it[0]}`:'';
+    const shelf=`<div class="s2shelf">${d.bought.length?d.bought.map((b,i)=>`<span class="s2b ${i===d.bought.length-1&&d.justBought?'drop':''}" style="--dl:${(i*.17).toFixed(2)}s"><span class="s2e">${b[1]}</span></span>`).join(''):'<span class="s2empty">כאן יחכו כל הדברים שנקנה 🛍️</span>'}</div>`;
+    shell(`<div class="card stage s2 ${fin?'fin':''}"><p class="muted">${fin?'קנינו הכל! איזה כיף! 🎉':d.phase==='say'?'אומרים את המשפט 🗣️':'בוחרים מטבע אחד או שניים 🪙 ביחד הם המחיר'}</p>${fin?'':`<div class="progress">${d.k+1} / ${N}</div>`}
+      ${fin?'':`<div class="s2top"><div class="register ${d.ding?'ding':''}" id="register"><div class="rscreen">₪ ${d.total}</div><div class="rslot"></div><div class="rkeys">${'<i></i>'.repeat(6)}</div><div class="rdrawer"></div></div>
+        <div class="s2item" id="s2item"><span class="s2pic">${it[1]}</span><span class="s2name">${rhl(it[0])}</span></div>
+        <div class="s2slots">${[0,1].map(k=>d.pick[k]!=null?`<button class="coin2 in ${d.pick[k]>=5?'big':''}" data-k="${k}" type="button"><b>${d.pick[k]}</b><small>₪</small></button>`:'<span class="s2slot"></span>').join('<span class="s2op">+</span>')}<span class="s2op">=</span><span class="s2sum">${sum?sum+' ₪':'?'}</span></div></div>
+        ${sum?`<div class="sentence s2sent">${rhl(sent)}</div>`:''}
+        ${d.phase==='say'?'<div id="s2rec"></div>':`<div class="coins2">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="coin2 ${v>=5?'big':''}" data-v="${v}" type="button" ${d.pick.length>=2?'disabled':''}><b>${v}</b><small>₪</small></button>`).join('')}</div>
+        <div class="row"><button class="btn sun" id="s2go" type="button" ${sum?'':'disabled'}>🗣️ זה המחיר! אומרים</button></div>`}`}
+      ${shelf}</div>`);
+    d.ding=false;d.justBought=false;
+    if(fin)return;
+    if(d.phase==='pick'){
+      app.querySelectorAll('.coins2 .coin2').forEach(b=>b.onclick=()=>{if(d.pick.length>=2)return;d.pick.push(+b.dataset.v);SFX.blip();render()});
+      app.querySelectorAll('.s2slots .coin2').forEach(b=>b.onclick=()=>{d.pick.splice(+b.dataset.k,1);SFX.blip();render()});
+      document.getElementById('s2go').onclick=()=>{if(!sum)return;d.phase='say';render();saySeq([SHOP2_PAY[g?'g':'b'],SHEK[sum-1][1],'בִּשְׁבִיל לִקְנוֹת '+it[2]])};
+      return}
+    const ok=()=>{addStar();voice('cheer');const coins=[...app.querySelectorAll('.s2slots .coin2')],reg=document.getElementById('register');let left=coins.length;
+      const done=()=>{SFX.kaching();d.total+=sum;d.ding=true;
+        const pic=document.getElementById('s2item');if(pic)pic.classList.add('jump');
+        TIMERS.push(setTimeout(()=>{d.bought.push(it);d.justBought=true;d.k++;d.pick=[];d.phase='pick';render();
+          if(d.k>=N){SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),900));TIMERS.push(setTimeout(finish,6500))}},700))};
+      if(!coins.length||!reg){done();return}coins.forEach(c=>flyTo(c,reg,()=>{if(--left===0)done()}))};
+    const host=document.getElementById('s2rec');
+    if(REC.state==='no'){host.innerHTML='<button class="btn leaf" id="s2ok" type="button">⭐ אמרתי!</button>';host.querySelector('#s2ok').onclick=ok}
+    else recStep(host,ok);
+    return;
+  }
   if(S.act==='rocket'){
     /* long sentences that mix ש with ס / שׂ: every phrase and every sentence the child says is a fuel capsule for the rocket.
        When the tank is full: a countdown "שָׁלוֹשׁ, שְׁתַּיִם, אַחַת, שִׁגּוּר!" said together, the rocket launches and lands on a planet */
@@ -3847,8 +3977,8 @@ function renderAct(){
     shell(`<div class="card stage rk"><p class="muted">ממלאים את החללית בדלק של משפטים עם <b class="hsh">ש</b> ועם <b class="hss">ס / שׂ</b> · ⛽ ${d.fuel} / ${N}</p><div class="rk-wrap">${sky}${panel}</div></div>`);
     /* the voice always calls back, even if a sound fails */
     const say=(v,cb)=>{let ok=false;const go=()=>{if(ok)return;ok=true;cb&&cb()};saySeq([v],go);if(cb)TIMERS.push(setTimeout(go,Math.max(3500,v.length*160)))};
-    const countdown=()=>{let i=0;const step=()=>{if(S.act!=='rocket')return;d.cd=i<3?String(3-i):'🚀';render();SFX.tick();
-      say(ROCKET_COUNT[i],()=>{i++;if(i<ROCKET_COUNT.length){TIMERS.push(setTimeout(step,450));return}
+    const countdown=()=>{let i=0;const step=()=>{if(S.act!=='rocket')return;const t0=Date.now();d.cd=i<3?String(3-i):'🚀';render();SFX.tick();
+      say(ROCKET_COUNT[i],()=>{i++;if(i<ROCKET_COUNT.length){TIMERS.push(setTimeout(step,Math.max(450,1150-(Date.now()-t0))));return}
         d.cd=null;d.phase='fly';render();SFX.fanfare();
         TIMERS.push(setTimeout(()=>{if(S.act!=='rocket')return;d.phase='land';render();say(ROCKET_LAND);TIMERS.push(setTimeout(finish,4800))},3300))})};
       TIMERS.push(setTimeout(step,700))};
@@ -4100,7 +4230,7 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
 loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
 /* the practice-word sound files load quietly in the background */
-setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=1',()=>{})},1500);
+setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=3',()=>{})},1500);
 try{applyTints()}catch(e){}
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-4.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
