@@ -1777,6 +1777,8 @@ const SFX=(()=>{
     load(){tone(330,.1,{vol:.18});tone(495,.12,{vol:.18,at:.08})},
     tick(){tone(1800,.03,{vol:.1,type:'square'})},
     zip(){tone(400,.25,{vol:.12,to:1400,type:'sawtooth'})},
+    /* rocket lift-off: a deep engine rumble, a hiss of fire and a rising whoosh */
+    launch(){noise(3.4,{vol:.6,hp:30,lp:500});noise(3,{vol:.3,hp:700,lp:4000,at:.15});tone(62,3.2,{vol:.35,to:38,type:'sawtooth'});tone(140,2.8,{vol:.14,to:1300,type:'sawtooth',at:.5});for(let i=0;i<10;i++)noise(.12,{at:.1+i*.28,vol:.28,hp:150,lp:1400})},
     roll(){for(let i=0;i<6;i++)noise(.04,{at:i*.08,vol:.3,hp:1500})},
     fanfare(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,{vol:.18,at:i*.13,type:'triangle'}));tone(1047,.7,{vol:.18,at:.55,type:'triangle'});tone(1319,.7,{vol:.12,at:.55,type:'triangle'})},
     whoosh(){noise(.6,{vol:.25,hp:400,lp:3000})},
@@ -4023,8 +4025,8 @@ function renderAct(){
     const say=(v,cb)=>{let ok=false;const go=()=>{if(ok)return;ok=true;cb&&cb()};saySeq([v],go);if(cb)TIMERS.push(setTimeout(go,Math.max(3500,v.length*160)))};
     const countdown=()=>{let i=0;const step=()=>{if(S.act!=='rocket')return;const t0=Date.now();d.cd=i<3?String(3-i):'🚀';render();SFX.tick();
       say(ROCKET_COUNT[i],()=>{i++;if(i<ROCKET_COUNT.length){TIMERS.push(setTimeout(step,Math.max(450,1150-(Date.now()-t0))));return}
-        d.cd=null;d.phase='fly';render();SFX.fanfare();
-        TIMERS.push(setTimeout(()=>{if(S.act!=='rocket')return;d.phase='land';render();say(ROCKET_LAND);TIMERS.push(setTimeout(finish,4800))},3300))})};
+        d.cd=null;d.phase='fly';render();SFX.launch();
+        TIMERS.push(setTimeout(()=>{if(S.act==='rocket')finish()},3600))})};
       TIMERS.push(setTimeout(step,700))};
     if(d.phase==='phr'||d.phase==='sent'){const v=d.phase==='phr'?it[1]:it[3];
       document.getElementById('rkHear').onclick=()=>say(v);
