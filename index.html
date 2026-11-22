@@ -1249,7 +1249,7 @@ body{background:#5E8F55}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=3"></script><script src="mygames.js?v=7"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=3"></script><script src="mygames.js?v=7"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="tts.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -1676,10 +1676,13 @@ function playPh(ph){if(SFX.muted)return;
     a.onplaying=()=>{started=true;PHREC[ph]=true};a.onerror=fb;a.play().catch(e=>{if(e&&e.name==='AbortError')return;fb()})}catch(e){fb()}}/* the word sorting says the start twice and then the whole word: "דֶּ... דֶּ... דֶּלֶת" (Google voice, device voice if it cannot play) */
 function saySeq(arr,onDone){if(SFX.muted){onDone&&onDone();return}const me=(window._seqId=(window._seqId||0)+1);let k=0;
   const next=()=>{if(me!==window._seqId)return;if(k>=arr.length){onDone&&onDone();return}const t=arr[k++];let done=false;const go=()=>{if(done)return;done=true;setTimeout(next,k<arr.length?380:0)};
-    try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
+    try{if(window._sylA)window._sylA.pause();const a=new Audio(ttsUrl(t));window._sylA=a;
       a.onended=go;const bad=()=>{if(me!==window._seqId)return;femaleSay(t);setTimeout(go,1200)};a.onerror=bad;a.play().catch(e=>{if(e&&e.name==='AbortError')return;bad()})}catch(e){go()}};next()}/* first syllables in the word-sorting game: Google's Hebrew voice (much clearer than the device voices); if it cannot play, the device voice */
-function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
-  try{if(window._sylA)window._sylA.pause();const a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t));window._sylA=a;
+/* words the site says are kept as sound files on the site (tts/<hash>.mp3, list in tts.js), made once from Google's Hebrew voice;
+   Google itself refuses some requests when many are sent, so it is only used for words that have no file yet */
+function ttsHash(t){let h=5381;for(let i=0;i<t.length;i++)h=(Math.imul(h,33)^t.charCodeAt(i))>>>0;return h.toString(16)}
+function ttsUrl(t){t=String(t||'').trim();const h=ttsHash(t);return (window.TTS_HAVE&&TTS_HAVE.has(h))?'tts/'+h+'.mp3':'https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+encodeURIComponent(t)}function saySyl(t){if(SFX.muted)return;let done=false;const fb=()=>{if(done)return;done=true;femaleSay(t)};
+  try{if(window._sylA)window._sylA.pause();const a=new Audio(ttsUrl(t));window._sylA=a;
     a.onerror=()=>{if(window._sylA===a)fb()};a.play().then(()=>{done=true}).catch(e=>{if(e&&e.name==='AbortError')return;if(window._sylA===a)fb()})}catch(e){fb()}}
 const vPh=x=>({'ב':'b','פ':'p','ד':'d','ת':'t','ג':'g','ק':'k','ז':'z','ס':'s','V':'v','F':'f'})[x]||'p';
 const VOICE={door:'audio/door.webm',welcomeB:'audio/welcomeB.webm',welcomeG:'audio/welcomeG.webm',byeB:'audio/byeB.webm',byeG:'audio/byeG.webm',done:'audio/done2.webm',
@@ -3615,7 +3618,7 @@ function renderAct(){
     if(S.act!=='vsortg'){TIMERS.push(setTimeout(()=>saySeq([it[3],it[3],niq(it[0])]),450));return}
     /* guided sorting: the computer says both possibilities ("פָּרָה? בָּרָה?") and the picture slides to each side as it is said;
        then the child decides where the picture goes */
-    const lv=v.a[0]==='V'?'ו':v.a[0],lb=v.b[0]==='F'?'פ':v.b[0],w=niq(it[0]),rest=w.slice(1).replace(/^ּ/,'');
+    const lv=v.a[0]==='V'?'ו':v.a[0],lb=v.b[0]==='F'?'פ':v.b[0],w=niq(it[0]),noDg=x=>x.replace(/^[ְ-ׇ]+/,m=>m.replace(/ּ/g,'')),rest=noDg(w.slice(1));
     const dg=x=>v.b[0]!=='F'&&'בפכתדג'.includes(x)?'ּ':'';
     const voiced=it[2]?w:lv+dg(lv)+rest,voiceless=it[2]?lb+dg(lb)+rest:w;
     const slide=z=>{card.style.transition='transform .7s ease-in-out';if(!z){card.style.transform='none';return}
@@ -3623,7 +3626,7 @@ function renderAct(){
       card.style.transform=`translateX(${(t.left+t.width/2)-(c.left+c.width/2-cur)}px) scale(.85)`};
     /* each possibility: the whole first syllable three times and then the word, slowly: "פָּ פָּ פָּ פַּרְוָז? או בָּ בָּ בָּ בַּרְוָז?"
        while the picture slides to that side */
-    const sy=String(it[3]||''),syRest=sy.slice(1).replace(/^ּ/,''),sylV=it[2]?sy:lv+dg(lv)+syRest,sylB=it[2]?lb+dg(lb)+syRest:sy;
+    const sy=String(it[3]||''),syRest=noDg(sy.slice(1)),sylV=it[2]?sy:lv+dg(lv)+syRest,sylB=it[2]?lb+dg(lb)+syRest:sy;
     const demo=()=>{const me=S.data;slide(zB);saySeq([sylB,sylB,sylB,voiceless+'?'],()=>{if(S.data!==me)return;saySeq(['אוֹ'],()=>{if(S.data!==me)return;slide(zA);
       saySeq([sylV,sylV,sylV,voiced+'?'],()=>{if(S.data!==me)return;slide(null);TIMERS.push(setTimeout(()=>{d.lock=false;const c=document.getElementById('cheer');if(c)c.textContent='איך קוראים לתמונה? גוררים לצד הנכון 👆'},600))})})})};    d.lock=true;TIMERS.push(setTimeout(demo,700));
     card.onclick=()=>{if(d.lock)return;d.lock=true;demo()};document.getElementById('cheer').textContent='מקשיבים לשתי האפשרויות... 👂';
