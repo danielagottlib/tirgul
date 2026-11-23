@@ -2842,7 +2842,7 @@ function startAct(act,from){
   if(act==='castle'){d.items=items().slice(0,7);d.n=0;d.busy=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='castle')render()})}
   if(act==='cashier'){let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<3)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));shopInit(d,w)}
   if(act==='seqrec'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;d.sid=SEQ4[sid]?sid:'r';d.st=SEQ4[d.sid];d.placed=[null,null,null,null];d.tray=shuffle([0,1,2,3]);d.phase='order';d.blobs=[];d.k=0;d.sel=null;d.heard=false;
-    loadScriptOnce('seq4.js?v=2',()=>{if(S.act==='seqrec')render()})}
+    loadScriptOnce('seq4.js?v=3',()=>{if(S.act==='seqrec')render()})}
   if(act==='paint'){const s=SOUNDS[S.sound];d.objs=[];d.lines=[];d.phase='idle';d.choices=[];d.pick=[];d.text='';
     const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length&&okPos(t));d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
   if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,8);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
@@ -3907,7 +3907,9 @@ function renderAct(){
     const card=document.getElementById('dcard'),zA=document.getElementById('dzA'),zB=document.getElementById('dzB');
     const choose=toA=>{if(d.lock)return;const z=toA?zA:zB;
       if(toA===!!it[2]){d.lock=true;SFX.good();addStar();(toA?d.inA:d.inB).push(it[1]);document.getElementById('cheer').textContent=pick(CHEERS,1)[0];
-        flyTo(card,z,()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()})}
+        /* after a correct sort the child says the whole word and hears himself (recording) */
+        flyTo(card,z,()=>{const next=()=>{d.lock=false;d.k++;if(d.k>=d.list.length)finish();else render()};if(S.act!=='vsort'){next();return}
+          saySeq([niq(it[0])]);recOverlay(`<div class="pic" style="font-size:96px">${it[1]}</div><div class="word">${esc(it[0])}</div><p class="muted" style="font-size:16px">עכשיו תורך! אומרים את המילה 🗣️</p>`,next)})}
       else{SFX.bad();[card,z].forEach(e=>{e.classList.remove('no');void e.offsetWidth;e.classList.add('no')});
         document.getElementById('cheer').textContent='לא נכון 🙂 מקשיבים שוב';TIMERS.push(setTimeout(()=>saySeq([it[3],it[3],niq(it[0])]),600))}};
     card.onclick=()=>saySeq([it[3],it[3],niq(it[0])]);zA.onclick=()=>choose(true);zB.onclick=()=>choose(false);
