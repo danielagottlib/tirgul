@@ -2880,6 +2880,8 @@ function startAct(act,from){
     if(d.game.kind==='come'){d.items=d.game.items.slice();d.done=[];d.cur=null}
     if(d.game.kind==='space'){const ks=Object.keys(SPACE_REL),objs=d.game.items;d.qs=shuffle([...ks,...ks].map((r,i)=>({r,o:objs[(i*3+Math.floor(Math.random()*objs.length))%objs.length]}))).slice(0,d.game.rounds||8);d.k=0;d.placed=false;d.first=-1}}
   S.data=d;
+  /* the tracking sheet also gets 'התחלת משחק', so Daniela can see games that were opened and left before the end */
+  setTimeout(()=>{if(S.data===d)logEv('התחלת משחק',titleFor())},0);
   if(['phear','find','odd','quest','where','sort','two'].includes(act)){Object.assign(S,{view:'act',act});window.scrollTo(0,0);newRound()}
   else go('act',{act});
 }
