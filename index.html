@@ -1697,7 +1697,9 @@ function decode(code){
   return bits;
 }
 const has=(bits,b)=>!!(bits&(1<<b));
-function maxStage(bits){const m=(bits>>>18)&7;return (m&&m<6)?m:6}
+function maxStage(bits){const m=(bits>>>18)&7;return m===7?5:(m&&m<6)?m:6}
+/* the ש-with-ס stage: opened by the therapist's level 'ש עם ס' (7) or when everything is open */
+function shsOpen(bits){const m=(bits>>>18)&7;return m===7||maxStage(bits)>=6}
 function positions(bits){const p=POS.filter((x,i)=>has(bits,POSBIT[i])).map(x=>x[0]);return p.length?p:['s','m','e']}
 
 /* ---------- storage, speech, helpers ---------- */
@@ -2332,7 +2334,7 @@ function renderSound(){
   const s=SOUNDS[S.sound],mx=maxStage(S.bits),p=prog();
   const st=STAGES.slice(0,mx).map(a=>[a,p.ctx['snd'+S.sound+':'+a[0]]||0]);
   const nx=st.findIndex(x=>x[1]<MASTER);
-  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail"><button class="step" data-disc="1"><span class="num" aria-hidden="true">👂</span><span class="st"><b>אבחנה שמיעתית</b><span>יש את ההגה במילה, או אין?</span></span><span class="sstars">${p.ctx['snd'+S.sound+':disc']?'⭐ '+p.ctx['snd'+S.sound+':disc']:''}</span></button>${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>${a[0]==='long'&&has(S.bits,22)&&s.w.x?`<button class="step mix" data-stage="mix"><span class="num" aria-hidden="true">🔀</span><span class="st"><b>הגה שיבוש עם הגה מטרה</b><span>${s.id==='r'?'א+ר, י+ר, ר+י, ר+א':'מילים ומשפטים'}</span></span><span class="sstars">${p.ctx['snd'+S.sound+':mix']?'⭐ '+p.ctx['snd'+S.sound+':mix']:''}</span></button>`:''}`).join('')}${s.id==='sh'&&mx>=5?`<button class="step shs" data-stage="shs"><span class="num" aria-hidden="true">🚀</span><span class="st"><b>ש עם ס</b><span>משפטים שמשלבים ש עם ס / שׂ</span></span><span class="sstars">${p.ctx['snd'+S.sound+':shs']?'⭐ '+p.ctx['snd'+S.sound+':shs']:''}</span></button>`:''}</div>`;
+  app.innerHTML=header('הגה '+s.name,'home')+`<p class="muted" style="text-align:center">עולים במדרגות! מתחילים במדרגה הראשונה ומתקדמים 🧗</p><div class="trail"><button class="step" data-disc="1"><span class="num" aria-hidden="true">👂</span><span class="st"><b>אבחנה שמיעתית</b><span>יש את ההגה במילה, או אין?</span></span><span class="sstars">${p.ctx['snd'+S.sound+':disc']?'⭐ '+p.ctx['snd'+S.sound+':disc']:''}</span></button>${st.map(([a,n],i)=>`<button class="step ${i===nx?'next':''}" data-stage="${a[0]}">${i===nx?'<span class="nexttag">הבא בתור</span>':''}<span class="num" aria-hidden="true">${n>=MASTER?'✓':a[1]}</span><span class="st"><b>${a[2]}</b><span>${a[0]==='syl'?[s.L[0]+'ָ',s.L[0]+'וֹ',s.L[0]+'ִי'].join(', ')+'...':a[3]}</span></span><span class="sstars">${n?'⭐ '+n:''}</span></button>${a[0]==='long'&&s.id==='sh'&&shsOpen(S.bits)?`<button class="step shs" data-stage="shs"><span class="num" aria-hidden="true">🚀</span><span class="st"><b>ש עם ס</b><span>משפטים שמשלבים ש עם ס / שׂ</span></span><span class="sstars">${p.ctx['snd'+S.sound+':shs']?'⭐ '+p.ctx['snd'+S.sound+':shs']:''}</span></button>`:''}${a[0]==='long'&&has(S.bits,22)&&s.w.x?`<button class="step mix" data-stage="mix"><span class="num" aria-hidden="true">🔀</span><span class="st"><b>הגה שיבוש עם הגה מטרה</b><span>${s.id==='r'?'א+ר, י+ר, ר+י, ר+א':'מילים ומשפטים'}</span></span><span class="sstars">${p.ctx['snd'+S.sound+':mix']?'⭐ '+p.ctx['snd'+S.sound+':mix']:''}</span></button>`:''}`).join('')}${false?`<button class="step shs" data-stage="shs"><span class="num" aria-hidden="true">🚀</span><span class="st"><b>ש עם ס</b><span>משפטים שמשלבים ש עם ס / שׂ</span></span><span class="sstars">${p.ctx['snd'+S.sound+':shs']?'⭐ '+p.ctx['snd'+S.sound+':shs']:''}</span></button>`:''}</div>`;
   bindCommon();
   app.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const st=b.dataset.stage;go('games',{stage:st,gback:'sound'})});
   const dz=app.querySelector('[data-disc]');if(dz)dz.onclick=()=>{S.stage='disc';S.gback='sound';startAct('disc','sound')};
@@ -4195,7 +4197,7 @@ const VSTEPS=['הגרון המזמזם','רועש או שקט?','ממיינים 
 function describe(bits,code){
   const parts=[];SOUNDS.forEach((s,i)=>{if(has(bits,i))parts.push(s.name)});
   let t=parts.length?'היגוי: '+parts.join(', '):'';
-  if(parts.length){const p=POS.filter((x,i)=>has(bits,POSBIT[i])).map(x=>x[1]);t+=' ('+(p.length?p.join(', '):'תחילה, אמצע וסוף')+'; עד שלב '+maxStage(bits)+': '+STAGES[maxStage(bits)-1][2]+')'}
+  if(parts.length){const p=POS.filter((x,i)=>has(bits,POSBIT[i])).map(x=>x[1]);t+=' ('+(p.length?p.join(', '):'תחילה, אמצע וסוף')+'; '+(((bits>>>18)&7)===7?'עד שלב ש עם ס (אחרי משפטים ארוכים)':'עד שלב '+maxStage(bits)+': '+STAGES[maxStage(bits)-1][2])+')'}
   const l=GOAL_LANG.filter(g=>has(bits,g.bit)).map(g=>g.name);
   const v=VOICING.filter(x=>has(bits,x.bit)).map(x=>x.name),vv=(bits>>>23)&7,vs=vv&&vv<6?vv:(parts.length?maxStage(bits):6);
   const mg=code?myAssigned(code).map(g=>g.name):[];
@@ -4211,7 +4213,7 @@ function renderTherapist(){
       <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
     <fieldset><legend>היגוי</legend><div class="checks">${SOUNDS.map((s,i)=>`<label><input type="checkbox" id="g${i}" data-bit="${i}"> הגה ${s.name}</label>`).join('')}</div></fieldset>
     <fieldset class="sndonly" hidden><legend>מיקום ההגה במילה (חל על הברות, מילים וצירופים)</legend><div class="checks">${POS.map((p,i)=>`<label><input type="checkbox" id="p${i}" data-bit="${POSBIT[i]}" ${i<3?'checked':''}> ${p[1]}${p[0]==='c'?' (כרוב, דרקון...)':p[0]==='x'?' (ר: א+ר, י+ר, ר+י, ר+א) – שלב נפרד אחרי משפטים ארוכים':''}</label>`).join('')}</div></fieldset>
-    <fieldset class="sndonly" hidden><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח)':''}</option>`).join('')}</select></fieldset>
+    <fieldset class="sndonly" hidden><legend>עד איזה שלב פתוח לתרגול (בהגאים)</legend><select class="txt" id="stageSel">${STAGES.map((st,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${st[1]}. ${st[2]}${i===5?' (הכל פתוח, כולל ש עם ס)':''}</option>${i===4?'<option value="7">5+. ש עם ס (שלב נוסף בהגה ש, אחרי משפטים ארוכים)</option>':''}`).join('')}</select></fieldset>
     <fieldset><legend>קולי ובלתי קולי</legend><div class="checks">${VOICING.map(v=>`<label><input type="checkbox" id="v${v.bit}" data-bit="${v.bit}"> ${v.name}</label>`).join('')}</div></fieldset>
     <fieldset class="vonly" hidden><legend>עד איזה שלב פתוח (קולי ובלתי קולי)</legend><select class="txt" id="vstageSel">${['הגרון המזמזם','רועש או שקט?','ממיינים מילים 1','ממיינים מילים 2','זוגות מילים','משחקי אמירה (הכל פתוח)'].map((t,i)=>`<option value="${i+1}" ${i===5?'selected':''}>${i+1}. ${t}</option>`).join('')}</select>
       </fieldset>
@@ -4276,7 +4278,7 @@ function renderTherapist(){
   {const gs=document.getElementById('goalsToSheet');if(gs)gs.onclick=()=>{const seen=new Set();let n=0;savedList().forEach(r=>{const c=fmtCode(r.c);if(seen.has(c)||isBlocked(r.c)||replacedBy(r.c))return;seen.add(c);logSend({code:c,ev:'מטרות',name:r.n||'',target:describe(decode(r.c)||0,r.c)});n++});gs.disabled=true;document.getElementById('goalsStat').textContent='✓ נשלחו '+n+' קודים לגיליון. מעכשיו גם כל קוד חדש נשמר שם עם המטרות שלו.'}}
   document.getElementById('tf').onsubmit=e=>{
     e.preventDefault();let bits=0;app.querySelectorAll('#tf input[type=checkbox]').forEach(c=>{if(c.checked)bits|=1<<+c.dataset.bit});const anyS=SOUNDS.some((s,i)=>{const c=document.getElementById('g'+i);return c&&c.checked}),anyV=VOICING.some(v=>{const c=document.getElementById('v'+v.bit);return c&&c.checked});
-    const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value;if(anyS&&ss<6)bits|=ss<<18;const vLong=anyV&&vs<6;
+    const ss=+document.getElementById('stageSel').value,vs=+document.getElementById('vstageSel').value;if(anyS&&ss!==6)bits|=ss<<18;const vLong=anyV&&vs<6;
     if(!document.getElementById('nick').value.trim()){document.getElementById('terr').textContent='כתבי את שם המטופל, או בחרי אותו מהרשימה.';return}
     const mg=[...app.querySelectorAll('#tf .mgc:checked')].map(c=>c.value);
     if(!(bits&GOALMASK)&&!mg.length){document.getElementById('terr').textContent='סמני לפחות מטרה אחת או משחק אישי.';return}
@@ -4293,6 +4295,7 @@ function renderTherapist(){
     const nb=decode(code)||bits,ob=prev.length?(decode(prev[0])||0):0;
     const lvl=[];SOUNDS.forEach((s,i)=>{if(!has(nb,i))return;const ms=maxStage(nb),om=has(ob,i)?maxStage(ob):0;
       lvl.push(`• ההגה ${s.name}: ${ms>=6?'כל הרמות – מהברות ועד תיאור תמונות וסיפור':'תרגול עד רמת '+STAGES[ms-1][2]}${!has(ob,i)?' (חדש!)':ms>om?' (רמה חדשה!)':''}`)});
+    {const si=SOUNDS.findIndex(s=>s.id==='sh');if(si>=0&&has(nb,si)&&shsOpen(nb))lvl.push('• שלב ש עם ס: משפטים וצירופים שמשלבים ש עם ס / שׂ'+(has(ob,si)&&shsOpen(ob)?'':' (חדש!)'))}
     VOICING.forEach(v=>{if(!has(nb,v.bit))return;const st=x=>{const vv=(x>>>23)&7;return vv&&vv<6?vv:(SOUNDS.some((s,i)=>has(x,i))?maxStage(x):6)},ns=st(nb),os=has(ob,v.bit)?st(ob):0;
       lvl.push(`• הבחנה בין הגאים קוליים ובלתי קוליים (${v.name}): ${ns>=6?'כל השלבים פתוחים':'עד שלב "'+VSTEPS[ns-1]+'"'}${!has(ob,v.bit)?' (חדש!)':ns>os?' (שלב חדש!)':''}`)});
     GOAL_LANG.forEach(g=>{if(has(nb,g.bit))lvl.push(`• ${g.name}${has(ob,g.bit)?'':' (חדש!)'}`)});
