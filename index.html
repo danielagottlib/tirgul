@@ -1428,7 +1428,25 @@ body{background:#5E8F55}
 
 /* memory: square cards sized by width - keep the 3 rows inside the screen on a computer */
 @media (min-width:900px){.mem{max-width:min(100%,calc((100dvh - 250px) * 1.3));margin-inline:auto}}
-</style>
+/* ---- journey victory at the palace ---- */
+.jw-sky{position:relative;height:min(64dvh,580px);border-radius:26px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#FFF6C9 0%,#FFD86B 22%,#7EC8FF 58%,#3E86D8 100%);box-shadow:inset 0 0 0 5px rgba(255,255,255,.6),0 14px 30px rgba(30,60,120,.3)}
+.jw-rays{position:absolute;left:50%;top:40%;width:240%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:repeating-conic-gradient(rgba(255,255,255,.32) 0 9deg,transparent 9deg 18deg);animation:jwSpin 20s linear infinite}
+@keyframes jwSpin{to{rotate:360deg}}
+.jw-castle{position:absolute;left:50%;bottom:5%;translate:-50% 0;width:min(60%,520px);z-index:2;animation:jwRise 1.3s cubic-bezier(.2,1.4,.4,1) both}
+.jw-castle img{width:100%;display:block;filter:drop-shadow(0 18px 24px rgba(0,0,0,.35))}
+.jw-cemo{font-size:min(260px,30vh);display:block;text-align:center;line-height:1}
+@keyframes jwRise{from{transform:translateY(60%) scale(.45);opacity:0}}
+.jw-flag{position:absolute;top:-12%;width:5px;height:20%;border-radius:3px;background:#6b4a2a;z-index:3}
+.jw-flag i{position:absolute;top:0;left:5px;width:52px;height:32px;background:var(--c);clip-path:polygon(0 0,100% 50%,0 100%);transform-origin:left center;animation:jwWave .55s ease-in-out var(--d) infinite alternate;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+@keyframes jwWave{from{transform:skewY(-10deg) scaleX(.82)}to{transform:skewY(10deg) scaleX(1.06)}}
+.jw-bal{position:absolute;bottom:-22%;width:50px;height:62px;border-radius:50% 50% 46% 46%;background:radial-gradient(circle at 35% 28%,#ffffffaa,var(--c) 42%);z-index:4;animation:jwBal var(--t) linear var(--d) infinite}
+.jw-bal::after{content:'';position:absolute;left:50%;top:100%;width:1px;height:52px;background:#0005}
+@keyframes jwBal{0%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-450px) rotate(7deg)}100%{transform:translateY(-900px) rotate(-7deg)}}
+.jw-conf b{position:absolute;top:-6%;width:10px;height:16px;border-radius:2px;background:var(--c);z-index:5;animation:jwConf var(--t) linear var(--d) infinite}
+@keyframes jwConf{to{transform:translateY(720px) rotate(720deg)}}
+.jw-hero{position:absolute;right:10%;bottom:7%;font-size:min(96px,12vh);z-index:6;animation:jwJump .55s ease-in-out infinite alternate}
+@keyframes jwJump{to{transform:translateY(-34px) rotate(10deg)}}
+.jw-title{position:absolute;top:5%;left:0;right:0;text-align:center;font-size:clamp(30px,4.6vw,60px);font-weight:900;color:#fff;text-shadow:0 4px 0 #C56A00,0 0 26px #FF8A00;z-index:7;animation:rkPop .9s ease-out}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1780,6 +1798,8 @@ const SFX=(()=>{
     load(){tone(330,.1,{vol:.18});tone(495,.12,{vol:.18,at:.08})},
     tick(){tone(1800,.03,{vol:.1,type:'square'})},
     zip(){tone(400,.25,{vol:.12,to:1400,type:'sawtooth'})},
+    /* victory trumpets at the palace, with a cheering crowd */
+    trumpets(){[[392,.16,0],[523,.16,.18],[659,.16,.36],[784,.45,.54],[659,.16,1.05],[784,.9,1.23]].forEach(([f,d,a])=>{tone(f,d,{type:'sawtooth',vol:.12,at:a});tone(f*1.5,d,{type:'square',vol:.03,at:a})});noise(2.4,{vol:.2,hp:500,lp:3500,at:.5});for(let i=0;i<8;i++)noise(.08,{vol:.25,hp:1800,at:.6+i*.21})},
     /* rocket lift-off: a deep engine rumble, a hiss of fire and a rising whoosh */
     launch(){noise(3.4,{vol:.6,hp:30,lp:500});noise(3,{vol:.3,hp:700,lp:4000,at:.15});tone(62,3.2,{vol:.35,to:38,type:'sawtooth'});tone(140,2.8,{vol:.14,to:1300,type:'sawtooth',at:.5});for(let i=0;i<10;i++)noise(.12,{at:.1+i*.28,vol:.28,hp:150,lp:1400})},
     roll(){for(let i=0;i<6;i++)noise(.04,{at:i*.08,vol:.3,hp:1500})},
@@ -2380,7 +2400,7 @@ GAMES.color=['🎨','דפי צביעה','בוחרים צבע ואומרים מש
 /* rocket game (long sentences, ש together with ס / שׂ): [phrase, phrase with niqqud, sentence, sentence with niqqud, pic1, pic2] */
 const ROCKET=[
  ['שוטר על סוס','שׁוֹטֵר עַל סוּס','השוטר רוכב על סוס לבן בשוק','הַשּׁוֹטֵר רוֹכֵב עַל סוּס לָבָן בַּשּׁוּק','👮','🐴'],
- ['שבלול בסלט','שַׁבְּלוּל בַּסָּלָט','השבלול הקטן מסתתר בתוך הסלט של סבתא','הַשַּׁבְּלוּל הַקָּטָן מִסְתַּתֵּר בְּתוֹךְ הַסָּלָט שֶׁל סַבְתָּא','🐌','🥗'],
+ ['שבלול בסלט','שַׁבְּלוּל בַּסָּלָט','השבלול הקטן אוכל את הסלט של סבתא','הַשַּׁבְּלוּל הַקָּטָן אוֹכֵל אֶת הַסָּלָט שֶׁל סַבְתָּא','🐌','🥗'],
  ['שמש וסירה','שֶׁמֶשׁ וְסִירָה','השמש זורחת והסירה שטה בים','הַשֶּׁמֶשׁ זוֹרַחַת וְהַסִּירָה שָׁטָה בַּיָּם','☀️','⛵'],
  ['נחש בסל','נָחָשׁ בַּסַּל','הנחש השובב ישן בתוך הסל של סבא','הַנָּחָשׁ הַשּׁוֹבָב יָשֵׁן בְּתוֹךְ הַסַּל שֶׁל סַבָּא','🐍','🧺'],
  ['משאית סוכריות','מַשָּׂאִית סוּכָּרִיּוֹת','המשאית הגדולה מביאה סוכריות לשכונה','הַמַּשָּׂאִית הַגְּדוֹלָה מְבִיאָה סוּכָּרִיּוֹת לַשְּׁכוּנָה','🚚','🍬'],
@@ -2837,7 +2857,7 @@ function startAct(act,from){
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
-  if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=4',()=>{})}
+  if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=5',()=>{})}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
     loadScriptOnce('color.js?v=1',()=>{if(S.act==='color')render()})}
   if(S.stage==='syl')loadScriptOnce('creatures.js?v=1',()=>{if(S.view==='act')render()});
@@ -3524,7 +3544,18 @@ function renderAct(){
        or the child taps square after square towards it. Other squares just wiggle.
        On every landing a sentence (ש עם ס: "עכשיו הגעתי למספר ___"); a ladder climbs, a snake slides; 30 is the castle */
     const B=30,LAD={4:12,15:23},SNK={19:9,27:17},pawn=kidG()==='g'?'👸':'🤴',pos=d.pos;
-    const RC=i=>{const r=Math.floor((i-1)/6),c=r%2?5-((i-1)%6):(i-1)%6;return [5-r,c+1]};
+    /* square 30: a big victory at the palace - the castle rises, flags wave on its towers, balloons fly up, confetti, trumpets */
+    if(d.phase==='win'){
+      const C=window.CASTLE_IMG;if(!C)loadScriptOnce('castle.js?v=1',()=>{if(S.act==='journey'&&S.data===d)render()});
+      const cols=['#FF6B6B','#FFD43B','#69DB7C','#4DABF7','#B197FC','#FF922B','#F783AC'];
+      const bal=Array.from({length:16},(x,k)=>`<i class="jw-bal" style="left:${(k*6.3+2)%95}%;--c:${cols[k%7]};--d:${((k*.47)%3.6).toFixed(2)}s;--t:${5+(k%5)}s"></i>`).join('');
+      const conf=Array.from({length:60},(x,k)=>`<b style="left:${(k*17)%100}%;--c:${cols[k%7]};--d:${((k%12)*.25).toFixed(2)}s;--t:${(2.4+(k%4)*.5).toFixed(1)}s"></b>`).join('');
+      const flags=[12,34,64,86].map((x,k)=>`<span class="jw-flag" style="left:${x}%;--c:${cols[k]};--d:${k*.18}s"><i></i></span>`).join('');
+      shell(`<div class="card stage jwin"><div class="jw-sky"><div class="jw-rays"></div>${bal}<div class="jw-castle">${flags}${C?`<img src="${C.full}" alt="">`:'<span class="jw-cemo">🏰</span>'}</div><div class="jw-hero">${pawn}</div><div class="jw-conf">${conf}</div>
+        <div class="jw-title">🏆 ניצחון! הגעתם לארמון! 🎉</div></div><div class="row"><button class="btn sun" id="jwin" type="button">🎉 מסיימים בגדול!</button></div></div>`);
+      if(!d.winPlayed){d.winPlayed=1;SFX.fanfare();TIMERS.push(setTimeout(()=>SFX.trumpets(),1000));TIMERS.push(setTimeout(()=>SFX.tune&&SFX.tune(),3600));TIMERS.push(setTimeout(finish,16000))}
+      document.getElementById('jwin').onclick=()=>finish();
+      return}    const RC=i=>{const r=Math.floor((i-1)/6),c=r%2?5-((i-1)%6):(i-1)%6;return [5-r,c+1]};
     const target=d.roll?Math.min(d.from0+d.roll,B):null;
     const msg=pos>=B?'הגענו לטירה! 🏰🎉':d.phase==='roll'?(d.rolling?'הקובייה מתגלגלת! לוחצים עליה כדי לעצור ✋':d.note||'לוחצים על הקובייה כדי להטיל אותה 🎲')
       :d.phase==='move'?`יצא ${d.roll}! 🎉 הולכים אל המשבצת המנצנצת – נוגעים בה, או צעד אחרי צעד 👣`:d.phase==='walk'?'סופרים יחד... 🔢':'';
@@ -3545,7 +3576,7 @@ function renderAct(){
     const land=()=>{d.phase='say';d.cnt=null;render();
       const n=d.pos,isSh=S.stage==='shs',it=isSh?JNUM[n-1]:d.items[d.k%d.items.length];d.k++;
       const after=()=>{d.roll=null;
-        if(d.pos>=B){SFX.fanfare();render();TIMERS.push(setTimeout(finish,2200));return}
+        if(d.pos>=B){d.phase='win';render();return}
         const p=d.pos;if(LAD[p]!=null){d.note='עלינו בסולם! 🪜';SFX.zip();d.pos=LAD[p]}else if(SNK[p]!=null){d.note='אוי, נחש! מחליקים למטה 🐍';SFX.bad();d.pos=SNK[p]}else d.note='';
         d.phase='roll';render()};
       TIMERS.push(setTimeout(()=>{if(isSh)saySeq([it[2]]);sayIt(it,after)},450))};
@@ -4330,7 +4361,7 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
 loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
 /* the practice-word sound files load quietly in the background */
-setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=4',()=>{})},1500);
+setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=5',()=>{})},1500);
 try{applyTints()}catch(e){}
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-4.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
