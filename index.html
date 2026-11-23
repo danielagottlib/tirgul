@@ -2432,6 +2432,7 @@ const SHMIN=[['סיר','🍲','סִיר','שיר','🎵','שִׁיר'],['סיר�
  ['סהר','🌙','סַהַר','שער','🚪','שַׁעַר'],['סוחב','🧳','סוֹחֵב','שוכב','🛌','שׁוֹכֵב'],['נסיכה','👸','נְסִיכָה','נשיכה','🦷','נְשִׁיכָה'],['סולח','🤝','סוֹלֵחַ','שולח','📨','שׁוֹלֵחַ'],
  ['סוער','🌊','סוֹעֵר','שוער','🧤','שׁוֹעֵר'],['סריקה','🖨️','סְרִיקָה','שריקה','😗','שְׁרִיקָה'],['מסך','📺','מָסָךְ','משך','🪢','מָשַׁךְ'],['סליחה','🙏','סְלִיחָה','שליחה','📦','שְׁלִיחָה']];
 GAMES.shmin=['🎶','חרוזים של ס ו־ש','מוצאים זוגות ואומרים את שתי המילים'];
+Object.assign(NIQ,{'הולך':'הוֹלֵךְ','מטרייה':'מִטְרִיָּה','העננים':'הָעֲנָנִים','מתפזרים':'מִתְפַּזְּרִים','יוצאת':'יוֹצֵאת','בשלולית':'בַּשְּׁלוּלִית','שלולית':'שְׁלוּלִית'});
 /* ש in blue, ס and the ש of sin words (שׂ) in orange */
 function rhl(t){return String(t).split(' ').map(tok=>{const sin=isSin(tok)||/מחפש/.test(tok);return [...tok].map(ch=>ch==='ש'?'<span class="'+(sin?'hss':'hsh')+'">ש</span>':ch==='ס'?'<span class="hss">ס</span>':ch).join('')}).join(' ')}
 /* new games, one level each, so a child who moves up meets something new (Nov 2026) */
@@ -2461,7 +2462,7 @@ const VMIN=[
 const SEQ4={
  r:{name:'הארנב והגזר',cap:['הארנב רואה גזר גדול בגינה','הארנב מושך ומושך את הגזר','הגזר יצא והארנב נפל על הגב','הארנב מתחלק בגזר עם החברים']},
  l:{name:'הליצן והבלון',cap:['הליצן מנפח בלון צהוב','הבלון גדל וגדל','הבלון עף למעלה, לשמיים','ילדה תופסת את הבלון ומחזירה לליצן']},
- sh:{name:'שמש וגשם',cap:['השמש זורחת והילד משחק','יורד גשם והילד פותח מטרייה','הילד קופץ בשלולית','הגשם נגמר ויש קשת בשמיים']},
+ sh:{name:'שמש וגשם',cap:['יורד גשם והילד הולך עם מטרייה','הילד קופץ בשלולית','העננים מתפזרים והשמש יוצאת','הגשם נגמר ויש קשת בשמיים']},
  s:{name:'הסוס של הילד',cap:['הילד נותן לסוס סוכרייה','הילד עולה על הסוס','הילד רוכב על הסוס בשדה','הסוס שותה מים מהדלי']},
  k:{name:'הקוף והבננה',cap:['הקוף רואה בננות על העץ','הקוף קוטף בננה','הקוף קולף את הבננה','הקוף אוכל את הבננה ושמח']},
  g:{name:'עוגה ליום הולדת',cap:['הילדה מערבבת בצק בקערה גדולה','הילדה מכניסה את העוגה לתנור','העוגה מוכנה וגבוהה','חוגגים יום הולדת עם העוגה']},
@@ -2832,7 +2833,7 @@ function startAct(act,from){
   if(act==='cook'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;const base=(S.stage==='long'&&COOK2[sid])||COOK[sid]||pick(RECIPES,1)[0];const okIng=base.ing.filter(x=>okText(x[1])&&okPos(x[1]));d.recipe=Object.assign({},base,{ing:shuffle(okIng.length>=3?okIng:base.ing)});loadScriptOnce('dishes.js?v=2',()=>{if(S.act==='cook'&&S.view==='act')render()});d.pairs=false;d.n=0;d.added=[];d.ready=false;d.baking=false;d.phase=null}
   if(act==='silly'){d.n=0;d.goal=8;d.cur=null;d.rolling=false}
   if(act==='bubbles'){d.items=items().slice(0,8);d.popped=[]}
-  if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];d.pic='kingdom-bg.jpg?v=2'}
+  if(act==='puzzle'){const w=items();d.items=Array.from({length:9},(x,i)=>w[i%w.length]);d.open=[];{const P=['kingdom-bg.jpg?v=2','scn/park.jpg','scn/sea.jpg','scn/kitchen.jpg','scn/farm.jpg','scn/city.jpg','scn/pond.jpg'];const c=P.filter(x=>x!==S.lastPuzPic);d.pic=c[Math.floor(Math.random()*c.length)];S.lastPuzPic=d.pic}}
   if(act==='shop'){/* only things a child could buy in a shop */
     let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<4)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));
     d.items=w.slice(0,6).map(w=>['אני רוצה לקנות '+w[0],w[1]]);d.bought=[]}
@@ -2841,7 +2842,7 @@ function startAct(act,from){
   if(act==='castle'){d.items=items().slice(0,7);d.n=0;d.busy=false;loadScriptOnce('castle.js?v=1',()=>{if(S.act==='castle')render()})}
   if(act==='cashier'){let w=shuffle(soundWords().filter(x=>!x[0].includes(' ')&&!NOBUY.has(x[0])));if(w.length<3)w=shuffle(soundWords().filter(x=>!x[0].includes(' ')));shopInit(d,w)}
   if(act==='seqrec'){const sid=SOUNDS[S.sound]&&SOUNDS[S.sound].id;d.sid=SEQ4[sid]?sid:'r';d.st=SEQ4[d.sid];d.placed=[null,null,null,null];d.tray=shuffle([0,1,2,3]);d.phase='order';d.blobs=[];d.k=0;d.sel=null;d.heard=false;
-    loadScriptOnce('seq4.js?v=1',()=>{if(S.act==='seqrec')render()})}
+    loadScriptOnce('seq4.js?v=2',()=>{if(S.act==='seqrec')render()})}
   if(act==='paint'){const s=SOUNDS[S.sound];d.objs=[];d.lines=[];d.phase='idle';d.choices=[];d.pick=[];d.text='';
     const ex=((s&&s.short)||[]).map(x=>x[0]).filter(t=>ptFind(t).length&&okPos(t));d.example=ex.length?pick(ex,1)[0]:'יש ציפור על העץ'}
   if(act==='vmin'){const ps=VMIN[S.pair]||VMIN[0];d.pairs=ps;d.rounds=shuffle([...ps,...ps].map(p=>({p,t:Math.random()<.5?0:1}))).slice(0,8);d.k=0;d.ok=null;d.first=true}  if(act==='seq'||act==='director'){d.order=shuffle([0,1,2]);d.si=0;d.placed=[];d.cards=shuffle([0,1,2]);d.told=false;loadScriptOnce('story.js?v=1',()=>{if(S.act===act)render()})}
@@ -2868,7 +2869,10 @@ function startAct(act,from){
   if(act==='memory'){const w=pick(items(),6);d.cards=shuffle([...w,...w].map((x,k)=>({w:x,k})));d.open=[];d.done=[]}
   if(act==='wheel'){d.items=items();d.wheel=d.items.slice(0,8);d.goal=d.wheel.length;d.order=shuffle([...Array(d.goal).keys()]);d.pieces=0;d.cur=null;d.count=0;d.rot=0;
     const pool=(S.sound!=null&&SOUNDS[S.sound]&&!['pair','vocab'].includes(S.stage))?soundWords():d.items.filter(x=>x[1]&&x[2]!=='syl');
-    const prev=S.lastPuzzle;let pz=pick(pool.filter(x=>x[1]!==prev),1)[0]||pool[0];S.lastPuzzle=pz[1];d.puzzle=pz}
+    /* a different hidden picture every time: no faces, real illustrations first, never the same as last time */
+    const face=/[\u{1F600}-\u{1F64F}\u{1F910}-\u{1F92F}\u{1F970}-\u{1F97A}]/u,W=window.WORD_IMG||{},prev=S.lastPuzzle;
+    const okP=pool.filter(x=>x[1]&&!face.test(x[1])&&x[1]!==prev),best=okP.filter(x=>W[x[1]]);
+    let pz=pick(best.length>=3?best:okP.length?okP:pool,1)[0]||pool[0];S.lastPuzzle=pz[1];d.puzzle=pz}
   if(act==='story'){d.round=0;d.trio=null;d.count=0}
   if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.done=[];d.phase='play';S.gkey='mine|'+d.game.id;
     if(d.game.kind==='come'){d.items=d.game.items.slice();d.done=[];d.cur=null}
