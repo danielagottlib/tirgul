@@ -1454,7 +1454,7 @@ body{background:#5E8F55}
 .rpline line{stroke:#E8590C;stroke-width:8;stroke-linecap:round;stroke-dasharray:2 14}
 .rpkid{display:flex;flex-direction:column;align-items:center;font-size:84px;line-height:1}
 .rpkid .rpb{font-size:56px;margin-top:-18px;animation:rkBob 2s infinite}
-.rpeek{width:min(320px,40vh);aspect-ratio:1;border-radius:50%;background:var(--img) var(--px) var(--py)/320% no-repeat #fff;border:12px solid #5b3a1a;box-shadow:0 0 0 6px #e2b647,0 16px 30px rgba(0,0,0,.35),inset 0 0 30px rgba(0,0,0,.35);cursor:crosshair;touch-action:none;transition:background-size .9s ease,background-position .9s ease,border-radius .9s ease}
+.rpeek{width:min(320px,40vh);aspect-ratio:1;border-radius:50%;background:var(--img) var(--px) var(--py)/540% no-repeat #fff;border:12px solid #5b3a1a;box-shadow:0 0 0 6px #e2b647,0 16px 30px rgba(0,0,0,.35),inset 0 0 30px rgba(0,0,0,.35);cursor:crosshair;touch-action:none;transition:background-size .9s ease,background-position .9s ease,border-radius .9s ease}
 .rpeek.show{background-size:88%;background-position:center;border-radius:30px;cursor:default;animation:rkPop .9s ease-out}
 .rpopts{display:flex;flex-direction:column;gap:12px}
 @media(max-width:760px){.rpopts{flex-direction:row}}
@@ -1490,7 +1490,12 @@ body{background:#5E8F55}
 .rtdark{position:absolute;inset:0;z-index:3;pointer-events:none;background:rgba(6,8,28,.95);-webkit-mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);transition:opacity 1.2s}
 .rtscene.lit .rtdark{opacity:0}
 .rtlamp{position:absolute;left:var(--x);top:var(--y);z-index:5;font-size:44px;pointer-events:none;transform:translate(10px,20px) rotate(-40deg);filter:drop-shadow(0 0 10px #ffe066)}
-.rtscene.lit .rtlamp{display:none}</style>
+.rtscene.lit .rtlamp{display:none}
+.rpeek.emo{position:relative;overflow:hidden;background:#fff}
+.rpemo{position:absolute;left:50%;top:50%;font-size:min(760px,95vh);line-height:1;transform:translate(calc(-50% + (50 - var(--px))*1%),calc(-50% + (50 - var(--py))*1%));transition:font-size .9s,transform .9s}
+.rpeek.emo.show .rpemo{font-size:min(220px,27vh);transform:translate(-50%,-50%)}
+.rpoe{font-size:min(80px,10vh);line-height:1}
+</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -2910,7 +2915,7 @@ function startAct(act,from){
     const A=V?V.a:v.a[1].map(sy),B=V?V.b:v.b[1].map(sy);
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
-  if(act==='rapeek'){const W=window.WORD_IMG||{},pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
+  if(act==='rapeek'){const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
   if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>r.map(x=>({o:x,g:Math.random()<.5?1:0,got:false})));d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
   if(act==='ratorch'){d.bg=pick(['scn/park.jpg','scn/farm.jpg','scn/city.jpg','scn/kitchen.jpg'],1)[0];const cells=shuffle([...Array(12).keys()]).slice(0,5);d.objs=shuffle(RA_OBJ).slice(0,5).map((o,i)=>({o,x:8+(cells[i]%4)*23+Math.floor(Math.random()*8),y:12+Math.floor(cells[i]/4)*28+Math.floor(Math.random()*8)}));d.found=[];d.lx=220;d.ly=160}
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
@@ -4115,8 +4120,8 @@ function renderAct(){
     shell(`<div class="card stage ra"><p class="jmsg">${d.shown?'נכון! עכשיו אומרים מה הוא רואה 🗣️':'מה הוא רואה? רואים רק חלק קטן... מותחים קו לתמונה הנכונה ✏️'}</p><div class="progress">${d.k+1} / ${R.length}</div>
       <div class="rpgame" id="rpgame"><svg class="rpline" id="rpline"><line x1="0" y1="0" x2="0" y2="0"/></svg>
         <div class="rpkid"><span class="rpk">👦</span><span class="rpb">🔭</span></div>
-        <div class="rpeek ${d.shown?'show':''}" id="rpeek" style="--img:url(${src});--px:${rd.px}%;--py:${rd.py}%"></div>
-        <div class="rpopts">${rd.opts.map((o,i)=>`<button class="rpopt" data-i="${i}" type="button"><img src="${W[o[1]]}" alt=""><span>${esc(o[0])}</span></button>`).join('')}</div></div></div>`);
+        ${src?`<div class="rpeek ${d.shown?'show':''}" id="rpeek" style="--img:url(${src});--px:${rd.px}%;--py:${rd.py}%"></div>`:`<div class="rpeek emo ${d.shown?'show':''}" id="rpeek"><span class="rpemo" style="--px:${rd.px};--py:${rd.py}">${rd.ans[1]}</span></div>`}
+        <div class="rpopts">${rd.opts.map((o,i)=>`<button class="rpopt" data-i="${i}" type="button">${W[o[1]]?`<img src="${W[o[1]]}" alt="">`:`<b class="rpoe">${o[1]}</b>`}<span>${esc(o[0])}</span></button>`).join('')}</div></div></div>`);
     if(d.shown)return;
     const game=document.getElementById('rpgame'),peek=document.getElementById('rpeek'),svg=document.getElementById('rpline'),ln=svg.querySelector('line');
     const pick=i=>{const o=rd.opts[i];if(o!==rd.ans){const b=app.querySelector(`.rpopt[data-i="${i}"]`);if(b){b.classList.remove('no');void b.offsetWidth;b.classList.add('no')}SFX.bad();return}
