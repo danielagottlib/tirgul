@@ -1495,7 +1495,32 @@ body{background:#5E8F55}
 .rpemo{position:absolute;left:50%;top:50%;font-size:min(760px,95vh);line-height:1;transform:translate(calc(-50% + (50 - var(--px))*1%),calc(-50% + (50 - var(--py))*1%));transition:font-size .9s,transform .9s}
 .rpeek.emo.show .rpemo{font-size:min(220px,27vh);transform:translate(-50%,-50%)}
 .rpoe{font-size:min(80px,10vh);line-height:1}
-</style>
+/* ---- adult ד program: calm, adult look ---- */
+.dad{background:linear-gradient(180deg,#F7FAFC,#EEF3F8)!important;color:#1F2D3D}
+.dadh{font-size:clamp(22px,2.6vw,30px);font-weight:800;color:#1F3A5F;margin:0 0 10px;text-align:center}
+.dadintro{display:grid;grid-template-columns:repeat(2,minmax(0,220px)) minmax(0,1fr);gap:16px;align-items:center;margin-bottom:16px}
+@media(max-width:760px){.dadintro{grid-template-columns:1fr 1fr}.dadtxt{grid-column:1/-1}}
+.dadintro figure{margin:0;background:#fff;border-radius:16px;padding:8px;box-shadow:0 4px 14px rgba(31,58,95,.12)}
+.dadintro img{width:100%;border-radius:12px;display:block}
+.dadintro figcaption{font-size:14px;color:#4A5B70;text-align:center;margin-top:6px;line-height:1.4}
+.dadtxt{font-size:17px;line-height:1.6;color:#2B3B4E}
+.dadsteps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.dadstep{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#fff;border:2px solid #C9D6E5;cursor:pointer;text-align:right;transition:transform .15s,box-shadow .15s}
+.dadstep:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,58,95,.15)}
+.dadstep .dn{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#1F3A5F;color:#fff;font-weight:800;font-size:18px}
+.dadstep.ok{border-color:#2F9E77}.dadstep.ok .dn{background:#2F9E77}
+.dadstep .dt{display:flex;flex-direction:column}.dadstep .dt b{font-size:18px;color:#1F3A5F}.dadstep .dt small{font-size:14px;color:#5B6B80}
+.dadtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.dadtop .dadh{margin:0}
+.dadprog{font-weight:800;color:#1F3A5F;background:#fff;border-radius:999px;padding:4px 14px;border:2px solid #C9D6E5}
+.dadmain{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:760px){.dadmain{grid-template-columns:1fr}}
+.dadpic{margin:0;background:#fff;border-radius:18px;padding:8px;box-shadow:0 6px 18px rgba(31,58,95,.14)}
+.dadpic img{width:100%;border-radius:14px;display:block}
+.dadcol{display:flex;flex-direction:column;gap:14px}
+.dadtip{font-size:16px;line-height:1.6;background:#fff;border-right:5px solid #2F7FC1;border-radius:10px;padding:12px 14px;color:#2B3B4E;margin:0}
+.dadword{font-size:clamp(38px,5vw,64px);font-weight:800;color:#1F3A5F;text-align:center;letter-spacing:1px}
+.dadword b{color:#2F7FC1}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -1531,7 +1556,7 @@ body{background:#5E8F55}
   <div class="w-bubbles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 <div class="wrap" id="app"></div>
-<script src="avatar.js?v=3"></script><script src="mygames.js?v=7"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
+<script src="avatar.js?v=3"></script><script src="mygames.js?v=8"></script><script>document.write('<script src="assign.js?t='+Date.now()+'"><\/script>')</script><script>document.write('<script src="blocked.js?t='+Date.now()+'"><\/script>')</script><script src="scenes-a.js?v=2"></script><script src="scenes-b.js"></script><script src="scenes-c.js"></script>
 <script>
 /* ---------- data ---------- */
 const SOUNDS=[
@@ -2484,6 +2509,21 @@ const SHMIN=[['סיר','🍲','סִיר','שיר','🎵','שִׁיר'],['סיר�
  ['סהר','🌙','סַהַר','שער','🚪','שַׁעַר'],['סוחב','🧳','סוֹחֵב','שוכב','🛌','שׁוֹכֵב'],['נסיכה','👸','נְסִיכָה','נשיכה','🦷','נְשִׁיכָה'],['סולח','🤝','סוֹלֵחַ','שולח','📨','שׁוֹלֵחַ'],
  ['סוער','🌊','סוֹעֵר','שוער','🧤','שׁוֹעֵר'],['סריקה','🖨️','סְרִיקָה','שריקה','😗','שְׁרִיקָה'],['מסך','📺','מָסָךְ','משך','🪢','מָשַׁךְ'],['סליחה','🙏','סְלִיחָה','שליחה','📦','שְׁלִיחָה']];
 GAMES.shmin=['🎶','חרוזים של ס ו־ש','מוצאים זוגות ואומרים את שתי המילים'];
+/* adult ד program (personal game kind 'dadult'): no childish games — guided practice with listening and recording.
+   steps: from נ to ד, from ל to ד, ד alone, names with ד, names with ד or ת/ט. [display, niqqud, gender for names (1 = woman)] */
+const DAD_V=[['ָה','א'],['וֹ','ו'],['ִי','י'],['וּ','ו'],['ֶה','ה']];
+const DAD_STEPS=[
+ {id:'n',title:'מ־נ אל ד',sub:'נָה נָה ← דָה',tip:'אומרים נ ארוכה (נננ): קצה הלשון מורם ונוגע ברכס שמאחורי השיניים העליונות, והאוויר יוצא מהאף. משאירים את הלשון בדיוק שם, עוצרים את האוויר לרגע — ומשחררים בבת אחת: ד.',
+  items:[['נָה, נָה, דָה'],['נוֹ, נוֹ, דוֹ'],['נִי, נִי, דִי'],['נוּ, נוּ, דוּ'],['נֶה, נֶה, דֶה']]},
+ {id:'l',title:'מ־ל אל ד',sub:'לָה לָה ← דָה',tip:'אומרים ל ארוכה (לללל): קצה הלשון באותו מקום מאחורי השיניים העליונות. משאירים אותו שם, סוגרים לרגע את האוויר — ומשחררים: ד.',
+  items:[['לָה, לָה, דָה'],['לוֹ, לוֹ, דוֹ'],['לִי, לִי, דִי'],['לוּ, לוּ, דוּ'],['לֶה, לֶה, דֶה']]},
+ {id:'d',title:'ד לבד',sub:'דָה, דוֹ, דִי, דוּ, דֶה',tip:'עכשיו ד בלי גשר: הלשון עולה מראש לרכס שמאחורי השיניים העליונות, נעצרת לרגע, ומשתחררת עם הקול.',
+  items:[['דָה, דָה, דָה'],['דוֹ, דוֹ, דוֹ'],['דִי, דִי, דִי'],['דוּ, דוּ, דוּ'],['דֶה, דֶה, דֶה']]},
+ {id:'w',title:'שמות עם ד',sub:'דנה, דוד, דורית...',tip:'מסתכלים על התמונה ואומרים: "זאת דנה" / "זה דוד". שמים לב שהלשון עולה לרכס כבר בתחילת השם.',
+  items:[['דנה','דָּנָה',1],['דני','דָּנִי',0],['דוד','דָּוִד',0],['דורית','דּוֹרִית',1],['דניאל','דָּנִיֵּאל',0],['דפנה','דַּפְנָה',1],['דן','דָּן',0],['דליה','דַּלְיָה',1],['דור','דּוֹר',0]]},
+ {id:'m',title:'ד או ת / ט',sub:'דנה – תמר, דן – טל',tip:'שמות עם ד ושמות עם ת / ט מעורבבים. ב־ד יש קול (מרגישים רטט בגרון); ב־ת / ט רק אוויר. אומרים "זאת..." / "זה..." ושומרים על ההבדל.',
+  items:[['דנה','דָּנָה',1],['תמר','תָּמָר',1],['דוד','דָּוִד',0],['תום','תּוֹם',0],['דליה','דַּלְיָה',1],['טל','טַל',1],['דן','דָּן',0],['טוביה','טוֹבְיָה',0],['דפנה','דַּפְנָה',1],['טליה','טַלְיָה',1],['דור','דּוֹר',0],['תומר','תּוֹמֶר',0],['דורית','דּוֹרִית',1],['טובה','טוֹבָה',1],['דניאל','דָּנִיֵּאל',0],['תמיר','תָּמִיר',0],['דני','דָּנִי',0],['תמי','תָּמִי',1]]}];
+const dadSay=it=>it.length===1?[it[0],it[0]]:[(it[2]?'זאת ':'זה ')+it[0],(it[2]?'זֹאת ':'זֶה ')+it[1]];
 /* "ר עם א" stage (ר only): things with no ר, so the only ר is in רואה / רוצה / ראיתי. [word, picture, niqqud] */
 const RA_OBJ=[['בננה','🍌','בָּנָנָה'],['כלב','🐕','כֶּלֶב'],['חתול','🐈','חָתוּל'],['פיל','🐘','פִּיל'],['אוטו','🚗','אוֹטוֹ'],['עוגה','🎂','עוּגָה'],['גלידה','🍦','גְּלִידָה'],['בובה','🪆','בּוּבָּה'],['דובי','🧸','דּוּבִּי'],['תפוח','🍎','תַּפּוּחַ'],['מטוס','✈️','מָטוֹס'],['פיצה','🍕','פִּיצָה'],['בלון','🎈','בָּלוֹן'],['סוס','🐴','סוּס'],['שוקולד','🍫','שׁוֹקוֹלָד']];
 const RA_SAY={see:o=>['הוא רואה '+o[0],'הוּא רוֹאֶה '+o[2]],saw:o=>['ראיתי '+o[0]+'!','רָאִיתִי '+o[2]+'!'],want:(o,g)=>g?['היא רוצה '+o[0],'הִיא רוֹצָה '+o[2]]:['הוא רוצה '+o[0],'הוּא רוֹצֶה '+o[2]]};
@@ -2937,6 +2977,7 @@ function startAct(act,from){
   if(act==='story'){d.round=0;d.trio=null;d.count=0}
   if(act==='mine'){d.game=myGames().find(g=>g.id===S.mg)||myGames()[0];d.items=shuffle(d.game.items.slice()).slice(0,d.game.rounds||99);d.k=0;d.n=0;d.done=[];d.phase='play';S.gkey='mine|'+d.game.id;
     if(d.game.kind==='come'){d.items=d.game.items.slice();d.done=[];d.cur=null}
+    if(d.game.kind==='dadult'){d.step=null;d.k=0;loadScriptOnce('dadult.js?v=1',()=>{if(S.data===d)render()});loadScriptOnce('tts-dad.js?v=1',()=>{})}
     if(d.game.kind==='space'){const ks=Object.keys(SPACE_REL),objs=d.game.items;d.qs=shuffle([...ks,...ks].map((r,i)=>({r,o:objs[(i*3+Math.floor(Math.random()*objs.length))%objs.length]}))).slice(0,d.game.rounds||8);d.k=0;d.placed=false;d.first=-1}}
   S.data=d;
   /* the tracking sheet also gets 'התחלת משחק', so Daniela can see games that were opened and left before the end */
@@ -2968,6 +3009,41 @@ function newRound(){
 function renderAct(){
   const d=S.data;let body='';
   const shell=b=>{app.innerHTML=header(titleFor(),backTo())+b;bindCommon()};
+  if(S.act==='mine'&&d.game.kind==='dadult'){
+    /* adult ד program: a calm, adult screen (no cartoons). A menu of 5 steps; in each step the model is heard,
+       the patient records himself and hears it, then moves on. Steps done are marked (kept on this device) */
+    const I=window.DAD_IMG;if(!I||typeof DAD_STEPS==='undefined'){shell('<div class="card stage dad"><p class="muted">טוען את התרגול...</p></div>');return}
+    const doneKey='dad-done-'+(S.code||''),done=(()=>{try{return JSON.parse(store.get(doneKey)||'[]')}catch(e){return []}})();
+    if(d.step==null){
+      shell(`<div class="card stage dad"><h2 class="dadh">תרגול ד – מהלשון אל הצליל</h2>
+        <div class="dadintro"><figure><img src="${I.mouth}" alt=""><figcaption>קצה הלשון מורם ונוגע ברכס שמאחורי השיניים העליונות</figcaption></figure>
+          <figure><img src="${I.diag}" alt=""><figcaption>זה המקום של נ, ל ו־ד – אותו מקום בדיוק</figcaption></figure>
+          <div class="dadtxt"><p><b>הרעיון:</b> ב־נ וב־ל הלשון כבר נמצאת במקום הנכון של ד. מתחילים מהם, משאירים את הלשון במקום ומשחררים – ומגיעים ל־ד.</p>
+            <p>בכל תרגיל: מקשיבים לדוגמה, לוחצים "הקלטה", אומרים, ושומעים את עצמכם.</p></div></div>
+        <div class="dadsteps">${DAD_STEPS.map((s,i)=>`<button class="dadstep ${done.includes(s.id)?'ok':''}" data-i="${i}" type="button"><span class="dn">${done.includes(s.id)?'✓':i+1}</span><span class="dt"><b>${s.title}</b><small>${s.sub}</small></span></button>`).join('')}</div></div>`);
+      app.querySelectorAll('.dadstep').forEach(b=>b.onclick=()=>{d.step=+b.dataset.i;d.k=0;d.said=false;d.played=false;SFX.blip();render()});
+      return}
+    const st=DAD_STEPS[d.step],N=st.items.length,it=st.items[d.k],say=dadSay(it),isName=it.length>1,pic=isName?I[it[0]]:(d.step===2?I.diag:I.mouth);
+    shell(`<div class="card stage dad"><div class="dadtop"><button class="ghost" id="dadback" type="button">→ לכל השלבים</button><h2 class="dadh">${st.title}</h2><span class="dadprog">${d.k+1} / ${N}</span></div>
+      <div class="dadmain"><figure class="dadpic ${isName?'face':''}"><img src="${pic}" alt=""></figure>
+        <div class="dadcol"><p class="dadtip">${st.tip}</p>
+          <div class="dadword">${isName?`${it[2]?'זאת':'זה'} <b>${esc(it[0])}</b>`:esc(it[0])}</div>
+          <div class="row"><button class="btn ghost" id="dadhear" type="button">🔊 השמעה</button></div>
+          <div id="dadrec"></div>${d.said?`<div class="row"><button class="btn sun" id="dadnext" type="button">${d.k+1<N?'הבא ←':'✓ סיום השלב'}</button></div>`:''}</div></div></div>`);
+    const play=()=>saySeq([say[1]]);
+    document.getElementById('dadhear').onclick=play;
+    document.getElementById('dadback').onclick=()=>{d.step=null;SFX.blip();render()};
+    if(!d.played){d.played=true;TIMERS.push(setTimeout(play,450))}
+    const next=()=>{d.k++;d.said=false;d.played=false;
+      if(d.k>=N){if(!done.includes(st.id)){done.push(st.id);store.set(doneKey,JSON.stringify(done))}SFX.fanfare();d.step=null;
+        if(DAD_STEPS.every(s=>done.includes(s.id))){TIMERS.push(setTimeout(finish,1500));return}}
+      render()};
+    const nb=document.getElementById('dadnext');if(nb)nb.onclick=next;
+    if(!d.said){const host=document.getElementById('dadrec'),ok=()=>{addStar();d.said=true;render()};
+      if(REC.state==='no'){host.innerHTML='<button class="btn leaf" id="dadok" type="button">✓ אמרתי</button>';host.querySelector('#dadok').onclick=ok}
+      else recStep(host,ok)}
+    return;
+  }
   if(S.act==='mine'&&d.game.kind==='plane'){
     /* personal game "טסים באווירון" (Gemini art): realistic items stand on the runway, a plane waits.
        The child taps an item and says the phrase ("רִיבִי בָּאֲוִירוֹן") reps times; the item flies into a window.
