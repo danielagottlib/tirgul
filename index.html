@@ -1563,7 +1563,7 @@ body{background:#5E8F55}
 .ascstack{flex:1;width:100%;display:flex;flex-direction:column-reverse;align-items:center;overflow:hidden;min-height:220px;border-bottom:8px solid #C98F56}
 .ascstack{font-size:40px}.ascsm{font-size:1em;line-height:.92;display:block}
 .ascsm.flip{transform:rotate(180deg)}
-.ascsm.drop{animation:ascDrop .6s cubic-bezier(.3,1.5,.6,1)}
+.ascsm.ascdrop{animation:ascDrop .6s cubic-bezier(.3,1.5,.6,1)}
 .ascsm.somer{animation:ascSomer 1.1s ease-out}
 @keyframes ascDrop{from{transform:translateY(-260px)}to{transform:none}}
 @keyframes ascSomer{0%{transform:translateY(-260px) rotate(0)}60%{transform:translateY(-30px) rotate(540deg)}80%{transform:translateY(6px) rotate(560deg)}100%{transform:rotate(540deg)}}
@@ -4374,7 +4374,7 @@ function renderAct(){
       ${cur?`<div class="asctalk"><p class="muted" style="margin:0">על כל מילה שאומרים – לוחצים על 😊</p><div class="row"><button class="btn sun ascplus" id="ascplus" type="button">😊 עוד מילה</button><button class="btn ghost" id="aschint" type="button">💡 רמז</button><button class="btn leaf" id="ascnext" type="button">סיימתי לספר ←</button></div><p class="aschint" id="aschtxt" hidden>${cur[4]}</p></div>`:''}</div>`);
     const fitTower=()=>{const st=document.getElementById('ascstack');if(!st)return;const h=st.clientHeight||220;st.style.fontSize=Math.max(12,Math.min(40,Math.floor(h/(d.tower.length||1)/0.95)))+'px'};fitTower();
     if(cur){
-      document.getElementById('ascplus').onclick=()=>{const flip=Math.random()<.3;d.tower.push(flip);const st=document.getElementById('ascstack'),s=document.createElement('span');s.className='ascsm '+(flip?'flip somer':'drop');s.textContent='😊';st.appendChild(s);
+      document.getElementById('ascplus').onclick=()=>{const flip=Math.random()<.3;d.tower.push(flip);const st=document.getElementById('ascstack'),s=document.createElement('span');s.className='ascsm '+(flip?'flip somer':'ascdrop');s.textContent='😊';st.appendChild(s);
         document.getElementById('asccnt').textContent=d.tower.length;(flip?SFX.boing:SFX.pop)();fitTower()};
       document.getElementById('aschint').onclick=()=>{document.getElementById('aschtxt').hidden=false};
       document.getElementById('ascnext').onclick=()=>{d.done.push(d.talk);d.talk=null;d.sel=null;
