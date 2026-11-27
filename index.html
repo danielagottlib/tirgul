@@ -1490,8 +1490,9 @@ body{background:#5E8F55}
 .rtobj.found img{filter:drop-shadow(0 0 14px #FFD43B) drop-shadow(0 0 4px #fff)}
 .rtdark{position:absolute;inset:0;z-index:3;pointer-events:none;background:rgba(6,8,28,.95);-webkit-mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);transition:opacity 1.2s}
 .rtscene.lit .rtdark{opacity:0}
-.rtscene.plain .rtobj img,.rtscene.plain .rtobj span{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 3px #fff)}
-.rtscene.lit .rtobj{animation:rtHop .9s ease-in-out infinite alternate}
+.rtscene.plain .rtobj img{mix-blend-mode:multiply}.rtscene.plain .rtobj span{font-size:min(60px,8vh);line-height:1;display:grid;place-items:center;height:100%}
+.rtscene.lit .rtobj{animation:rtHop .9s ease-in-out infinite alternate;background:radial-gradient(circle,rgba(255,236,150,.85) 0,rgba(255,236,150,.5) 45%,transparent 70%);border-radius:50%}
+.rtscene.plain.lit .rtobj{width:min(110px,14vh);height:min(110px,14vh);margin:-16px 0 0 -16px}
 @keyframes rtHop{to{transform:translateY(-8px) scale(1.06)}}
 .rtlamp{position:absolute;left:var(--x);top:var(--y);z-index:5;font-size:44px;pointer-events:none;transform:translate(10px,20px) rotate(-40deg);filter:drop-shadow(0 0 10px #ffe066)}
 .rtscene.lit .rtlamp{display:none}
@@ -4478,8 +4479,10 @@ function renderAct(){
     const all=d.found.length>=d.objs.length;
     shell(`<div class="card stage ra"><p class="jmsg">${all?(d.s+1<RA_TORCH.length?'כל הכבוד! מצאתם הכל 🎉':'מצאתם הכל בכל השלבים! 🎉'):sc.title+' 🔦'}</p><div class="progress">${d.s+1} / ${RA_TORCH.length} · נמצאו ${d.found.length} / ${d.objs.length}</div>
       <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(${['scn/farm.jpg','scn/kitchen.jpg','scn/park.jpg'][d.s]||'kingdom-bg.jpg'})">
-        ${d.objs.map((o,i)=>`<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${W[o.o[1]]?`<img src="${W[o.o[1]]}" alt="">`:`<span>${o.o[1]}</span>`}</button>`).join('')}
+        ${d.objs.map((o,i)=>{const src=(window.RA_IMG&&RA_IMG[o.o[1]])||W[o.o[1]];return `<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${src?`<img src="${src}" alt="" data-e="${o.o[1]}">`:`<span>${o.o[1]}</span>`}</button>`}).join('')}
         <div class="rtdark"></div><div class="rtlamp">🔦</div></div>${all?`<div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="rtnext" type="button">${d.s+1<RA_TORCH.length?'המשך ←':'✓ סיום'}</button></div>`:''}</div>`);
+    /* a blank placeholder picture (1 pixel) is swapped for the emoji itself */
+    app.querySelectorAll('.rtobj img[data-e]').forEach(im=>{const fix=()=>{if(im.naturalWidth<20){const s=document.createElement('span');s.textContent=im.dataset.e;im.replaceWith(s)}};if(im.complete)fix();else im.onload=fix});
     if(all){if(!d.lit){d.lit=true;SFX.fanfare()}document.getElementById('rtnext').onclick=()=>{if(S.overlay)return;d.lit=false;d.s++;if(d.s<RA_TORCH.length){raTorchScene(d);render()}else finish()};return}
     const scn=document.getElementById('rts'),z=parseFloat(getComputedStyle(app.querySelector('.card.stage')).zoom)||1;
     const at=ev=>{const r=scn.getBoundingClientRect();d.lx=(ev.clientX-r.left)/z;d.ly=(ev.clientY-r.top)/z;scn.style.setProperty('--x',d.lx+'px');scn.style.setProperty('--y',d.ly+'px')};
