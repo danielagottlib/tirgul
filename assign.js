@@ -14,5 +14,9 @@ window.MY_ASSIGN={
  ],
  "WZWJ-QUBE": [
   "house-l"
+ ],
+ "45H5-FBVD-TA": [
+  "d-adult",
+  "syl-speech"
  ]
 };
