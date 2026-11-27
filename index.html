@@ -1540,7 +1540,7 @@ body{background:#5E8F55}
 .rditem span{font-size:18px;font-weight:800;color:#5a3a12;pointer-events:none}
 .rditem.sel{box-shadow:0 0 0 5px #FFD43B;transform:scale(1.05)}
 .rditem.empty{visibility:hidden}
-.rcscene{position:relative;width:100%;height:min(60dvh,520px);border-radius:24px;overflow:hidden;background:#89b center/cover no-repeat;box-shadow:0 14px 30px rgba(0,0,0,.3);border:5px solid #2b2d42}
+.rcscene{position:relative;width:100%;height:min(60dvh,520px);border-radius:24px;overflow:hidden;background:linear-gradient(#9fd3f5 0 45%,#c9b89a 45% 60%,#7b8794 60%) center/cover no-repeat;box-shadow:0 14px 30px rgba(0,0,0,.3);border:5px solid #2b2d42}
 .rccop{position:absolute;right:3%;bottom:4%;width:min(150px,20vh);z-index:3}
 .rccop img{width:100%;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
 .rccop span{font-size:90px}
@@ -1548,9 +1548,31 @@ body{background:#5E8F55}
 .rccop.alert .rcsiren{opacity:1;animation:rkFl .25s infinite alternate}
 .rccop.alert{animation:jwJump .4s ease-in-out 4 alternate}
 .rcrun{position:absolute;top:var(--y);left:105%;width:min(150px,19vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
+.rcrun:hover{animation-play-state:paused}
+.ascgame{display:flex;gap:14px;width:100%;align-items:stretch}
+.ascgrid{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.asccard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:18px;border:3px solid #e6dcc8;background:#fff;cursor:pointer;box-shadow:0 4px 0 #e6dcc8;font:inherit;transition:transform .15s}
+.asccard img{width:min(96px,12vh);height:min(96px,12vh);object-fit:contain}.asccard span{font-size:min(64px,9vh);line-height:1.2}.asccard b{font-size:18px}
+.asccard:hover:not([disabled]){transform:translateY(-3px)}.asccard.sel{border-color:#F08A24;box-shadow:0 0 0 4px #F08A2455,0 4px 0 #F08A24;transform:scale(1.05)}
+.asccard.done{opacity:.35;cursor:default}.asccard.now{opacity:1;border-color:#22A86A;box-shadow:0 0 0 5px #22A86A55;animation:ascGlow 1s ease-in-out infinite alternate}
+.asccard[disabled]:not(.now):not(.done){opacity:.6}.asccard.no{animation:ascNo .4s}
+@keyframes ascNo{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+@keyframes ascGlow{to{transform:scale(1.06)}}
+.asctower{width:110px;flex:none;display:flex;flex-direction:column;align-items:center;background:linear-gradient(#EAF6FF,#FFF6E6);border-radius:18px;border:3px solid #e6dcc8;padding:6px}
+.asctop{font-size:13px;text-align:center;line-height:1.3}.asctop b{font-size:22px;color:#F08A24}
+.ascstack{flex:1;width:100%;display:flex;flex-direction:column-reverse;align-items:center;overflow:hidden;min-height:220px;border-bottom:8px solid #C98F56}
+.ascsm{font-size:40px;line-height:.9;display:block}.ascstack.tall .ascsm{font-size:26px}
+.ascsm.flip{transform:rotate(180deg)}
+.ascsm.drop{animation:ascDrop .6s cubic-bezier(.3,1.5,.6,1)}
+.ascsm.somer{animation:ascSomer 1.1s ease-out}
+@keyframes ascDrop{from{transform:translateY(-260px)}to{transform:none}}
+@keyframes ascSomer{0%{transform:translateY(-260px) rotate(0)}60%{transform:translateY(-30px) rotate(540deg)}80%{transform:translateY(6px) rotate(560deg)}100%{transform:rotate(540deg)}}
+.asctalk{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px}.ascplus{font-size:22px}
+.aschint{background:#FFF6D6;border-radius:12px;padding:8px 14px;margin:0;font-size:18px}
+@media (max-width:700px){.ascgrid{grid-template-columns:repeat(2,1fr)}.asctower{width:80px}}
 .rcrun img{width:100%;pointer-events:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));animation:rkBob .4s ease-in-out infinite}
 .rcrun span{font-size:90px;pointer-events:none}
-@keyframes rcRun{from{left:105%}to{left:-25%}}
+@keyframes rcRun{0%{left:105%}20%{left:68%}36%{left:68%}54%{left:30%}70%{left:30%}100%{left:-25%}}
 .rcrun.caught{z-index:4}
 .rcrun.caught img{animation:none;filter:drop-shadow(0 0 16px #FF3B3B) drop-shadow(0 0 6px #fff)}
 /* adult mode: no stars, goal, album or stickers */
@@ -1798,6 +1820,15 @@ const VOICING=[
  {bit:16,name:'ז / ס',a:['ז',[['זית','🫒'],['זחל','🐛'],['זהב','🪙'],['זקן','🧔']]],b:['ס',[['סוס','🐴'],['סבון','🧼'],['סירה','⛵'],['סנאי','🐿️'],['סל','🧺']]]},
  {bit:17,name:'ו/ב / פ',a:['V',[['ורד','🌹'],['וופל','🧇'],['כובע','🎩'],['צב','🐢'],['גרב','🧦']]],b:['F',[['כף','🥄'],['קוף','🐒'],['עוף','🐔'],['טלפון','📞'],['סופגנייה','🍩']]]}
 ];
+/* "מה קשור למה?": [word, picture, word, picture, hint sentence] */
+const ASSOC=[['כלב','🐕','עצם','🦴','הכלב אוהב לכרסם עצם'],['גשם','🌧️','מטרייה','☂️','כשיורד גשם פותחים מטרייה כדי לא להירטב'],['מפתח','🔑','דלת','🚪','עם המפתח פותחים את הדלת'],
+  ['דבורה','🐝','דבש','🍯','הדבורה מכינה דבש'],['פרה','🐄','חלב','🥛','מהפרה מקבלים חלב'],['כדור','⚽','שער','🥅','בועטים את הכדור לתוך השער'],
+  ['עיפרון','✏️','דף','📄','עם העיפרון כותבים ומציירים על הדף'],['דג','🐟','ים','🌊','הדג שוחה בים'],['ביצה','🥚','מחבת','🍳','מטגנים ביצה במחבת'],
+  ['גרב','🧦','נעל','👟','קודם נועלים גרב ואחר כך נעל'],['עוגה','🎂','נר','🕯️','ביום הולדת שמים נרות על העוגה'],['קוף','🐒','בננה','🍌','הקוף אוהב לאכול בננה'],
+  ['מברשת שיניים','🪥','שיניים','🦷','עם מברשת השיניים מצחצחים שיניים'],['כבאי','🚒','אש','🔥','הכבאים מכבים את האש'],['כפפות','🧤','שלג','⛄','כשמשחקים בשלג לובשים כפפות'],
+  ['ירח','🌙','מיטה','🛏️','בלילה, כשהירח בשמיים, הולכים לישון במיטה'],['מספריים','✂️','נייר','📜','עם המספריים גוזרים נייר'],['תינוק','👶','בקבוק','🍼','התינוק שותה מהבקבוק']];
+function assocRound(d){const fresh=[...ASSOC.keys()].filter(i=>!d.used.includes(i));d.set=shuffle(fresh).slice(0,4);d.used.push(...d.set);
+  d.cards=shuffle(d.set.flatMap(p=>[{p,s:0},{p,s:1}]));d.done=[];d.sel=null;d.talk=null}
 const GOAL_LANG=[{bit:8,id:'vocab',name:'אוצר מילים וקטגוריות',icon:'🧺'},{bit:9,id:'instr',name:'הוראות ומשפטים',icon:'👂'}];
 
 /* ---------- access codes ---------- */
@@ -1811,7 +1842,7 @@ function encode(bits){
   let s='',t=total;for(let i=0;i<8;i++){s=AL[t%32]+s;t=Math.floor(t/32)}
   return s.slice(0,4)+'-'+s.slice(4);
 }
-const GOALMASK=0x3E3FF;
+const GOALMASK=0x3E3FF,ADULTBIT=1<<26;
 /* longer codes (10 characters): the usual 8 + two characters that keep a separate level for the voicing pairs.
    The level is returned in bits 23-25 (1-5; 0 = everything open). Old 8-character codes work exactly as before */
 function vCheck(c8,v){let t=0;for(const ch of c8)t=(t*31+AL.indexOf(ch))>>>0;return mix(t+v*7919+333)&0x7F}
@@ -1819,7 +1850,9 @@ function encodeLong(bits,v){const c8=normCode(encode(bits)),n=(v&7)*128+vCheck(c
 function decode(code){
   let c=String(code||'').toUpperCase().replace(/[^0-9A-Z]/g,'');let vlev=0;
   if(c.length===10){const a=AL.indexOf(c[8]),b=AL.indexOf(c[9]);if(a<0||b<0)return null;const n=a*32+b,v=n>>7;if(vCheck(c.slice(0,8),v)!==(n&0x7F))return null;vlev=v;
-    const base=decode(c.slice(0,8)+'');if(base===null&&!((window.MY_ASSIGN||{})[fmtCode(c)]||[]).length)return null;return ((base||0)|(vlev<<23))>>>0}
+    /* level 6 in the long part = an adult patient (bit 26): adult screens, no stars, everything open in voicing */
+    const adult=v===6;if(adult)vlev=0;
+    const base=decode(c.slice(0,8)+'');if(base===null&&!((window.MY_ASSIGN||{})[fmtCode(c)]||[]).length)return null;return ((base||0)|(vlev<<23)|(adult?ADULTBIT:0))>>>0}
   if(c.length!==8)return null;
   let t=0;for(const ch of c){const v=AL.indexOf(ch);if(v<0)return null;t=t*32+v}
   const cs=t%2048,comb=Math.floor(t/2048);
@@ -2176,7 +2209,7 @@ function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code
 function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
 /* when Daniela opens new levels or games (a new code replaced the old one), the family sees it on the next visit */
 function newLevelsNote(bits){try{const prev=store.get('kid-lastbits'),pg=store.get('kid-lastmg'),mg=String(myAssigned(S.code).map(g=>g.id).sort());store.set('kid-lastbits',String(bits));store.set('kid-lastmg',mg);
-  if(prev===null||(+prev===bits&&pg===mg))return;setTimeout(()=>{const ov=document.createElement('div');ov.className='overlay';ov.innerHTML='<div class="card stage pop-in"><div style="font-size:64px">🎁</div><h2>יש חדש באתר!</h2><p>דניאלה פתחה בשבילך שלבים ומשחקים חדשים לתרגול 🎉</p><button class="btn leaf" type="button">יופי, מתחילים!</button></div>';document.body.appendChild(ov);SFX.fanfare&&SFX.fanfare();ov.querySelector('button').onclick=()=>ov.remove()},900)}catch(e){}}
+  if(prev===null||(+prev===bits&&pg===mg))return;setTimeout(()=>{const ov=document.createElement('div');ov.className='overlay';const adl=isAdultCode();ov.innerHTML=adl?'<div class="card stage pop-in"><h2>נוספו תרגולים חדשים</h2><p>דניאלה עדכנה את תוכנית התרגול שלך.</p><button class="btn leaf" type="button">אישור</button></div>':'<div class="card stage pop-in"><div style="font-size:64px">🎁</div><h2>יש חדש באתר!</h2><p>דניאלה פתחה בשבילך שלבים ומשחקים חדשים לתרגול 🎉</p><button class="btn leaf" type="button">יופי, מתחילים!</button></div>';document.body.appendChild(ov);if(!adl&&SFX.fanfare)SFX.fanfare();ov.querySelector('button').onclick=()=>ov.remove()},900)}catch(e){}}
 function login(code){
   if(isTestCode(code)){S.bits=GOALMASK|0x601C00;S.code=TEST_CODE;S.stars=+(store.get('stars-'+S.code)||0);S.view=store.get('name-'+S.code)?'welcome':'name';store.set('kid-code',S.code);logVisit();return true}
   const nb=replacedBy(code);if(nb){migrateCode(code,nb);code=nb}
@@ -2313,6 +2346,8 @@ function render(){
   if(isAdmin()){S.view='therapist';return renderTherapist()}
   if(S.view==='therapist')S.view=S.bits===null?'login':'home';
   if(S.view==='login')return renderLogin();
+  /* adults skip the children's name screen and the knock-knock door: straight to their practice list */
+  if((S.view==='name'||S.view==='welcome'||S.view==='bye'||S.view==='album')&&isAdultCode())S.view='home';
   if(S.view==='name')return renderName();
   if(S.view==='welcome')return renderWelcome();
   if(S.view==='bye')return renderBye();
@@ -2382,7 +2417,14 @@ function renderLogin(){
 }
 
 function renderHome(){
-  if(isAdultCode()){const gs=myAssigned(S.code).filter(x=>x.kind==='dadult'||x.kind==='sylspeech'),g=gs[0];app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div>`+header(kidName()?'שלום '+esc(kidName()):'התרגול שלי')+`<div class="card stage dad"><h2 class="dadh">התרגול שלי</h2><p class="dadtxt" style="text-align:center">תרגול אישי. בכל תרגיל שומעים דוגמה, מקליטים, ושומעים את עצמכם. אפשר להוריד כל הקלטה למחשב ולשלוח לדניאלה.</p><div class="dadsteps">${gs.map(x=>`<button class="dadstep" data-mg="${x.id}" type="button"><span class="dn">${x.icon}</span><span class="dt"><b>${esc(x.name)}</b><small>${esc(x.sub||'')}</small></span></button>`).join('')}</div></div>`;bindCommon();app.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{S.mg=b.dataset.mg;startAct('mine','home')});return}
+  if(isAdultCode()){const ad=x=>x.kind==='dadult'||x.kind==='sylspeech',gs=[...myAssigned(S.code).filter(ad),...myAssigned(S.code).filter(x=>!ad(x))];
+    const st=(ic,t,sub,attr)=>`<button class="dadstep" ${attr} type="button"><span class="dn">${ic}</span><span class="dt"><b>${esc(t)}</b><small>${esc(sub||'')}</small></span></button>`;
+    const rows=[...gs.map(x=>st(x.icon,x.name,x.sub,`data-mg="${esc(x.id)}"`)),...SOUNDS.map((s,i)=>has(S.bits,i)?st(s.name,'הגה '+s.name,'היגוי – מהברות ועד משפטים',`data-sound="${i}"`):''),...VOICING.map((v,i)=>has(S.bits,v.bit)?st(v.a[0]+'/'+v.b[0],v.name,'קולי ובלתי קולי',`data-pair="${i}"`):''),...GOAL_LANG.map(g=>has(S.bits,g.bit)?st(g.icon,g.name,'שפה',`data-lang="${g.id}"`):'')].filter(Boolean);
+    app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div>`+header('התרגול שלי')+`<div class="card stage dad"><h2 class="dadh">${kidName()?'שלום '+esc(kidName()):'התרגול שלי'}</h2><p class="dadtxt" style="text-align:center">תרגול אישי. בכל תרגיל שומעים דוגמה, מקליטים, ושומעים את עצמכם. אפשר להוריד כל הקלטה למחשב ולשלוח לדניאלה.</p><div class="dadsteps">${rows.join('')}</div></div>`;bindCommon();
+    app.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{S.mg=b.dataset.mg;startAct('mine','home')});
+    app.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>go('sound',{sound:+b.dataset.sound}));
+    app.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>go('lang',{lang:b.dataset.lang}));
+    app.querySelectorAll('[data-pair]').forEach(b=>b.onclick=()=>go('pair',{pair:+b.dataset.pair}));return}
   const p=prog(),td=today(p),sk=streak(p),stk=Math.min(STICKERS.length,Math.floor(S.stars/PER_STICKER)),girl=kidG()==='g';
   const sum=pre=>Object.keys(p.ctx).filter(k=>k.startsWith(pre)).reduce((a,k)=>a+p.ctx[k],0);
   const badge=n=>n?`<span class="tbadge" aria-label="${starsWord(n)}">⭐ ${n}</span>`:'';
@@ -2605,7 +2647,7 @@ function raTorchScene(d){const cells=shuffle([...Array(20).keys()]).slice(0,10);
 const SYL_CARDS=[{t:'איש הולך על המדרכה',v:'אִישׁ הוֹלֵךְ עַל הַמִּדְרָכָה',s:[1,2,1,4],i:0},{t:'אישה קונה לחם במכולת',v:'אִשָּׁה קוֹנָה לֶחֶם בַּמַּכֹּלֶת',s:[2,2,2,4],i:1},{t:'האיש שותה קפה',v:'הָאִישׁ שׁוֹתֶה קָפֶה',s:[2,2,2],i:2},
  {t:'הרופא בודק את החולה',v:'הָרוֹפֵא בּוֹדֵק אֶת הַחוֹלֶה',s:[3,2,1,3],i:3},{t:'הנהג עוצר ברמזור',v:'הַנֶּהָג עוֹצֵר בָּרַמְזוֹר',s:[3,2,3],i:4},{t:'האישה משקה את העציצים',v:'הָאִשָּׁה מַשְׁקָה אֶת הָעֲצִיצִים',s:[3,2,1,4],i:5},
  {t:'הסבא קורא עיתון',v:'הַסַּבָּא קוֹרֵא עִתּוֹן',s:[3,2,2],i:6},{t:'הילדים משחקים בפארק',v:'הַיְּלָדִים מְשַׂחֲקִים בַּפָּארְק',s:[4,3,2],i:7},{t:'המלצר מגיש ארוחה',v:'הַמֶּלְצַר מַגִּישׁ אֲרוּחָה',s:[3,2,3],i:8}];/* adult mode: a code with only the adult ד program shows no stars, daily goal, album or stickers */
-function isAdultCode(){try{return !!S.code&&!(S.bits&GOALMASK)&&myAssigned(S.code).some(g=>g.kind==='dadult'||g.kind==='sylspeech')}catch(e){return false}}window.SHS_VOC=window.SHS_VOC||{};RA_OBJ.forEach(o=>{[RA_SAY.see(o),RA_SAY.saw(o),RA_SAY.want(o,0),RA_SAY.want(o,1)].forEach(x=>SHS_VOC[x[0]]=x[1])});
+function isAdultCode(){try{return !!S.code&&(!!(S.bits&ADULTBIT)||!(S.bits&GOALMASK)&&myAssigned(S.code).some(g=>g.kind==='dadult'||g.kind==='sylspeech'))}catch(e){return false}}window.SHS_VOC=window.SHS_VOC||{};RA_OBJ.forEach(o=>{[RA_SAY.see(o),RA_SAY.saw(o),RA_SAY.want(o,0),RA_SAY.want(o,1)].forEach(x=>SHS_VOC[x[0]]=x[1])});
 Object.assign(NIQ,{'הולך':'הוֹלֵךְ','מטרייה':'מִטְרִיָּה','העננים':'הָעֲנָנִים','מתפזרים':'מִתְפַּזְּרִים','יוצאת':'יוֹצֵאת','בשלולית':'בַּשְּׁלוּלִית','שלולית':'שְׁלוּלִית'});
 /* ש in blue, ס and the ש of sin words (שׂ) in orange */
 function rhl(t){return String(t).split(' ').map(tok=>{const sin=isSin(tok)||/מחפש/.test(tok);return [...tok].map(ch=>ch==='ש'?'<span class="'+(sin?'hss':'hsh')+'">ש</span>':ch==='ס'?'<span class="hss">ס</span>':ch).join('')}).join(' ')}
@@ -2688,8 +2730,8 @@ function renderGames(){
 }
 function renderLang(){
   const acts=S.lang==='vocab'
-   ?[['name','🖼️','מה זה?','משחקים ואומרים שמות'],['find','🔎','מצאו את','מקשיבים ובוחרים'],['sort','🧺','מיון','מה שייך לקבוצה'],['odd','🤔','מה לא שייך?','מוצאים את השונה']]
-   :[['quest','❓','שאלות','מי? מה? איפה?'],['two','✌️','הוראה בשני שלבים','נוגעים לפי הסדר'],['where','📦','איפה הכדור?','על, מתחת, ליד']];
+   ?[['name','🖼️','מה זה?','משחקים ואומרים שמות'],['find','🔎','מצאו את','מקשיבים ובוחרים'],['sort','🧺','מיון','מה שייך לקבוצה'],['odd','🤔','מה לא שייך?','מוצאים את השונה'],['assoc','🔗','מה קשור למה?','מוצאים זוג ומספרים']]
+   :[['quest','❓','שאלות','מי? מה? איפה?'],['two','✌️','הוראה בשני שלבים','נוגעים לפי הסדר'],['where','📦','איפה הכדור?','על, מתחת, ליד'],['assoc','🔗','מה קשור למה?','ארגון הבעה: מוצאים זוג ומספרים']];
   const g=GOAL_LANG.find(x=>x.id===S.lang);
   app.innerHTML=header(g.name,'home')+`<div class="grid">${acts.map(a=>`<button class="tile" data-act="${a[0]}"><span class="big">${a[1]}</span>${a[2]}<span class="sub">${a[3]}</span></button>`).join('')}</div>`;
   bindCommon();
@@ -3033,7 +3075,8 @@ function startAct(act,from){
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
   if(act==='radress'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>({name,g,n:0,order:shuffle([0,1,2,3])});d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null;d.pop=false}
-  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';
+  if(act==='assoc'){d.round=0;d.rounds=3;d.tower=[];d.used=[];assocRound(d)}
+  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';try{(window.__cityImg=new Image()).src='scn/city.jpg'}catch(e){}
     const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
   if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
   if(act==='ratorch'){d.s=0;raTorchScene(d)}
@@ -3069,7 +3112,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',shop2:'הקופה של ש ו־ס',shmin:'חרוזים של ס ו־ש',rapeek:'מה הוא רואה?',radress:'מלבישים את אורי',racop:'השוטר ראה...',rawant:'ישראל רוצה...',ratorch:'הפנס בחושך',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='assoc')return 'מה קשור למה?';if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',shop2:'הקופה של ש ו־ס',shmin:'חרוזים של ס ו־ש',rapeek:'מה הוא רואה?',radress:'מלבישים את אורי',racop:'השוטר ראה...',rawant:'ישראל רוצה...',ratorch:'הפנס בחושך',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -4318,6 +4361,31 @@ function renderAct(){
         document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)}});
     return;
   }
+  if(S.act==='assoc'){
+    /* "מה קשור למה?" (expressive language): picture cards; the child finds two that go together (dog + bone),
+       then tells why. The adult taps 😊 for every word said; each smiley drops onto a tower, and now and then
+       a cheeky one does a somersault and lands upside down */
+    const W=window.WORD_IMG||{},pic=e=>W[e]?`<img src="${W[e]}" alt="">`:`<span>${e}</span>`;
+    if(d.round>=d.rounds){finish();return}
+    const cur=d.talk!=null?ASSOC[d.talk]:null;
+    shell(`<div class="card stage asc"><p class="jmsg">${cur?`מצאתם! ${cur[0]} ו${cur[2]} 🎉 עכשיו מספרים: למה הם קשורים?`:'מה קשור למה? בוחרים שני כרטיסים שהולכים ביחד 🔗'}</p><div class="progress">${d.round+1} / ${d.rounds} · נמצאו ${d.done.length} / ${d.set.length}</div>
+      <div class="ascgame"><div class="ascgrid">${d.cards.map((c,i)=>{const p=ASSOC[c.p],e=c.s?p[3]:p[1],w=c.s?p[2]:p[0],dn=d.done.includes(c.p);return `<button class="asccard ${dn?'done':''} ${d.sel===i?'sel':''} ${cur&&c.p===d.talk?'now':''}" data-i="${i}" type="button" ${dn||cur?'disabled':''}>${pic(e)}<b>${w}</b></button>`}).join('')}</div>
+        <div class="asctower"><div class="asctop">מגדל החייכנים<br><b id="asccnt">${d.tower.length}</b></div><div class="ascstack" id="ascstack">${d.tower.map(f=>`<span class="ascsm ${f?'flip':''}">😊</span>`).join('')}</div></div></div>
+      ${cur?`<div class="asctalk"><p class="muted" style="margin:0">על כל מילה שאומרים – לוחצים על 😊</p><div class="row"><button class="btn sun ascplus" id="ascplus" type="button">😊 עוד מילה</button><button class="btn ghost" id="aschint" type="button">💡 רמז</button><button class="btn leaf" id="ascnext" type="button">סיימתי לספר ←</button></div><p class="aschint" id="aschtxt" hidden>${cur[4]}</p></div>`:''}</div>`);
+    if(cur){
+      document.getElementById('ascplus').onclick=()=>{const flip=Math.random()<.3;d.tower.push(flip);const st=document.getElementById('ascstack'),s=document.createElement('span');s.className='ascsm '+(flip?'flip somer':'drop');s.textContent='😊';st.appendChild(s);
+        document.getElementById('asccnt').textContent=d.tower.length;(flip?SFX.boing:SFX.pop)();st.classList.toggle('tall',d.tower.length>12)};
+      document.getElementById('aschint').onclick=()=>{document.getElementById('aschtxt').hidden=false};
+      document.getElementById('ascnext').onclick=()=>{d.done.push(d.talk);d.talk=null;d.sel=null;
+        if(d.done.length>=d.set.length){SFX.fanfare();d.round++;if(d.round<d.rounds){assocRound(d);TIMERS.push(setTimeout(render,600))}else TIMERS.push(setTimeout(finish,900))}else render()};
+      return}
+    app.querySelectorAll('.asccard:not([disabled])').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+      if(d.sel==null||d.sel===i){d.sel=d.sel===i?null:i;SFX.blip();render();return}
+      const a=d.cards[d.sel],c=d.cards[i];
+      if(a.p===c.p){d.talk=a.p;d.sel=null;SFX.good();render()}
+      else{SFX.bad();b.classList.remove('no');void b.offsetWidth;b.classList.add('no');d.sel=null;TIMERS.push(setTimeout(render,450))}});
+    return;
+  }
   if(S.act==='racop'&&d.phase==='hide'){
     /* "השוטר ראה..." stage 2: the animals hid on the street (behind a tree, a bin, a fountain...).
        The child taps a hiding place: if someone is there he pops out and the child says "השוטר ראה ___!"; otherwise the place wiggles */
@@ -4407,8 +4475,8 @@ function renderAct(){
     shell(`<div class="card stage ra"><p class="jmsg">${all?(d.s+1<RA_TORCH.length?'כל הכבוד! מצאתם הכל 🎉':'מצאתם הכל בכל השלבים! 🎉'):sc.title+' 🔦'}</p><div class="progress">${d.s+1} / ${RA_TORCH.length} · נמצאו ${d.found.length} / ${d.objs.length}</div>
       <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(kingdom-bg.jpg)">
         ${d.objs.map((o,i)=>`<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${W[o.o[1]]?`<img src="${W[o.o[1]]}" alt="">`:`<span>${o.o[1]}</span>`}</button>`).join('')}
-        <div class="rtdark"></div><div class="rtlamp">🔦</div></div></div>`);
-    if(all){SFX.fanfare();TIMERS.push(setTimeout(()=>{d.s++;if(d.s<RA_TORCH.length){raTorchScene(d);render()}else finish()},2800));return}
+        <div class="rtdark"></div><div class="rtlamp">🔦</div></div>${all?`<div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="rtnext" type="button">${d.s+1<RA_TORCH.length?'המשך ←':'✓ סיום'}</button></div>`:''}</div>`);
+    if(all){if(!d.lit){d.lit=true;SFX.fanfare()}document.getElementById('rtnext').onclick=()=>{if(S.overlay)return;d.lit=false;d.s++;if(d.s<RA_TORCH.length){raTorchScene(d);render()}else finish()};return}
     const scn=document.getElementById('rts'),z=parseFloat(getComputedStyle(app.querySelector('.card.stage')).zoom)||1;
     const at=ev=>{const r=scn.getBoundingClientRect();d.lx=(ev.clientX-r.left)/z;d.ly=(ev.clientY-r.top)/z;scn.style.setProperty('--x',d.lx+'px');scn.style.setProperty('--y',d.ly+'px')};
     scn.onpointermove=at;scn.onpointerdown=at;
@@ -4568,13 +4636,15 @@ function describe(bits,code){
   const l=GOAL_LANG.filter(g=>has(bits,g.bit)).map(g=>g.name);
   const v=VOICING.filter(x=>has(bits,x.bit)).map(x=>x.name),vv=(bits>>>23)&7,vs=vv&&vv<6?vv:(parts.length?maxStage(bits):6);
   const mg=code?myAssigned(code).map(g=>g.name):[];
-  return [t,v.length?'קולי/בלתי קולי: '+v.join(', ')+' ('+(vs>=6?'הכל פתוח':'עד '+VSTEPS[vs-1])+')':'',l.length?'שפה: '+l.join(', '):'',mg.length?'משחקים אישיים: '+mg.join(', '):''].filter(Boolean).join(' · ');
+  return [bits&ADULTBIT?'🧑 טיפול מבוגרים':'',t,v.length?'קולי/בלתי קולי: '+v.join(', ')+' ('+(vs>=6?'הכל פתוח':'עד '+VSTEPS[vs-1])+')':'',l.length?'שפה: '+l.join(', '):'',mg.length?'משחקים אישיים: '+mg.join(', '):''].filter(Boolean).join(' · ');
 }const SITE_URL='https://danielagottlib.github.io/tirgul/';
 function renderTherapist(){
   const list=savedList();const link=store.get('th-link')||'';
   app.innerHTML=`<div class="brand small"><img class="logo" src="${LOGO}" alt="דניאלה גוטליב, קלינאית תקשורת M.A."></div><div class="top"><h1>מסך המטפלת</h1></div>
   <p class="muted">כאן יוצרים קוד אישי לכל מטופל. הקוד פותח לו רק את המטרות שסימנת. מסך זה לא מופיע אצל הילדים. שמרי את הכתובת שלו במועדפים.</p>
   <div class="card"><form id="tf" class="form">
+    <fieldset><legend>סוג הטיפול</legend><div class="checks"><label><input type="radio" name="who" value="kid" checked> 🧒 טיפול ילדים</label><label><input type="radio" name="who" value="adult"> 🧑 טיפול מבוגרים</label></div>
+      <p class="muted" style="font-size:14px;margin:4px 0 0">במבוגרים: בלי מסך פתיחה ושם, בלי כוכבים, יעד יומי ומדבקות, וההודעה נכתבת למטופל עצמו.</p></fieldset>
     <div><label for="nick">שם המטופל</label><input class="txt" id="nick" maxlength="30" list="patients" autocomplete="off" placeholder="בוחרים מהרשימה או כותבים שם חדש">
       <datalist id="patients">${[...new Set(list.map(r=>r.n).filter(Boolean))].map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
       <p class="muted" style="font-size:14px;margin-top:4px">למטופל קיים בוחרים את השם מהרשימה, בדיוק כמו שנכתב. כך הקוד החדש מחליף את הקוד הקודם שלו. השמות נשמרים רק במכשיר הזה.</p></div>
@@ -4657,7 +4727,7 @@ function renderTherapist(){
     if(!anySound)bits&=~(0x601C00|(7<<18));
     document.getElementById('terr').textContent='';
     /* a fresh code that no saved patient and no personal-games patient already has */
-    const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);const mk=()=>vLong?encodeLong(bits,vs):encode(bits);let code=mk(),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=mk();
+    const used=new Set([...savedList().map(r=>fmtCode(r.c)),...Object.keys(window.MY_ASSIGN||{})]);const adultSel=((app.querySelector('#tf input[name=who]:checked')||{}).value==='adult');const mk=()=>adultSel?encodeLong(bits,6):vLong?encodeLong(bits,vs):encode(bits);let code=mk(),tries=0;while(used.has(fmtCode(code))&&tries++<300)code=mk();
     const nick=document.getElementById('nick').value.trim(),site=SITE_URL;
     const l=savedList();const prev=nick?l.filter(r=>r.n===nick&&!isBlocked(r.c)&&!replacedBy(r.c)).map(r=>r.c):[];
     l.unshift({n:nick,c:code});store.set('th-codes',JSON.stringify(l.slice(0,200)));logName(code,nick);
@@ -4671,12 +4741,15 @@ function renderTherapist(){
       lvl.push(`• הבחנה בין הגאים קוליים ובלתי קוליים (${v.name}): ${ns>=6?'כל השלבים פתוחים':'עד שלב "'+VSTEPS[ns-1]+'"'}${!has(ob,v.bit)?' (חדש!)':ns>os?' (שלב חדש!)':''}`)});
     GOAL_LANG.forEach(g=>{if(has(nb,g.bit))lvl.push(`• ${g.name}${has(ob,g.bit)?'':' (חדש!)'}`)});
     myGames().filter(g=>mg.includes(g.id)).forEach(g=>lvl.push(`• משחק אישי: ${g.name}`));
-    const updMsg=`הורים יקרים${nick?' של '+nick:''},\nעדכון משמח! 🎉\nבעקבות ההתקדמות היפה בטיפול, הכנתי עבורכם קוד עדכני עם תרגול ברמה מתקדמת יותר באתר התרגול של ${CLINIC}.\n\nהקוד העדכני: ${code}\nהקישור לאתר (ללא שינוי): ${site}\n\nמה מתרגלים מעכשיו:\n${lvl.join('\n')}\n\nחשוב לדעת:\n• מעכשיו נכנסים עם הקוד העדכני. מי שייכנס עם הקוד הקודם יועבר אוטומטית לקוד החדש, וכל הכוכבים והמדבקות נשמרים.\n• כמו תמיד, התרגול נעשה בליווי שלכם: הסבירו את ההוראות ועקבו אחר האמירה וההגייה במהלך התרגול.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nממשיכים להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
-    const fullMsg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n• לצורך מעקב אחר ההתקדמות, האתר מעדכן אותי אילו פעילויות בוצעו ומתי. ההקלטות של הילד נשמרות רק במכשיר שלכם ואינן נשלחות אליי. המידע משמש אותי לצורך הטיפול בלבד.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    let updMsg=`הורים יקרים${nick?' של '+nick:''},\nעדכון משמח! 🎉\nבעקבות ההתקדמות היפה בטיפול, הכנתי עבורכם קוד עדכני עם תרגול ברמה מתקדמת יותר באתר התרגול של ${CLINIC}.\n\nהקוד העדכני: ${code}\nהקישור לאתר (ללא שינוי): ${site}\n\nמה מתרגלים מעכשיו:\n${lvl.join('\n')}\n\nחשוב לדעת:\n• מעכשיו נכנסים עם הקוד העדכני. מי שייכנס עם הקוד הקודם יועבר אוטומטית לקוד החדש, וכל הכוכבים והמדבקות נשמרים.\n• כמו תמיד, התרגול נעשה בליווי שלכם: הסבירו את ההוראות ועקבו אחר האמירה וההגייה במהלך התרגול.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nממשיכים להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    let fullMsg=`הורים יקרים${nick?' של '+nick:''},\nבשעה טובה! יצרתי עבורכם אתר תרגול אישי של ${CLINIC} 🎉\nהאתר נבנה מתוך מחשבה והשקעה רבה, כדי לאפשר לילדכם להתקדם בצורה הטובה ביותר.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• הפעילויות מיועדות לתרגול בליווי הורה, ולא לעבודה עצמאית של הילד. תפקידכם להסביר לילד את ההוראות ולעקוב אחר אופן האמירה וההגייה שלו במהלך התרגול.\n• מערכת התרגול כוללת הקלטה של הילד, כך שהוא שומע את עצמו ומקבל משוב נוסף המקדם את הרכישה. לכן חשובה נוכחותכם לאורך כל התרגול.\n• הפעילויות באתר מותאמות אישית לילדכם, ובהמשך יתווספו פעילויות נוספות ברמות תרגול מתקדמות, בהתאם להתקדמותו בטיפול הפרונטלי.\n• לצורך מעקב אחר ההתקדמות, האתר מעדכן אותי אילו פעילויות בוצעו ומתי. ההקלטות של הילד נשמרות רק במכשיר שלכם ואינן נשלחות אליי. המידע משמש אותי לצורך הטיפול בלבד.\n• הקישור לאתר ו/או הקוד האישי מיועדים לשימושכם האישי בלבד ואינם ניתנים להעברה.\n\nמומלץ להתאמן כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    const aUpd=`שלום${nick?' '+nick:''},\nבעקבות ההתקדמות בטיפול, הכנתי עבורך קוד עדכני באתר התרגול של ${CLINIC}.\n\nהקוד העדכני: ${code}\nהקישור לאתר (ללא שינוי): ${site}\n\nמה מתרגלים מעכשיו:\n${lvl.join('\n')}\n\nחשוב לדעת:\n• מעכשיו נכנסים עם הקוד העדכני. כניסה עם הקוד הקודם תעביר אוטומטית לקוד החדש.\n• הקישור לאתר והקוד האישי מיועדים לשימושך האישי בלבד.\n\nבהצלחה!\nדניאלה גוטליב`;
+    const aFull=`שלום${nick?' '+nick:''},\nיצרתי עבורך תוכנית תרגול אישית באתר התרגול של ${CLINIC}.\n\nהקישור לאתר: ${site}\nהקוד האישי: ${code}\n\nחשוב לדעת:\n• בכל תרגיל שומעים דוגמה, מקליטים ומאזינים להקלטה.\n• אפשר להוריד כל הקלטה למחשב ולשלוח לי, כדי שאוכל לתת משוב.\n• ההקלטות נשמרות רק במכשיר שלך ואינן נשלחות אליי. לצורך מעקב, האתר מעדכן אותי רק אילו תרגילים בוצעו ומתי.\n• הקישור לאתר והקוד האישי מיועדים לשימושך האישי בלבד.\n\nמומלץ לתרגל כמה דקות בכל יום.\nבהצלחה!\nדניאלה גוטליב`;
+    if(adultSel){updMsg=aUpd;fullMsg=aFull}
     let msg=prev.length?updMsg:fullMsg;
     const mgNames=myGames().filter(g=>mg.includes(g.id)).map(g=>g.name);
     document.getElementById('result').innerHTML=`<div class="card stage"><p class="muted">הקוד${nick?' של '+esc(nick):''}:</p><div class="codebig">${code}</div><p>${esc([(bits&GOALMASK)?describe(decode(code)||bits):'',mgNames.length?'משחקים אישיים: '+mgNames.join(', '):''].filter(Boolean).join(' · '))}</p>${mg.length?'<p class="muted" id="mgSave">שומר את המשחקים האישיים...</p>':''}
-      ${prev.length?`<p style="font-weight:700">📨 הודעת עדכון להורים – קוד עדכני עם תרגול מתקדם (${esc(nick)} כבר קיבל/ה קוד בעבר):</p>`:''}
+      ${prev.length?`<p style="font-weight:700">📨 ${adultSel?'הודעת עדכון למטופל':'הודעת עדכון להורים'} – קוד עדכני עם תרגול מתקדם (${esc(nick)} כבר קיבל/ה קוד בעבר):</p>`:''}
       <textarea class="txt" id="msg" rows="14" readonly>${esc(msg)}</textarea>
       <div class="row"><button class="btn sun" id="copy" type="button">העתקת ההודעה</button>${prev.length?'<button class="btn ghost" id="msgSwap" type="button">להודעת הפתיחה המלאה</button>':''}</div><p class="muted" id="copied"></p>
       <p class="muted" style="font-size:15px">הקוד נשמר בטבלה למטה רק במכשיר הזה. כדי לשנות מטרות, יוצרים קוד חדש ושולחים אותו.</p></div>`;
