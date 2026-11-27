@@ -1563,7 +1563,17 @@ body.adult .top .stars,body.adult .stars,body.adult #album,body.adult .stickerpo
 .syld{display:flex;gap:8px;direction:rtl}
 .syld i{width:clamp(24px,2.6vw,34px);height:clamp(24px,2.6vw,34px);border-radius:50%;background:#1F3A5F;transition:transform .15s,background .15s}
 .syld i.now{background:#F08C00;transform:scale(1.35);box-shadow:0 0 0 6px rgba(240,140,0,.25)}
-.syld i.on{background:#2F9E77}</style>
+.syld i.on{background:#2F9E77}/* police: hide-and-seek scene */
+.rhspot{position:absolute;transform:translate(-50%,-50%);width:min(130px,17vh);height:min(130px,17vh);padding:0;border:0;background:none;cursor:pointer;z-index:2}
+.rhspot .rhcover{position:relative;z-index:2;display:block}
+.rhspot .rhcover img{width:100%;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35))}
+.rhspot .rhcover span{font-size:90px}
+.rhspot .rhwho{position:absolute;left:50%;top:-42%;width:72%;transform:translateX(-50%);z-index:1;animation:rhPeek .6s cubic-bezier(.3,1.6,.5,1)}
+.rhspot .rhwho img{width:100%;filter:drop-shadow(0 0 12px #FFD43B)}
+.rhspot .rhwho span{font-size:64px}
+@keyframes rhPeek{from{transform:translate(-50%,60%);opacity:0}}
+.rhspot.no{animation:jno .4s}
+.rhspot:not(.found):hover .rhcover{transform:rotate(-4deg)}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -3011,7 +3021,8 @@ function startAct(act,from){
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
   if(act==='radress'){loadScriptOnce('ra-img.js?v=1',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>{const grp={};RA_CLOTH.filter(c=>g||c[0]!=='שמלה').forEach(c=>{(grp[c[6]]=grp[c[6]]||[]).push(c)});return {name,g,done:[],items:shuffle(Object.keys(grp)).slice(0,4).map(k=>pick(grp[k],1)[0])}};d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null}
-  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,6);d.k=0;d.dur=5;d.y=40;d.caught=false}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=1',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
+  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=10;d.y=40;d.caught=false;d.phase='chase';
+    const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=1',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
   if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>r.map(x=>({o:x,g:Math.random()<.5?1:0,got:false})));d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
   if(act==='ratorch'){d.bg=pick(['scn/park.jpg','scn/farm.jpg','scn/city.jpg','scn/kitchen.jpg'],1)[0];const cells=shuffle([...Array(12).keys()]).slice(0,5);d.objs=shuffle(RA_OBJ).slice(0,5).map((o,i)=>({o,x:8+(cells[i]%4)*23+Math.floor(Math.random()*8),y:12+Math.floor(cells[i]/4)*28+Math.floor(Math.random()*8)}));d.found=[];d.lx=220;d.ly=160}
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
@@ -4292,12 +4303,26 @@ function renderAct(){
         document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up)}});
     return;
   }
+  if(S.act==='racop'&&d.phase==='hide'){
+    /* "השוטר ראה..." stage 2: the animals hid on the street (behind a tree, a bin, a fountain...).
+       The child taps a hiding place: if someone is there he pops out and the child says "השוטר ראה ___!"; otherwise the place wiggles */
+    const W=window.WORD_IMG||{},pic=e=>W[e]?`<img src="${W[e]}" alt="">`:`<span>${e}</span>`,left=d.spots.filter(s=>s.who&&!s.found).length;
+    shell(`<div class="card stage ra"><p class="jmsg">${left?`שלב 2: החיות התחבאו! נוגעים במקומות המסתור ומחפשים 🔍 (עוד ${left})`:'מצאנו את כולם! השוטר שמח 🎉'}</p>
+      <div class="rcscene hide" id="rcs" style="background-image:url(scn/city.jpg)"><div class="rccop" id="rccop">${pic('👮')}<span class="rcsiren">🚨</span></div>
+        ${d.spots.map((s,i)=>`<button class="rhspot ${s.found?'found':''}" data-i="${i}" type="button" style="left:${s.x}%;top:${s.y}%">${s.who&&s.found?`<span class="rhwho">${pic(s.who[1])}</span>`:''}<span class="rhcover">${pic(s.e)}</span></button>`).join('')}</div></div>`);
+    if(!left){SFX.fanfare();TIMERS.push(setTimeout(finish,2600));return}
+    app.querySelectorAll('.rhspot:not(.found)').forEach(b=>b.onclick=()=>{if(S.overlay)return;const s=d.spots[+b.dataset.i];
+      if(!s.who){b.classList.remove('no');void b.offsetWidth;b.classList.add('no');SFX.bad();return}
+      s.found=true;SFX.siren();render();document.getElementById('rccop').classList.add('alert');const t=['השוטר ראה '+s.who[0]+'!','הַשּׁוֹטֵר רָאָה '+s.who[2]+'!'];
+      TIMERS.push(setTimeout(()=>{saySeq([t[1]]);sayIt([t[0],s.who[1]],()=>render())},1000))});
+    return;
+  }
   if(S.act==='racop'){
     /* ר עם א: "השוטר ראה...": things run along a city street; the child taps one to catch it,
        the siren sounds, and he says "השוטר ראה כלב!". Each round is a little faster */
-    const W=window.WORD_IMG||{},N=d.items.length;if(d.k>=N){finish();return}
+    const W=window.WORD_IMG||{},N=d.items.length;if(d.k>=N){d.phase='hide';render();return}
     const it=d.items[d.k];
-    shell(`<div class="card stage ra"><p class="jmsg" id="rcmsg">מישהו רץ ברחוב! לוחצים עליו מהר, כדי שהשוטר יראה אותו 👮</p><div class="progress">${d.k+1} / ${N}</div>
+    shell(`<div class="card stage ra"><p class="jmsg" id="rcmsg">שלב 1: מישהו רץ ברחוב! לוחצים עליו כדי שהשוטר יראה אותו 👮</p><div class="progress">${d.k+1} / ${N}</div>
       <div class="rcscene" id="rcs" style="background-image:url(scn/city.jpg)"><div class="rccop" id="rccop">${W['👮']?`<img src="${W['👮']}" alt="">`:'<span>👮</span>'}<span class="rcsiren">🚨</span></div>
         <button class="rcrun" id="rcrun" type="button" style="--dur:${d.dur}s;--y:${d.y}%">${W[it[1]]?`<img src="${W[it[1]]}" alt="">`:`<span>${it[1]}</span>`}</button></div></div>`);
     const b=document.getElementById('rcrun');
@@ -4307,7 +4332,7 @@ function renderAct(){
       b.style.animation='none';b.style.left=((r.left-sc.left)/z)+'px';b.classList.add('caught');document.getElementById('rccop').classList.add('alert');SFX.siren();
       document.getElementById('rcmsg').textContent='תפסת! 🚓 עכשיו אומרים מה השוטר ראה';
       const s=['השוטר ראה '+it[0]+'!','הַשּׁוֹטֵר רָאָה '+it[2]+'!'];
-      TIMERS.push(setTimeout(()=>{saySeq([s[1]]);sayIt([s[0],it[1]],()=>{d.k++;d.caught=false;d.dur=Math.max(2.6,d.dur-.35);d.y=18+Math.floor(Math.random()*42);render()})},900))};
+      TIMERS.push(setTimeout(()=>{saySeq([s[1]]);sayIt([s[0],it[1]],()=>{d.k++;d.caught=false;d.dur=Math.max(7,d.dur-.6);d.y=18+Math.floor(Math.random()*42);render()})},900))};
     return;
   }
   if(S.act==='rapeek'){
