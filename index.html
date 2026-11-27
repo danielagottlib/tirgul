@@ -1547,7 +1547,7 @@ body{background:#5E8F55}
 .rccop .rcsiren{position:absolute;top:-30px;left:30%;font-size:44px;opacity:0}
 .rccop.alert .rcsiren{opacity:1;animation:rkFl .25s infinite alternate}
 .rccop.alert{animation:jwJump .4s ease-in-out 4 alternate}
-.rcrun{position:absolute;top:var(--y);left:105%;width:min(130px,16vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
+.rcrun{position:absolute;top:var(--y);left:105%;width:min(150px,19vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
 .rcrun img{width:100%;pointer-events:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));animation:rkBob .4s ease-in-out infinite}
 .rcrun span{font-size:90px;pointer-events:none}
 @keyframes rcRun{from{left:105%}to{left:-25%}}
@@ -3033,7 +3033,7 @@ function startAct(act,from){
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
   if(act==='radress'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>({name,g,n:0,order:shuffle([0,1,2,3])});d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null;d.pop=false}
-  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=10;d.y=40;d.caught=false;d.phase='chase';
+  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';
     const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
   if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
   if(act==='ratorch'){d.s=0;raTorchScene(d)}
@@ -4347,7 +4347,7 @@ function renderAct(){
       b.style.animation='none';b.style.left=((r.left-sc.left)/z)+'px';b.classList.add('caught');document.getElementById('rccop').classList.add('alert');SFX.siren();
       document.getElementById('rcmsg').textContent='תפסת! 🚓 עכשיו אומרים מה השוטר ראה';
       const s=['השוטר ראה '+it[0]+'!','הַשּׁוֹטֵר רָאָה '+it[2]+'!'];
-      TIMERS.push(setTimeout(()=>{saySeq([s[1]]);sayIt([s[0],it[1]],()=>{d.k++;d.caught=false;d.dur=Math.max(7,d.dur-.6);d.y=18+Math.floor(Math.random()*42);render()})},900))};
+      TIMERS.push(setTimeout(()=>{saySeq([s[1]]);sayIt([s[0],it[1]],()=>{d.k++;d.caught=false;d.dur=Math.max(17,d.dur-.7);d.y=18+Math.floor(Math.random()*42);render()})},900))};
     return;
   }
   if(S.act==='rapeek'){
