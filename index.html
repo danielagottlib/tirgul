@@ -1468,6 +1468,7 @@ body{background:#5E8F55}
 .rwbub::after{content:'';position:absolute;bottom:-18px;left:50%;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #CED4DA}
 .rwbub img{width:70%;height:70%;object-fit:contain}
 .rwface{font-size:min(110px,13vh);line-height:1}
+.rwname{margin-top:4px;font-size:22px;font-weight:900;color:#fff;background:linear-gradient(90deg,#7048E8,#4DABF7);padding:2px 16px;border-radius:999px}
 .rwface img.wimg{width:min(130px,15vh);height:auto}
 .rwkid.got .rwface{animation:jwJump .5s ease-in-out 4 alternate}
 .rwkid.got .rwbub{opacity:.35}
@@ -1563,7 +1564,8 @@ body.adult .top .stars,body.adult .stars,body.adult #album,body.adult .stickerpo
 .syld{display:flex;gap:8px;direction:rtl}
 .syld i{width:clamp(24px,2.6vw,34px);height:clamp(24px,2.6vw,34px);border-radius:50%;background:#1F3A5F;transition:transform .15s,background .15s}
 .syld i.now{background:#F08C00;transform:scale(1.35);box-shadow:0 0 0 6px rgba(240,140,0,.25)}
-.syld i.on{background:#2F9E77}/* police: hide-and-seek scene */
+.syld i.on{background:#2F9E77}
+.syltip{margin:0;font-size:clamp(17px,1.8vw,21px);font-weight:700;color:#2F7FC1;text-align:center}/* police: hide-and-seek scene */
 .rhspot{position:absolute;transform:translate(-50%,-50%);width:min(130px,17vh);height:min(130px,17vh);padding:0;border:0;background:none;cursor:pointer;z-index:2}
 .rhspot .rhcover{position:relative;z-index:2;display:block}
 .rhspot .rhcover img{width:100%;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35))}
@@ -1573,7 +1575,11 @@ body.adult .top .stars,body.adult .stars,body.adult #album,body.adult .stickerpo
 .rhspot .rhwho span{font-size:64px}
 @keyframes rhPeek{from{transform:translate(-50%,60%);opacity:0}}
 .rhspot.no{animation:jno .4s}
-.rhspot:not(.found):hover .rhcover{transform:rotate(-4deg)}</style>
+.rhspot:not(.found):hover .rhcover{transform:rotate(-4deg)}.rtscene.plain .rtobj{width:min(78px,10vh);height:min(78px,10vh)}
+.rdwant{position:absolute;top:44px;left:-6px;z-index:3;width:min(92px,11vh);height:min(92px,11vh);border-radius:50%;background:#fff;border:4px solid #FFD43B;display:grid;place-items:center;box-shadow:0 6px 14px rgba(0,0,0,.18);animation:rkBob 1.6s infinite}
+.rdwant img{width:72%;height:72%;object-fit:contain}.rdwant .rde{font-size:44px}
+.rdkid.pop .rdbody{animation:rkPop .6s ease-out}
+.rdkid.no{animation:jno .35s}</style>
 </head>
 <body>
 <div id="world" aria-hidden="true">
@@ -2584,12 +2590,18 @@ const dadSay=it=>it.length===1?[it[0],it[0]]:[(it[2]?'זאת ':'זה ')+it[0],(i
 /* "ר עם א" stage (ר only): things with no ר, so the only ר is in רואה / רוצה / ראיתי. [word, picture, niqqud] */
 const RA_OBJ=[['בננה','🍌','בָּנָנָה'],['כלב','🐕','כֶּלֶב'],['חתול','🐈','חָתוּל'],['פיל','🐘','פִּיל'],['אוטו','🚗','אוֹטוֹ'],['עוגה','🎂','עוּגָה'],['גלידה','🍦','גְּלִידָה'],['בובה','🪆','בּוּבָּה'],['דובי','🧸','דּוּבִּי'],['תפוח','🍎','תַּפּוּחַ'],['מטוס','✈️','מָטוֹס'],['פיצה','🍕','פִּיצָה'],['בלון','🎈','בָּלוֹן'],['סוס','🐴','סוּס'],['שוקולד','🍫','שׁוֹקוֹלָד']];
 const RA_SAY={see:o=>['הוא רואה '+o[0],'הוּא רוֹאֶה '+o[2]],saw:o=>['ראיתי '+o[0]+'!','רָאִיתִי '+o[2]+'!'],want:(o,g)=>g?['היא רוצה '+o[0],'הִיא רוֹצָה '+o[2]]:['הוא רוצה '+o[0],'הוּא רוֹצֶה '+o[2]]};
-GAMES.rapeek=['🔭','מה הוא רואה?','רואים רק חלק – מנחשים ומותחים קו'];GAMES.rawant=['🎁','מה הוא רוצה?','כל ילד רוצה משהו אחר'];GAMES.ratorch=['🔦','הפנס בחושך','מאירים, מוצאים ואומרים: ראיתי!'];
+GAMES.rapeek=['🔭','מה הוא רואה?','רואים רק חלק – מנחשים ומותחים קו'];GAMES.rawant=['🎁','ישראל רוצה...','ישראל, אוריה וחברים – כל אחד רוצה משהו אחר'];const RA_WANTV={'ישראל':'יִשְׂרָאֵל רוֹצֶה','ראובן':'רְאוּבֵן רוֹצֶה','אורי':'אוּרִי רוֹצֶה','אוריה':'אוּרִיָּה רוֹצָה'};GAMES.ratorch=['🔦','הפנס בחושך','מאירים, מוצאים ואומרים: ראיתי!'];
 /* dress-up (ר עם א): [word, picture, niqqud, x%, y%, width% on the figure, body part] */
 const RA_CLOTH=[['כובע','🧢','כּוֹבַע',50,6,64,'h'],['משקפיים','👓','מִשְׁקָפַיִים',50,20,52,'e'],['צעיף','🧣','צָעִיף',50,33,56,'n'],['חולצה','👕','חוּלְצָה',50,45,84,'b'],['מעיל','🧥','מְעִיל',50,47,96,'b'],['כפפות','🧤','כְּפָפוֹת',86,63,26,'g'],['מגפיים','👢','מַגָּפַיִים',50,92,62,'f'],['נעליים','👟','נַעֲלַיִים',50,94,62,'f'],['שמלה','👗','שִׂמְלָה',50,60,92,'b']];
 const RA_NAMEV={'אורי':'אוּרִי לוֹבֵשׁ','ראובן':'רְאוּבֵן לוֹבֵשׁ','רועי':'רוֹעִי לוֹבֵשׁ','אריאל':'אֲרִיאֵל לוֹבֵשׁ','אוריה':'אוּרִיָּה לוֹבֶשֶׁת'};
 GAMES.radress=['👕','מלבישים את אורי','אורי לובש... אוריה לובשת...'];GAMES.racop=['🚓','השוטר ראה...','תופסים ברחוב ואומרים מה השוטר ראה'];
-/* "דיבור בצלילים" cards: sentence, niqqud (for the voice), syllables per word, picture index */
+/* dress-up: the clothes are put on in this order (each step has its own picture of the child wearing them) */
+const RA_OUTFIT={boy:[['כובע','🧢','כּוֹבַע'],['צעיף','🧣','צָעִיף'],['מעיל','🧥','מְעִיל'],['מגפיים','👢','מַגָּפַיִים']],girl:[['כובע','🧢','כּוֹבַע'],['משקפיים','👓','מִשְׁקָפַיִים'],['צעיף','🧣','צָעִיף'],['נעליים','👟','נַעֲלַיִים']]};
+/* flashlight: 3 scenes of 10 hidden things each */
+const RA_TORCH=[{title:'מצאו עם הפנס את כל החיות',items:[['כלב','🐕','כֶּלֶב'],['חתול','🐈','חָתוּל'],['פיל','🐘','פִּיל'],['סוס','🐴','סוּס'],['ארנב','🐇','אַרְנָב'],['צב','🐢','צָב'],['ברווז','🦆','בַּרְוָז'],['פרה','🐄','פָּרָה'],['כבשה','🐑','כִּבְשָׂה'],['ג׳ירפה','🦒','גִ׳ירָפָה']]},
+ {title:'מצאו עם הפנס את כל האוכל',items:[['בננה','🍌','בָּנָנָה'],['תפוח','🍎','תַּפּוּחַ'],['פיצה','🍕','פִּיצָה'],['עוגה','🎂','עוּגָה'],['גלידה','🍦','גְּלִידָה'],['שוקולד','🍫','שׁוֹקוֹלָד'],['ענבים','🍇','עֲנָבִים'],['אבטיח','🍉','אֲבַטִּיחַ'],['עוגייה','🍪','עוּגִיָּה'],['סופגנייה','🍩','סוּפְגָּנִיָּה']]},
+ {title:'מצאו עם הפנס את כל הילדים',items:[['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['תינוק','👶','תִּינוֹק'],['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['ילד','🧍','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['תינוק','👶','תִּינוֹק'],['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה']]}];
+function raTorchScene(d){const cells=shuffle([...Array(20).keys()]).slice(0,10);d.objs=shuffle(RA_TORCH[d.s].items.slice()).map((o,i)=>({o,x:6+(cells[i]%5)*19+Math.floor(Math.random()*7),y:8+Math.floor(cells[i]/5)*22+Math.floor(Math.random()*7)}));d.found=[];d.lx=200;d.ly=160}/* "דיבור בצלילים" cards: sentence, niqqud (for the voice), syllables per word, picture index */
 const SYL_CARDS=[{t:'איש הולך על המדרכה',v:'אִישׁ הוֹלֵךְ עַל הַמִּדְרָכָה',s:[1,2,1,4],i:0},{t:'אישה קונה לחם במכולת',v:'אִשָּׁה קוֹנָה לֶחֶם בַּמַּכֹּלֶת',s:[2,2,2,4],i:1},{t:'האיש שותה קפה',v:'הָאִישׁ שׁוֹתֶה קָפֶה',s:[2,2,2],i:2},
  {t:'הרופא בודק את החולה',v:'הָרוֹפֵא בּוֹדֵק אֶת הַחוֹלֶה',s:[3,2,1,3],i:3},{t:'הנהג עוצר ברמזור',v:'הַנֶּהָג עוֹצֵר בָּרַמְזוֹר',s:[3,2,3],i:4},{t:'האישה משקה את העציצים',v:'הָאִשָּׁה מַשְׁקָה אֶת הָעֲצִיצִים',s:[3,2,1,4],i:5},
  {t:'הסבא קורא עיתון',v:'הַסַּבָּא קוֹרֵא עִתּוֹן',s:[3,2,2],i:6},{t:'הילדים משחקים בפארק',v:'הַיְּלָדִים מְשַׂחֲקִים בַּפָּארְק',s:[4,3,2],i:7},{t:'המלצר מגיש ארוחה',v:'הַמֶּלְצַר מַגִּישׁ אֲרוּחָה',s:[3,2,3],i:8}];/* adult mode: a code with only the adult ד program shows no stars, daily goal, album or stickers */
@@ -3020,11 +3032,11 @@ function startAct(act,from){
     const A=V?V.a:v.a[1].map(sy),B=V?V.b:v.b[1].map(sy);
     d.list=shuffle([...A.map(w=>[w[0],w[1],1,w[2]]),...B.map(w=>[w[0],w[1],0,w[2]])]);d.k=0;d.inA=[];d.inB=[]}
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
-  if(act==='radress'){loadScriptOnce('ra-img.js?v=1',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>{const grp={};RA_CLOTH.filter(c=>g||c[0]!=='שמלה').forEach(c=>{(grp[c[6]]=grp[c[6]]||[]).push(c)});return {name,g,done:[],items:shuffle(Object.keys(grp)).slice(0,4).map(k=>pick(grp[k],1)[0])}};d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null}
+  if(act==='radress'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>({name,g,n:0,order:shuffle([0,1,2,3])});d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null;d.pop=false}
   if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=10;d.y=40;d.caught=false;d.phase='chase';
-    const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=1',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
-  if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>r.map(x=>({o:x,g:Math.random()<.5?1:0,got:false})));d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
-  if(act==='ratorch'){d.bg=pick(['scn/park.jpg','scn/farm.jpg','scn/city.jpg','scn/kitchen.jpg'],1)[0];const cells=shuffle([...Array(12).keys()]).slice(0,5);d.objs=shuffle(RA_OBJ).slice(0,5).map((o,i)=>({o,x:8+(cells[i]%4)*23+Math.floor(Math.random()*8),y:12+Math.floor(cells[i]/4)*28+Math.floor(Math.random()*8)}));d.found=[];d.lx=220;d.ly=160}
+    const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
+  if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
+  if(act==='ratorch'){d.s=0;raTorchScene(d)}
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
   if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=5',()=>{})}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
@@ -3057,7 +3069,7 @@ function fillPlatform(d){d.platform=[];for(let k=0;k<4;k++){d.platform.push(d.it
 function newLineRound(d){const its=[];const seen=new Set();let guard=0;while(its.length<4&&guard<50){const it=d.items[d.k%d.items.length];d.k++;guard++;if(!seen.has(it[1])){seen.add(it[1]);its.push(it)}}
   d.left=its;d.right=shuffle(its);d.links=[];d.sel=null}
 function backTo(){return S.data.from}
-function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',shop2:'הקופה של ש ו־ס',shmin:'חרוזים של ס ו־ש',rapeek:'מה הוא רואה?',radress:'מלבישים את אורי',racop:'השוטר ראה...',rawant:'מה הוא רוצה?',ratorch:'הפנס בחושך',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
+function titleFor(){if(S.act==='mine')return (S.data&&S.data.game&&S.data.game.name)||'המשחקים שלי';return {cashier:'משלמים בקופה',seq:'קלפי רצף',director:'הבמאי',bingo:'בינגו',kite:'מעיפים עפיפון',treasure:'מחפשים מטמון',castle:'בונים את הטירה',tower:'בונים טירה',fishing:'דייגים',dragon:'מאכילים את הדרקון',journey:'מסע בממלכה',bubbles:'מפוצצים בועות',puzzle:'פאזל',shop:'קונים בחנות',vbuzz:'הגרון המזמזם',vquiz:'רועש או שקט?',vsort:'ממיינים מילים 2',vsortg:'ממיינים מילים 1',vmin:'זוגות מילים',seqrec:'סיפור בהמשכים',paint:'מציירים במילים',disc:'האוזן הקשבנית',pscene:'תמונות מספרות',fix:'בית המלאכה',cook:'מבשלים ארוחה',color:'דפי צביעה',rocket:'החללית של ש ו־ס',shop2:'הקופה של ש ו־ס',shmin:'חרוזים של ס ו־ש',rapeek:'מה הוא רואה?',radress:'מלבישים את אורי',racop:'השוטר ראה...',rawant:'ישראל רוצה...',ratorch:'הפנס בחושך',silly:'מכונת המשפטים',scene:'מחפשים בתמונה',absurd:'מה מצחיק בתמונה?',eggs:'ביצים מפתיעות',monster:'המפלצון הרעב',frog:'הצפרדע הרעבה',balloon:'בלונים',train:'רכבת',line:'מותחים קו',memory:'זיכרון',wheel:'גלגל המזל',story:'מתארים ומספרים',phear:'מקשיבים ובוחרים',find:'מצאו את',sort:'מיון',odd:'מה לא שייך?',quest:'שאלות',two:'הוראה בשני שלבים',where:'איפה הכדור?'}[S.act]}
 const BCOLORS=['#FF6A55','#3C8DDE','#22A86A','#FFC43D','#B76CF0','#FF8FB1'];
 
 function newRound(){
@@ -3084,13 +3096,12 @@ function renderAct(){
     const N=SYL_CARDS.length,c=SYL_CARDS[d.k];
     let n=0;const words=c.t.split(' ').map((w,i)=>`<span class="sylw"><b>${esc(w)}</b><span class="syld">${Array.from({length:c.s[i]},()=>`<i data-n="${n++}"></i>`).join('')}</span></span>`).join('');
     shell(`<div class="card stage dad syl"><div class="dadtop"><button class="ghost" id="sylprev" type="button" ${d.k?'':'disabled'}>→ הקודם</button><h2 class="dadh">דיבור בצלילים</h2><span class="dadprog">${d.k+1} / ${N}</span></div>
-      <div class="sylcard"><img class="sylpic" src="${P[c.i]}" alt=""><div class="sylline">${words}</div></div>
-      <div class="row"><button class="btn ghost" id="sylhear" type="button">🔊 השמעה</button><button class="btn ghost" id="sylbeat" type="button">🥁 בקצב</button></div>
+      <div class="sylcard"><img class="sylpic" src="${P[c.i]}" alt=""><div class="sylline">${words}</div><p class="syltip">אמרו את המשפט בצלילים – היעזרו בעיגולים להמחשה: כל עיגול הוא צליל אחד</p></div>
+      <div class="row"><button class="btn ghost" id="sylhear" type="button">🔊 השמעה</button></div>
       <div id="sylrec"></div>${d.said?`<div class="row">${d.blob?'<button class="btn ghost" id="sylsave" type="button">💾 הורדת ההקלטה למחשב</button>':''}<button class="btn sun" id="sylnext" type="button">${d.k+1<N?'הכרטיסייה הבאה ←':'✓ סיום'}</button></div>`:''}</div>`);
     const beat=()=>{const dots=[...app.querySelectorAll('.syld i')];let j=0;dots.forEach(x=>x.classList.remove('on','now'));
       const step=()=>{if(S.data!==d)return;if(j>0)dots[j-1].classList.replace('now','on');if(j>=dots.length)return;dots[j].classList.add('now');SFX.tick();j++;TIMERS.push(setTimeout(step,620))};step()};
     document.getElementById('sylhear').onclick=()=>saySeq([c.v]);
-    document.getElementById('sylbeat').onclick=beat;
     document.getElementById('sylprev').onclick=()=>{if(!d.k)return;d.k--;d.said=false;d.blob=null;render()};
     const sv=document.getElementById('sylsave');if(sv)sv.onclick=()=>{try{const b=d.blob,ext=/mp4|m4a|aac/.test(b.type)?'m4a':/ogg/.test(b.type)?'ogg':'webm',nm=('הקלטה - דיבור בצלילים - '+c.t+' - '+new Date().toLocaleString('he-IL')).replace(/[\\/:*?"<>|.,]/g,'-');const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm+'.'+ext;document.body.appendChild(a);a.click();a.remove();SFX.blip()}catch(e){}};
     const nx=document.getElementById('sylnext');if(nx)nx.onclick=()=>{d.said=false;d.blob=null;if(d.k+1<N){d.k++;render()}else{d.k=0;render()}};
@@ -4280,18 +4291,22 @@ function renderAct(){
     return;
   }
   if(S.act==='radress'){
-    /* ר עם א: dress up אורי / ראובן / רועי / אריאל / אוריה. The child drags a piece of clothing onto the figure,
-       it appears on the body, and he says "אורי לובש כובע" / "אוריה לובשת שמלה". When all are on, the kid dances */
-    const W=window.WORD_IMG||{},I=window.RA_IMG;if(!I||!I.boy){shell('<div class="card stage ra"><p class="muted">טוען את הבגדים...</p></div>');return}
+    /* ר עם א: dress up אורי / ראובן / רועי / אריאל / אוריה. The child really gets dressed: each piece dragged on
+       changes the picture to the child wearing it (Gemini pictures, built one on top of the other).
+       The child's bubble shows what to put on next; he says "אורי לובש כובע" / "אוריה לובשת משקפיים" */
+    const W=window.WORD_IMG||{},I=window.RA_IMG;if(!I||!I.boy4){shell('<div class="card stage ra"><p class="muted">טוען את הבגדים...</p></div>');return}
     if(d.r>=d.kids.length){finish();return}
-    const kid=d.kids[d.r],pic=c=>W[c[1]]?`<img src="${W[c[1]]}" alt="">`:`<span class="rde">${c[1]}</span>`,all=kid.done.length>=kid.items.length;
-    shell(`<div class="card stage ra"><p class="jmsg">${all?`${kid.name} ${kid.g?'מוכנה':'מוכן'}! 🎉`:`מלבישים את ${kid.name}! גוררים בגד אל ${kid.g?'הילדה':'הילד'} 👕`}</p><div class="progress">${d.r+1} / ${d.kids.length}</div>
-      <div class="rdgame"><div class="rdkid ${all?'dance':''}" id="rdkid"><div class="rdname">${kid.name}</div><div class="rdfig"><img class="rdbody" src="${I[kid.g?'girl':'boy']}" alt="">${kid.done.map(c=>`<span class="rdon" style="left:${c[3]}%;top:${c[4]}%;width:${c[5]}%">${pic(c)}</span>`).join('')}</div></div>
-        <div class="rdcloset"><div class="rdtitle">🚪 הארון</div>${kid.items.map((c,j)=>kid.done.includes(c)?'<span class="rditem empty"></span>':`<button class="rditem ${d.sel===j?'sel':''}" data-j="${j}" type="button">${pic(c)}<span>${c[0]}</span></button>`).join('')}</div></div></div>`);
+    const kid=d.kids[d.r],seq=RA_OUTFIT[kid.g?'girl':'boy'],n=kid.n,all=n>=seq.length,nxt=seq[n],pic=c=>W[c[1]]?`<img src="${W[c[1]]}" alt="">`:`<span class="rde">${c[1]}</span>`;
+    const body=I[(kid.g?'girl':'boy')+(n?n:'')];
+    shell(`<div class="card stage ra"><p class="jmsg">${all?`${kid.name} ${kid.g?'מוכנה':'מוכן'} לצאת! 🎉`:`מלבישים את ${kid.name}! גוררים ${kid.g?'אליה':'אליו'} את הבגד מהארון 👕`}</p><div class="progress">${d.r+1} / ${d.kids.length}</div>
+      <div class="rdgame"><div class="rdkid ${all?'dance':''} ${d.pop?'pop':''}" id="rdkid"><div class="rdname">${kid.name}</div>${all?'':`<div class="rdwant">${pic(nxt)}</div>`}<div class="rdfig"><img class="rdbody" src="${body}" alt=""></div></div>
+        <div class="rdcloset"><div class="rdtitle">🚪 הארון</div>${kid.order.map(j=>j<n?'<span class="rditem empty"></span>':`<button class="rditem ${d.sel===j?'sel':''}" data-j="${j}" type="button">${pic(seq[j])}<span>${seq[j][0]}</span></button>`).join('')}</div></div></div>`);
+    d.pop=false;
     if(all)return;
-    const wear=j=>{const c=kid.items[j];if(!c||kid.done.includes(c))return;kid.done.push(c);d.sel=null;SFX.good();render();
+    const wear=j=>{if(j!==kid.n){SFX.bad();const k=document.getElementById('rdkid');if(k){k.classList.remove('no');void k.offsetWidth;k.classList.add('no')}d.sel=null;return}
+      const c=seq[j];kid.n++;d.sel=null;d.pop=true;SFX.good();render();
       const s=kid.name+' '+(kid.g?'לובשת':'לובש')+' '+c[0];
-      TIMERS.push(setTimeout(()=>{saySeq([RA_NAMEV[kid.name],c[2]]);sayIt([s,c[1]],()=>{if(kid.done.length>=kid.items.length){render();SFX.fanfare();TIMERS.push(setTimeout(()=>{d.r++;d.sel=null;render()},2600))}else render()})},650))};
+      TIMERS.push(setTimeout(()=>{saySeq([RA_NAMEV[kid.name],c[2]]);sayIt([s,c[1]],()=>{if(kid.n>=seq.length){render();SFX.fanfare();TIMERS.push(setTimeout(()=>{d.r++;d.sel=null;render()},2800))}else render()})},700))};
     document.getElementById('rdkid').onclick=()=>{if(d.sel!=null)wear(d.sel)};
     app.querySelectorAll('.rditem[data-j]').forEach(b=>{const j=+b.dataset.j;
       b.onpointerdown=e=>{const r=b.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
@@ -4364,14 +4379,14 @@ function renderAct(){
        to the one who wants it (or taps the thing, then the child) and says "הוא רוצה ___" / "היא רוצה ___" */
     const W=window.WORD_IMG||{},R=d.rounds,fin=d.r>=R.length;if(fin){finish();return}
     const kids=R[d.r],pic=o=>W[o[1]]?`<img src="${W[o[1]]}" alt="">`:`<span class="rwe">${o[1]}</span>`;
-    shell(`<div class="card stage ra"><p class="jmsg">מה כל אחד רוצה? גוררים את הדבר לילד שרוצה אותו 🎁</p><div class="progress">${d.r+1} / ${R.length}</div>
-      <div class="rwkids">${kids.map((k,i)=>`<div class="rwkid ${k.got?'got':''}" data-i="${i}"><div class="rwbub">${pic(k.o)}</div><div class="rwface">${k.g?'👧':'👦'}</div>${k.got?`<div class="rwhas">${pic(k.o)}</div>`:''}</div>`).join('')}</div>
+    shell(`<div class="card stage ra"><p class="jmsg">מה כל אחד רוצה? גוררים לכל ילד את מה שהוא רוצה 🎁</p><div class="progress">${d.r+1} / ${R.length}</div>
+      <div class="rwkids">${kids.map((k,i)=>`<div class="rwkid ${k.got?'got':''}" data-i="${i}"><div class="rwbub">${pic(k.o)}</div><div class="rwface">${k.g?'👧':'👦'}</div><div class="rwname">${k.name}</div>${k.got?`<div class="rwhas">${pic(k.o)}</div>`:''}</div>`).join('')}</div>
       <div class="rwtray">${d.tray.map((o,j)=>o?`<button class="rwitem ${d.sel===j?'sel':''}" data-j="${j}" type="button">${pic(o)}<span>${esc(o[0])}</span></button>`:'<span class="rwitem empty"></span>').join('')}</div></div>`);
     swapPics(app);
     const give=(j,i)=>{const o=d.tray[j],k=kids[i];if(!o||!k||k.got)return;
       if(k.o!==o){SFX.bad();const el=app.querySelector(`.rwkid[data-i="${i}"]`);if(el){el.classList.remove('no');void el.offsetWidth;el.classList.add('no')}d.sel=null;return}
-      SFX.good();k.got=true;d.tray[j]=null;d.sel=null;render();const s=RA_SAY.want(o,k.g);
-      TIMERS.push(setTimeout(()=>{saySeq([s[1]]);sayIt([s[0],(k.g?'👧':'👦')+o[1]],()=>{if(kids.every(x=>x.got)){d.r++;if(d.r<R.length)d.tray=shuffle(R[d.r].map(x=>x.o));}render()})},700))};
+      SFX.good();k.got=true;d.tray[j]=null;d.sel=null;render();const s=[k.name+' רוצה '+o[0],null];
+      TIMERS.push(setTimeout(()=>{saySeq([RA_WANTV[k.name],o[2]]);sayIt([s[0],(k.g?'👧':'👦')+o[1]],()=>{if(kids.every(x=>x.got)){d.r++;if(d.r<R.length)d.tray=shuffle(R[d.r].map(x=>x.o));}render()})},700))};
     app.querySelectorAll('.rwkid').forEach(el=>el.onclick=()=>{if(d.sel!=null)give(d.sel,+el.dataset.i)});
     app.querySelectorAll('.rwitem[data-j]').forEach(b=>{const j=+b.dataset.j;
       b.onpointerdown=e=>{const r=b.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;let g=null;
@@ -4384,21 +4399,23 @@ function renderAct(){
     return;
   }
   if(S.act==='ratorch'){
-    /* ר עם א: a dark scene. The light of the flashlight follows the finger / mouse; things are hidden in the dark.
-       Touching something inside the light finds it, and the child says "ראיתי ___!". When all are found the lights go on */
-    const W=window.WORD_IMG||{},all=d.found.length>=d.objs.length;
-    shell(`<div class="card stage ra"><p class="jmsg">${all?'מצאנו הכל! איזה אור! 🎉':'מאירים עם הפנס ומחפשים בחושך 🔦 נוגעים במה שרואים'}</p><div class="progress">🔦 ${d.found.length} / ${d.objs.length}</div>
-      <div class="rtscene ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(${d.bg})">
+    /* ר עם א: "הפנס בחושך" in 3 scenes: animals, food, children. A plain landscape at night (nothing to tap on it);
+       10 things are hidden in the dark. The light follows the finger; touching a thing inside the light finds it
+       and the child says "ראיתי ___!". When all 10 are found the lights go on and the next scene starts */
+    const W=window.WORD_IMG||{},sc=RA_TORCH[d.s];if(!sc){finish();return}
+    const all=d.found.length>=d.objs.length;
+    shell(`<div class="card stage ra"><p class="jmsg">${all?(d.s+1<RA_TORCH.length?'כל הכבוד! מצאתם הכל 🎉':'מצאתם הכל בכל השלבים! 🎉'):sc.title+' 🔦'}</p><div class="progress">${d.s+1} / ${RA_TORCH.length} · נמצאו ${d.found.length} / ${d.objs.length}</div>
+      <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(kingdom-bg.jpg)">
         ${d.objs.map((o,i)=>`<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${W[o.o[1]]?`<img src="${W[o.o[1]]}" alt="">`:`<span>${o.o[1]}</span>`}</button>`).join('')}
         <div class="rtdark"></div><div class="rtlamp">🔦</div></div></div>`);
-    if(all)return;
-    const sc=document.getElementById('rts'),z=parseFloat(getComputedStyle(app.querySelector('.card.stage')).zoom)||1;
-    const at=ev=>{const r=sc.getBoundingClientRect();d.lx=(ev.clientX-r.left)/z;d.ly=(ev.clientY-r.top)/z;sc.style.setProperty('--x',d.lx+'px');sc.style.setProperty('--y',d.ly+'px')};
-    sc.onpointermove=at;sc.onpointerdown=at;
-    app.querySelectorAll('.rtobj:not(.found)').forEach(b=>b.onclick=ev=>{if(S.overlay)return;const r=b.getBoundingClientRect(),s=sc.getBoundingClientRect();
-      const cx=(r.left+r.width/2-s.left)/z,cy=(r.top+r.height/2-s.top)/z;if(Math.hypot(cx-d.lx,cy-d.ly)>130){SFX.bad();return}
-      const i=+b.dataset.i,o=d.objs[i].o;d.found.push(i);SFX.good();render();const t=RA_SAY.saw(o);
-      TIMERS.push(setTimeout(()=>{saySeq([t[1]]);sayIt([t[0],o[1]],()=>{render();if(d.found.length>=d.objs.length){SFX.fanfare();TIMERS.push(setTimeout(finish,3200))}})},600))});
+    if(all){SFX.fanfare();TIMERS.push(setTimeout(()=>{d.s++;if(d.s<RA_TORCH.length){raTorchScene(d);render()}else finish()},2800));return}
+    const scn=document.getElementById('rts'),z=parseFloat(getComputedStyle(app.querySelector('.card.stage')).zoom)||1;
+    const at=ev=>{const r=scn.getBoundingClientRect();d.lx=(ev.clientX-r.left)/z;d.ly=(ev.clientY-r.top)/z;scn.style.setProperty('--x',d.lx+'px');scn.style.setProperty('--y',d.ly+'px')};
+    scn.onpointermove=at;scn.onpointerdown=at;
+    app.querySelectorAll('.rtobj:not(.found)').forEach(b=>b.onclick=ev=>{if(S.overlay)return;const r=b.getBoundingClientRect(),s=scn.getBoundingClientRect();
+      const cx=(r.left+r.width/2-s.left)/z,cy=(r.top+r.height/2-s.top)/z;if(Math.hypot(cx-d.lx,cy-d.ly)>140)return;
+      const i=+b.dataset.i,o=d.objs[i].o;d.found.push(i);SFX.good();render();
+      TIMERS.push(setTimeout(()=>{saySeq(['רָאִיתִי '+o[2]+'!']);sayIt(['ראיתי '+o[0]+'!',o[1]],()=>render())},600))});
     return;
   }
   if(S.act==='rocket'){
@@ -4724,7 +4741,7 @@ function swapTiles(root){const T=window.TILE_IMG;if(!T||!root||!root.querySelect
 let swapQ=false;new MutationObserver(()=>{if(swapQ)return;swapQ=true;requestAnimationFrame(()=>{swapQ=false;swapTiles(document.body);if(window.WORD_IMG)swapPics(document.body)})}).observe(document.body,{childList:true,subtree:true});
 loadScriptOnce('tiles.js?v=2',()=>swapTiles(document.body));
 /* the practice-word sound files load quietly in the background */
-setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=5',()=>{});loadScriptOnce('tts-d.js?v=2',()=>{})},1500);
+setTimeout(()=>{loadScriptOnce('tts-a.js?v=1',()=>{});loadScriptOnce('tts-b.js?v=1',()=>{});loadScriptOnce('tts-c.js?v=5',()=>{});loadScriptOnce('tts-d.js?v=4',()=>{})},1500);
 try{applyTints()}catch(e){}
 setTimeout(()=>{loadScriptOnce('words-1.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-2.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-3.js?v=1',()=>swapPics(document.body));loadScriptOnce('words-4.js?v=1',()=>swapPics(document.body))},800);const saved=store.get('kid-code');if(saved){const nb=replacedBy(saved);if(!nb&&isBlocked(saved))store.del('kid-code');else if(!login(saved))store.del('kid-code')}
 render();
