@@ -1467,7 +1467,7 @@ body{background:#5E8F55}
 .rwbub{position:relative;display:flex;align-items:center;justify-content:center;width:min(130px,15vh);height:min(110px,13vh);border-radius:50%;background:#fff;border:4px solid #CED4DA;box-shadow:0 6px 14px rgba(0,0,0,.12);margin-bottom:12px}
 .rwbub::after{content:'';position:absolute;bottom:-18px;left:50%;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #CED4DA}
 .rwbub img{width:70%;height:70%;object-fit:contain}
-.rwface{font-size:min(110px,13vh);line-height:1}
+.rwface{font-size:min(110px,13vh);line-height:1}.rwface img{height:min(150px,19vh);width:auto;display:block;margin:0 auto}
 .rwname{margin-top:4px;font-size:22px;font-weight:900;color:#fff;background:linear-gradient(90deg,#7048E8,#4DABF7);padding:2px 16px;border-radius:999px}
 .rwface img.wimg{width:min(130px,15vh);height:auto}
 .rwkid.got .rwface{animation:jwJump .5s ease-in-out 4 alternate}
@@ -1552,7 +1552,7 @@ body{background:#5E8F55}
 .rccop.alert .rcsiren{opacity:1;animation:rkFl .25s infinite alternate}
 .rccop.alert{animation:jwJump .4s ease-in-out 4 alternate}
 .rcrun{position:absolute;top:var(--y);left:105%;width:min(150px,19vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
-.rcrun:hover{animation-play-state:paused}.rcscene img[src^="data:image/jpeg"],.rtscene img[src^="data:image/jpeg"]{mix-blend-mode:multiply}
+.rcrun:hover{animation-play-state:paused}.rcscene .rcrun,.rcscene .rhspot,.rcscene .rccop{mix-blend-mode:multiply}.rtscene img[src^="data:image/jpeg"]{mix-blend-mode:multiply}
 .ascgame{display:flex;gap:14px;width:100%;align-items:stretch}
 .ascgrid{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .asccard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:18px;border:3px solid #e6dcc8;background:#fff;cursor:pointer;box-shadow:0 4px 0 #e6dcc8;font:inherit;transition:transform .15s}
@@ -2655,6 +2655,8 @@ const RA_OUTFIT={boy:[['כובע','🧢','כּוֹבַע'],['צעיף','🧣','�
 const RA_TORCH=[{title:'מצאו עם הפנס את כל החיות',items:[['כלב','🐕','כֶּלֶב'],['חתול','🐈','חָתוּל'],['פיל','🐘','פִּיל'],['סוס','🐴','סוּס'],['ארנב','🐇','אַרְנָב'],['צב','🐢','צָב'],['ברווז','🦆','בַּרְוָז'],['פרה','🐄','פָּרָה'],['כבשה','🐑','כִּבְשָׂה'],['ג׳ירפה','🦒','גִ׳ירָפָה']]},
  {title:'מצאו עם הפנס את כל האוכל',items:[['בננה','🍌','בָּנָנָה'],['תפוח','🍎','תַּפּוּחַ'],['פיצה','🍕','פִּיצָה'],['עוגה','🎂','עוּגָה'],['גלידה','🍦','גְּלִידָה'],['שוקולד','🍫','שׁוֹקוֹלָד'],['ענבים','🍇','עֲנָבִים'],['אבטיח','🍉','אֲבַטִּיחַ'],['עוגייה','🍪','עוּגִיָּה'],['סופגנייה','🍩','סוּפְגָּנִיָּה']]},
  {title:'מצאו עם הפנס את כל הילדים',items:[['ילד','👦','יֶלֶד','k1'],['ילדה','👧','יַלְדָּה','k2'],['תינוק','👶','תִּינוֹק','k3'],['ילד','👦','יֶלֶד','k4'],['ילדה','👧','יַלְדָּה','k5'],['ילד','👦','יֶלֶד','k6'],['ילדה','👧','יַלְדָּה','k7'],['תינוק','👶','תִּינוֹק','k8'],['ילד','👦','יֶלֶד','k9'],['ילדה','👧','יַלְדָּה','k10']]}];
+/* the children in 'ישראל רוצה...' are the picture-book children of torch-kids.js */
+const RA_KIDPIC={'ישראל':'k9','ראובן':'k1','אורי':'k4','אוריה':'k10'};
 function raTorchScene(d){const cells=shuffle([...Array(20).keys()]).slice(0,10);d.objs=shuffle(RA_TORCH[d.s].items.slice()).map((o,i)=>({o,x:6+(cells[i]%5)*19+Math.floor(Math.random()*7),y:8+Math.floor(cells[i]/5)*22+Math.floor(Math.random()*7)}));d.found=[];d.lx=200;d.ly=160}/* "דיבור בצלילים" cards: sentence, niqqud (for the voice), syllables per word, picture index */
 const SYL_CARDS=[{t:'איש הולך על המדרכה',v:'אִישׁ הוֹלֵךְ עַל הַמִּדְרָכָה',s:[1,2,1,4],i:0},{t:'אישה קונה לחם במכולת',v:'אִשָּׁה קוֹנָה לֶחֶם בַּמַּכֹּלֶת',s:[2,2,2,4],i:1},{t:'האיש שותה קפה',v:'הָאִישׁ שׁוֹתֶה קָפֶה',s:[2,2,2],i:2},
  {t:'הרופא בודק את החולה',v:'הָרוֹפֵא בּוֹדֵק אֶת הַחוֹלֶה',s:[3,2,1,3],i:3},{t:'הנהג עוצר ברמזור',v:'הַנֶּהָג עוֹצֵר בָּרַמְזוֹר',s:[3,2,3],i:4},{t:'האישה משקה את העציצים',v:'הָאִשָּׁה מַשְׁקָה אֶת הָעֲצִיצִים',s:[3,2,1,4],i:5},
@@ -3090,7 +3092,7 @@ function startAct(act,from){
   if(act==='assoc'){d.round=0;d.rounds=3;d.tower=[];d.used=[];assocRound(d)}
   if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';try{(window.__cityImg=new Image()).src='scn/city.jpg'}catch(e){}loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});
     const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
-  if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
+  if(act==='rawant'){loadScriptOnce('torch-kids.js?v=1',()=>{if(S.data===d)render()});const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
   if(act==='ratorch'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});loadScriptOnce('torch-kids.js?v=1',()=>{if(S.data===d)render()});d.s=0;raTorchScene(d)}
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
   if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=5',()=>{})}
@@ -4461,7 +4463,7 @@ function renderAct(){
     const W=window.WORD_IMG||{},R=d.rounds,fin=d.r>=R.length;if(fin){finish();return}
     const kids=R[d.r],pic=o=>W[o[1]]?`<img src="${W[o[1]]}" alt="">`:`<span class="rwe">${o[1]}</span>`;
     shell(`<div class="card stage ra"><p class="jmsg">מה כל אחד רוצה? גוררים לכל ילד את מה שהוא רוצה 🎁</p><div class="progress">${d.r+1} / ${R.length}</div>
-      <div class="rwkids">${kids.map((k,i)=>`<div class="rwkid ${k.got?'got':''}" data-i="${i}"><div class="rwbub">${pic(k.o)}</div><div class="rwface">${k.g?'👧':'👦'}</div><div class="rwname">${k.name}</div>${k.got?`<div class="rwhas">${pic(k.o)}</div>`:''}</div>`).join('')}</div>
+      <div class="rwkids">${kids.map((k,i)=>`<div class="rwkid ${k.got?'got':''}" data-i="${i}"><div class="rwbub">${pic(k.o)}</div><div class="rwface">${(window.RA_IMG&&RA_IMG[RA_KIDPIC[k.name]])?`<img src="${RA_IMG[RA_KIDPIC[k.name]]}" alt="">`:(k.g?'👧':'👦')}</div><div class="rwname">${k.name}</div>${k.got?`<div class="rwhas">${pic(k.o)}</div>`:''}</div>`).join('')}</div>
       <div class="rwtray">${d.tray.map((o,j)=>o?`<button class="rwitem ${d.sel===j?'sel':''}" data-j="${j}" type="button">${pic(o)}<span>${esc(o[0])}</span></button>`:'<span class="rwitem empty"></span>').join('')}</div></div>`);
     swapPics(app);
     const give=(j,i)=>{const o=d.tray[j],k=kids[i];if(!o||!k||k.got)return;
@@ -4486,7 +4488,7 @@ function renderAct(){
     const W=window.WORD_IMG||{},sc=RA_TORCH[d.s];if(!sc){finish();return}
     const all=d.found.length>=d.objs.length;
     shell(`<div class="card stage ra"><p class="jmsg">${all?(d.s+1<RA_TORCH.length?'כל הכבוד! מצאתם הכל 🎉':'מצאתם הכל בכל השלבים! 🎉'):sc.title+' 🔦'}</p><div class="progress">${d.s+1} / ${RA_TORCH.length} · נמצאו ${d.found.length} / ${d.objs.length}</div>
-      <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(${['scn/farm.jpg','scn/kitchen.jpg','scn/park.jpg'][d.s]||'kingdom-bg.jpg'})">
+      <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(${['scn/torch-farm.jpg','scn/torch-kitchen.jpg','scn/torch-park.jpg'][d.s]||'kingdom-bg.jpg'})">
         ${d.objs.map((o,i)=>{const R=window.RA_IMG||{},src=(o.o[3]&&R[o.o[3]])||R[o.o[1]]||W[o.o[1]];return `<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${src?`<img src="${src}" alt="" data-e="${o.o[1]}">`:`<span>${o.o[1]}</span>`}</button>`}).join('')}
         <div class="rtdark"></div><div class="rtlamp">🔦</div></div>${all?`<div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="rtnext" type="button">${d.s+1<RA_TORCH.length?'המשך ←':'✓ סיום'}</button></div>`:''}</div>`);
     /* a blank placeholder picture (1 pixel) is swapped for the emoji itself */
