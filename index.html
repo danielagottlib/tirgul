@@ -2210,7 +2210,13 @@ function logEv(ev,game,stars){if(!LOG_URL||!S.code)return;try{const s=SOUNDS[S.s
 /* the therapist screen sends "קוד חדש" with the patient's name (from Daniela's own device) when she creates a code;
    in her sheet a formula shows that name on every row with the same code. Children's devices never send a name. */
 function logName(code,name){if(!LOG_URL||!code)return;logSend({code:fmtCode(code),ev:'קוד חדש',name:name||'',target:describe(decode(code)||0,code)})}
-function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));logEv('כניסה')}catch(e){}}
+/* each visit row also carries the child's total stars so far; once per device, the progress saved on the device before
+   this existed is sent as one row "סיכום עד היום" (stars per area and days practised) */
+function logVisit(){try{const k='lastlog-'+S.code,t=+(store.get(k)||0);if(Date.now()-t<30*60000)return;store.set(k,String(Date.now()));
+  logSend({code:fmtCode(S.code),ev:'כניסה',game:'',target:'סה״כ כוכבים: '+(S.stars||0),stars:S.stars||0});
+  if(!store.get('sumsent-'+S.code)&&!isTestCode(S.code)){store.set('sumsent-'+S.code,'1');const p=prog(),days=Object.keys(p.days||{}).length;
+    if(S.stars||days){const parts=Object.entries(p.ctx||{}).sort((a,b)=>b[1]-a[1]).map(([c,n])=>{let l=c;try{l=ctxLabel(c)}catch(e){}return l+': '+n});
+      logSend({code:fmtCode(S.code),ev:'סיכום עד היום',game:'',target:'ימי תרגול: '+days+(parts.length?' · '+parts.join(' · '):''),stars:S.stars||0})}}}catch(e){}}
 /* when Daniela opens new levels or games (a new code replaced the old one), the family sees it on the next visit */
 function newLevelsNote(bits){try{const prev=store.get('kid-lastbits'),pg=store.get('kid-lastmg'),mg=String(myAssigned(S.code).map(g=>g.id).sort());store.set('kid-lastbits',String(bits));store.set('kid-lastmg',mg);
   if(prev===null||(+prev===bits&&pg===mg))return;setTimeout(()=>{const ov=document.createElement('div');ov.className='overlay';const adl=isAdultCode();ov.innerHTML=adl?'<div class="card stage pop-in"><h2>נוספו תרגולים חדשים</h2><p>דניאלה עדכנה את תוכנית התרגול שלך.</p><button class="btn leaf" type="button">אישור</button></div>':'<div class="card stage pop-in"><div style="font-size:64px">🎁</div><h2>יש חדש באתר!</h2><p>דניאלה פתחה בשבילך שלבים ומשחקים חדשים לתרגול 🎉</p><button class="btn leaf" type="button">יופי, מתחילים!</button></div>';document.body.appendChild(ov);if(!adl&&SFX.fanfare)SFX.fanfare();ov.querySelector('button').onclick=()=>ov.remove()},900)}catch(e){}}
