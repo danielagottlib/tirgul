@@ -1552,7 +1552,7 @@ body{background:#5E8F55}
 .rccop.alert .rcsiren{opacity:1;animation:rkFl .25s infinite alternate}
 .rccop.alert{animation:jwJump .4s ease-in-out 4 alternate}
 .rcrun{position:absolute;top:var(--y);left:105%;width:min(150px,19vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
-.rcrun:hover{animation-play-state:paused}
+.rcrun:hover{animation-play-state:paused}.rcscene img[src^="data:image/jpeg"],.rtscene img[src^="data:image/jpeg"]{mix-blend-mode:multiply}
 .ascgame{display:flex;gap:14px;width:100%;align-items:stretch}
 .ascgrid{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .asccard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:18px;border:3px solid #e6dcc8;background:#fff;cursor:pointer;box-shadow:0 4px 0 #e6dcc8;font:inherit;transition:transform .15s}
@@ -2340,6 +2340,8 @@ function header(title,back){
 
 /* on a computer the game must fit the screen without scrolling: if the game card is taller than the window,
    it is shrunk evenly (CSS zoom) just enough to fit; checked again after pictures load and when the window changes */
+/* pictures that are only a blank placeholder (a few pixels) are replaced by their emoji */
+function fixBlankImgs(){app.querySelectorAll('img[data-e]').forEach(im=>{const fix=()=>{if(im.naturalWidth&&im.naturalWidth<20){const s=document.createElement('span');s.textContent=im.dataset.e;s.style.fontSize='min(80px,10vh)';im.replaceWith(s)}};if(im.complete)fix();else im.addEventListener('load',fix,{once:true})})}
 function fitStage(again){const c=app.querySelector('.card.stage');if(!c)return;c.style.zoom='';
   if(innerWidth>=900&&innerHeight>=500){const over=document.documentElement.scrollHeight-innerHeight;
     if(over>2){const h=c.getBoundingClientRect().height;if(h>0)c.style.zoom=Math.max(.6,(h-over-6)/h).toFixed(3)}}
@@ -2361,7 +2363,7 @@ function render(){
   if(S.view==='pair')return renderPair();
   if(S.view==='games')return renderGames();
   if(S.view==='mine')return renderMine();
-  if(S.view==='act'){renderAct();fitStage();return}
+  if(S.view==='act'){renderAct();fitStage();fixBlankImgs();return}
   if(S.view==='album')return renderAlbum();
   if(S.view==='board')return renderBoard();
 }
@@ -2646,7 +2648,7 @@ const RA_OUTFIT={boy:[['כובע','🧢','כּוֹבַע'],['צעיף','🧣','�
 /* flashlight: 3 scenes of 10 hidden things each */
 const RA_TORCH=[{title:'מצאו עם הפנס את כל החיות',items:[['כלב','🐕','כֶּלֶב'],['חתול','🐈','חָתוּל'],['פיל','🐘','פִּיל'],['סוס','🐴','סוּס'],['ארנב','🐇','אַרְנָב'],['צב','🐢','צָב'],['ברווז','🦆','בַּרְוָז'],['פרה','🐄','פָּרָה'],['כבשה','🐑','כִּבְשָׂה'],['ג׳ירפה','🦒','גִ׳ירָפָה']]},
  {title:'מצאו עם הפנס את כל האוכל',items:[['בננה','🍌','בָּנָנָה'],['תפוח','🍎','תַּפּוּחַ'],['פיצה','🍕','פִּיצָה'],['עוגה','🎂','עוּגָה'],['גלידה','🍦','גְּלִידָה'],['שוקולד','🍫','שׁוֹקוֹלָד'],['ענבים','🍇','עֲנָבִים'],['אבטיח','🍉','אֲבַטִּיחַ'],['עוגייה','🍪','עוּגִיָּה'],['סופגנייה','🍩','סוּפְגָּנִיָּה']]},
- {title:'מצאו עם הפנס את כל הילדים',items:[['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['תינוק','👶','תִּינוֹק'],['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['ילד','🧍','יֶלֶד'],['ילדה','👧','יַלְדָּה'],['תינוק','👶','תִּינוֹק'],['ילד','👦','יֶלֶד'],['ילדה','👧','יַלְדָּה']]}];
+ {title:'מצאו עם הפנס את כל הילדים',items:[['ילד','👦','יֶלֶד','k1'],['ילדה','👧','יַלְדָּה','k2'],['תינוק','👶','תִּינוֹק','k3'],['ילד','👦','יֶלֶד','k4'],['ילדה','👧','יַלְדָּה','k5'],['ילד','👦','יֶלֶד','k6'],['ילדה','👧','יַלְדָּה','k7'],['תינוק','👶','תִּינוֹק','k8'],['ילד','👦','יֶלֶד','k9'],['ילדה','👧','יַלְדָּה','k10']]}];
 function raTorchScene(d){const cells=shuffle([...Array(20).keys()]).slice(0,10);d.objs=shuffle(RA_TORCH[d.s].items.slice()).map((o,i)=>({o,x:6+(cells[i]%5)*19+Math.floor(Math.random()*7),y:8+Math.floor(cells[i]/5)*22+Math.floor(Math.random()*7)}));d.found=[];d.lx=200;d.ly=160}/* "דיבור בצלילים" cards: sentence, niqqud (for the voice), syllables per word, picture index */
 const SYL_CARDS=[{t:'איש הולך על המדרכה',v:'אִישׁ הוֹלֵךְ עַל הַמִּדְרָכָה',s:[1,2,1,4],i:0},{t:'אישה קונה לחם במכולת',v:'אִשָּׁה קוֹנָה לֶחֶם בַּמַּכֹּלֶת',s:[2,2,2,4],i:1},{t:'האיש שותה קפה',v:'הָאִישׁ שׁוֹתֶה קָפֶה',s:[2,2,2],i:2},
  {t:'הרופא בודק את החולה',v:'הָרוֹפֵא בּוֹדֵק אֶת הַחוֹלֶה',s:[3,2,1,3],i:3},{t:'הנהג עוצר ברמזור',v:'הַנֶּהָג עוֹצֵר בָּרַמְזוֹר',s:[3,2,3],i:4},{t:'האישה משקה את העציצים',v:'הָאִשָּׁה מַשְׁקָה אֶת הָעֲצִיצִים',s:[3,2,1,4],i:5},
@@ -3080,10 +3082,10 @@ function startAct(act,from){
   if(act==='shop2')shopInit(d,shuffle(SHOP2));
   if(act==='radress'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const boys=shuffle(['אורי','ראובן','רועי','אריאל']);const mk=(name,g)=>({name,g,n:0,order:shuffle([0,1,2,3])});d.kids=shuffle([mk(boys[0],0),mk('אוריה',1)]);d.r=0;d.sel=null;d.pop=false}
   if(act==='assoc'){d.round=0;d.rounds=3;d.tower=[];d.used=[];assocRound(d)}
-  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';try{(window.__cityImg=new Image()).src='scn/city.jpg'}catch(e){}
+  if(act==='racop'){const mv=['🐕','🐈','🐴','🐘','🚗','✈️','🎈'];d.items=shuffle(RA_OBJ.filter(o=>mv.includes(o[1]))).slice(0,4);d.k=0;d.dur=20;d.y=40;d.caught=false;d.phase='chase';try{(window.__cityImg=new Image()).src='scn/city.jpg'}catch(e){}loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});
     const an=shuffle(RA_OBJ.filter(o=>['🐕','🐈','🐴','🐘'].includes(o[1]))),covers=shuffle(['🌳','🗑️','🪴','⛲','📦','🌳']),pos=shuffle([[8,58],[24,30],[40,62],[56,34],[70,60],[86,32]]);d.spots=covers.map((e,i)=>({e,x:pos[i][0],y:pos[i][1],who:i<4?an[i]:null,found:false}))}  if(act==='rapeek'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});const W=window.WORD_IMG||{};let pool=shuffle(RA_OBJ.filter(o=>W[o[1]]));if(pool.length<4)pool=shuffle(RA_OBJ.slice());d.rounds=pool.slice(0,Math.min(6,pool.length)).map(a=>({ans:a,opts:shuffle([a,...shuffle(pool.filter(x=>x!==a)).slice(0,2)]),px:15+Math.floor(Math.random()*70),py:15+Math.floor(Math.random()*70)}));d.k=0;d.shown=false}
   if(act==='rawant'){const o=shuffle(RA_OBJ).slice(0,6);d.rounds=[o.slice(0,3),o.slice(3,6)].map(r=>{const nm=shuffle(['ישראל',pick(['ראובן','אורי'],1)[0],'אוריה']);return r.map((x,i)=>({o:x,name:nm[i],g:nm[i]==='אוריה'?1:0,got:false}))});d.r=0;d.tray=shuffle(d.rounds[0].map(x=>x.o));d.sel=null}
-  if(act==='ratorch'){d.s=0;raTorchScene(d)}
+  if(act==='ratorch'){loadScriptOnce('ra-img.js?v=2',()=>{if(S.data===d)render()});loadScriptOnce('torch-kids.js?v=1',()=>{if(S.data===d)render()});d.s=0;raTorchScene(d)}
   if(act==='shmin'){const all=shuffle(SHMIN).slice(0,12).map((x,i)=>[i,...x]);d.all=all;d.rounds=[all.slice(0,4),all.slice(4,8),all.slice(8,12)];d.r=0;d.found=[];d.done=[];d.sel=null;d.left=shuffle(d.rounds[0].slice());d.right=shuffle(d.rounds[0].slice())}
   if(act==='rocket'){d.items=shuffle(ROCKET).slice(0,6);d.k=0;d.fuel=0;d.phase='phr';d.played=0;d.cd=null;loadScriptOnce('tts-c.js?v=5',()=>{})}
   if(act==='color'){const s=SOUNDS[S.sound];d.sid=s&&s.id==='ts'?'ts':'sh';d.pg=Math.floor(Math.random()*2);d.n=0;d.ci=-1;d.left=0;d.pix=null;
@@ -4394,7 +4396,7 @@ function renderAct(){
   if(S.act==='racop'&&d.phase==='hide'){
     /* "השוטר ראה..." stage 2: the animals hid on the street (behind a tree, a bin, a fountain...).
        The child taps a hiding place: if someone is there he pops out and the child says "השוטר ראה ___!"; otherwise the place wiggles */
-    const W=window.WORD_IMG||{},pic=e=>W[e]?`<img src="${W[e]}" alt="">`:`<span>${e}</span>`,left=d.spots.filter(s=>s.who&&!s.found).length;
+    const W=window.WORD_IMG||{},pic=e=>{const s=(window.RA_IMG&&RA_IMG[e])||W[e];return s?`<img src="${s}" alt="" data-e="${e}">`:`<span>${e}</span>`},left=d.spots.filter(s=>s.who&&!s.found).length;
     shell(`<div class="card stage ra"><p class="jmsg">${left?`שלב 2: החיות התחבאו! נוגעים במקומות המסתור ומחפשים 🔍 (עוד ${left})`:'מצאנו את כולם! השוטר שמח 🎉'}</p>
       <div class="rcscene hide" id="rcs" style="background-image:url(scn/city.jpg)"><div class="rccop" id="rccop">${pic('👮')}<span class="rcsiren">🚨</span></div>
         ${d.spots.map((s,i)=>`<button class="rhspot ${s.found?'found':''}" data-i="${i}" type="button" style="left:${s.x}%;top:${s.y}%">${s.who&&s.found?`<span class="rhwho">${pic(s.who[1])}</span>`:''}<span class="rhcover">${pic(s.e)}</span></button>`).join('')}</div></div>`);
@@ -4411,8 +4413,8 @@ function renderAct(){
     const W=window.WORD_IMG||{},N=d.items.length;if(d.k>=N){d.phase='hide';render();return}
     const it=d.items[d.k];
     shell(`<div class="card stage ra"><p class="jmsg" id="rcmsg">שלב 1: מישהו רץ ברחוב! לוחצים עליו כדי שהשוטר יראה אותו 👮</p><div class="progress">${d.k+1} / ${N}</div>
-      <div class="rcscene" id="rcs" style="background-image:url(scn/city.jpg)"><div class="rccop" id="rccop">${W['👮']?`<img src="${W['👮']}" alt="">`:'<span>👮</span>'}<span class="rcsiren">🚨</span></div>
-        <button class="rcrun" id="rcrun" type="button" style="--dur:${d.dur}s;--y:${d.y}%">${W[it[1]]?`<img src="${W[it[1]]}" alt="">`:`<span>${it[1]}</span>`}</button></div></div>`);
+      <div class="rcscene" id="rcs" style="background-image:url(scn/city.jpg)"><div class="rccop" id="rccop">${W['👮']?`<img src="${W['👮']}" alt="" data-e="👮">`:'<span>👮</span>'}<span class="rcsiren">🚨</span></div>
+        <button class="rcrun" id="rcrun" type="button" style="--dur:${d.dur}s;--y:${d.y}%">${((window.RA_IMG&&RA_IMG[it[1]])||W[it[1]])?`<img src="${(window.RA_IMG&&RA_IMG[it[1]])||W[it[1]]}" alt="" data-e="${it[1]}">`:`<span>${it[1]}</span>`}</button></div></div>`);
     const b=document.getElementById('rcrun');
     b.addEventListener('animationiteration',()=>{d.y=18+Math.floor(Math.random()*42);b.style.setProperty('--y',d.y+'%')});
     b.onpointerdown=e=>{e.preventDefault();if(d.caught)return;d.caught=true;
@@ -4479,7 +4481,7 @@ function renderAct(){
     const all=d.found.length>=d.objs.length;
     shell(`<div class="card stage ra"><p class="jmsg">${all?(d.s+1<RA_TORCH.length?'כל הכבוד! מצאתם הכל 🎉':'מצאתם הכל בכל השלבים! 🎉'):sc.title+' 🔦'}</p><div class="progress">${d.s+1} / ${RA_TORCH.length} · נמצאו ${d.found.length} / ${d.objs.length}</div>
       <div class="rtscene plain ${all?'lit':''}" id="rts" style="--x:${d.lx}px;--y:${d.ly}px;background-image:url(${['scn/farm.jpg','scn/kitchen.jpg','scn/park.jpg'][d.s]||'kingdom-bg.jpg'})">
-        ${d.objs.map((o,i)=>{const src=(window.RA_IMG&&RA_IMG[o.o[1]])||W[o.o[1]];return `<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${src?`<img src="${src}" alt="" data-e="${o.o[1]}">`:`<span>${o.o[1]}</span>`}</button>`}).join('')}
+        ${d.objs.map((o,i)=>{const R=window.RA_IMG||{},src=(o.o[3]&&R[o.o[3]])||R[o.o[1]]||W[o.o[1]];return `<button class="rtobj ${d.found.includes(i)?'found':''}" data-i="${i}" type="button" style="left:${o.x}%;top:${o.y}%">${src?`<img src="${src}" alt="" data-e="${o.o[1]}">`:`<span>${o.o[1]}</span>`}</button>`}).join('')}
         <div class="rtdark"></div><div class="rtlamp">🔦</div></div>${all?`<div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="rtnext" type="button">${d.s+1<RA_TORCH.length?'המשך ←':'✓ סיום'}</button></div>`:''}</div>`);
     /* a blank placeholder picture (1 pixel) is swapped for the emoji itself */
     app.querySelectorAll('.rtobj img[data-e]').forEach(im=>{const fix=()=>{if(im.naturalWidth<20){const s=document.createElement('span');s.textContent=im.dataset.e;im.replaceWith(s)}};if(im.complete)fix();else im.onload=fix});
