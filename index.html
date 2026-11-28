@@ -1490,7 +1490,7 @@ body{background:#5E8F55}
 .rtobj.found img{filter:drop-shadow(0 0 14px #FFD43B) drop-shadow(0 0 4px #fff)}
 .rtdark{position:absolute;inset:0;z-index:3;pointer-events:none;background:rgba(6,8,28,.95);-webkit-mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);mask-image:radial-gradient(circle 120px at var(--x) var(--y),transparent 0,transparent 70%,#000 100%);transition:opacity 1.2s}
 .rtscene.lit .rtdark{opacity:0}
-.rtscene.plain .rtobj img{mix-blend-mode:multiply}.rtscene.plain .rtobj span{font-size:min(60px,8vh);line-height:1;display:grid;place-items:center;height:100%}
+.rtscene.plain .rtobj span{font-size:min(60px,8vh);line-height:1;display:grid;place-items:center;height:100%}
 .rtscene.lit .rtobj{animation:rtHop .9s ease-in-out infinite alternate;background:radial-gradient(circle,rgba(255,236,150,.85) 0,rgba(255,236,150,.5) 45%,transparent 70%);border-radius:50%}
 .rtscene.plain.lit .rtobj{width:min(110px,14vh);height:min(110px,14vh);margin:-16px 0 0 -16px}
 @keyframes rtHop{to{transform:translateY(-8px) scale(1.06)}}
@@ -1552,7 +1552,7 @@ body{background:#5E8F55}
 .rccop.alert .rcsiren{opacity:1;animation:rkFl .25s infinite alternate}
 .rccop.alert{animation:jwJump .4s ease-in-out 4 alternate}
 .rcrun{position:absolute;top:var(--y);left:105%;width:min(150px,19vh);padding:0;border:0;background:none;cursor:pointer;z-index:2;animation:rcRun var(--dur) linear infinite;touch-action:none}
-.rcrun:hover{animation-play-state:paused}.rcscene .rcrun,.rcscene .rhspot,.rcscene .rccop{mix-blend-mode:multiply}.rtscene img[src^="data:image/jpeg"]{mix-blend-mode:multiply}
+.rcrun:hover{animation-play-state:paused}
 .ascgame{display:flex;gap:14px;width:100%;align-items:stretch}
 .ascgrid{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .asccard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:18px;border:3px solid #e6dcc8;background:#fff;cursor:pointer;box-shadow:0 4px 0 #e6dcc8;font:inherit;transition:transform .15s}
@@ -2348,6 +2348,19 @@ function header(title,back){
    it is shrunk evenly (CSS zoom) just enough to fit; checked again after pictures load and when the window changes */
 /* pictures that are only a blank placeholder (a few pixels) are replaced by their emoji */
 function fixBlankImgs(){app.querySelectorAll('img[data-e]').forEach(im=>{const fix=()=>{if(im.naturalWidth&&im.naturalWidth<20){const s=document.createElement('span');s.textContent=im.dataset.e;s.style.fontSize='min(80px,10vh)';im.replaceWith(s)}};if(im.complete)fix();else im.addEventListener('load',fix,{once:true})})}
+/* pictures standing on a scene (street, farm, kitchen...) must have no white box around them: the white that touches
+   the picture's edge is made transparent once (in a canvas) and the clean copy is reused */
+const CUT_CACHE={};
+function cutWhite(src,cb){if(CUT_CACHE[src])return cb(CUT_CACHE[src]);const im=new Image();
+  im.onload=()=>{try{const W=Math.min(im.naturalWidth,320),H=Math.max(1,Math.round(im.naturalHeight*W/im.naturalWidth)),c=document.createElement('canvas');c.width=W;c.height=H;
+    const x=c.getContext('2d');x.drawImage(im,0,0,W,H);const d=x.getImageData(0,0,W,H),p=d.data,seen=new Uint8Array(W*H),q=[];
+    const push=i=>{if(!seen[i]){seen[i]=1;q.push(i)}};for(let i=0;i<W;i++){push(i);push((H-1)*W+i)}for(let j=0;j<H;j++){push(j*W);push(j*W+W-1)}
+    const bg=i=>{const k=i*4,mn=Math.min(p[k],p[k+1],p[k+2]),mx=Math.max(p[k],p[k+1],p[k+2]);return p[k+3]<20||(mn>=226&&mx-mn<=24)};
+    while(q.length){const i=q.pop();if(!bg(i))continue;p[i*4+3]=0;const xx=i%W,yy=(i/W)|0;if(xx>0)push(i-1);if(xx<W-1)push(i+1);if(yy>0)push(i-W);if(yy<H-1)push(i+W)}
+    x.putImageData(d,0,0);CUT_CACHE[src]=c.toDataURL();cb(CUT_CACHE[src])}catch(e){CUT_CACHE[src]=src;cb(src)}};im.onerror=()=>cb(src);im.src=src}
+function cutScenePics(){app.querySelectorAll('.rcscene img,.rtscene .rtobj img,.rwkids img,.rwtray img').forEach(im=>{if(im.dataset.cut)return;im.dataset.cut='1';
+  const s=im.getAttribute('src');if(!s||!s.startsWith('data:'))return;if(CUT_CACHE[s]){im.src=CUT_CACHE[s];return}
+  im.style.visibility='hidden';cutWhite(s,u=>{im.src=u;im.style.visibility=''})})}
 function fitStage(again){const c=app.querySelector('.card.stage');if(!c)return;c.style.zoom='';
   if(innerWidth>=900&&innerHeight>=500){const over=document.documentElement.scrollHeight-innerHeight;
     if(over>2){const h=c.getBoundingClientRect().height;if(h>0)c.style.zoom=Math.max(.6,(h-over-6)/h).toFixed(3)}}
@@ -2369,7 +2382,7 @@ function render(){
   if(S.view==='pair')return renderPair();
   if(S.view==='games')return renderGames();
   if(S.view==='mine')return renderMine();
-  if(S.view==='act'){renderAct();fitStage();fixBlankImgs();return}
+  if(S.view==='act'){renderAct();fitStage();fixBlankImgs();cutScenePics();return}
   if(S.view==='album')return renderAlbum();
   if(S.view==='board')return renderBoard();
 }
